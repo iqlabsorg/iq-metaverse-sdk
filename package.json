@@ -24,7 +24,10 @@
     "test": "jest --group=unit",
     "typechain": "run-s typechain:clean typechain:generate",
     "typechain:clean": "rimraf src/contracts",
-    "typechain:generate": "yarn compile"
+    "typechain:generate": "yarn compile",
+    "docs": "run-s docs:clean docs:generate",
+    "docs:generate": "NODE_OPTIONS=--max_old_space_size=8192 typedoc --options typedoc.js --entryPointStrategy packages . --out docs && touch docs/.nojekyll",
+    "docs:clean": "rimraf docs"
   },
   "lint-staged": {
     "packages/**/*.ts": "yarn lint:fix",

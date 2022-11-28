@@ -15,8 +15,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node: [ '16' ]
-        os: [ ubuntu-latest ]
+        node: ['16']
+        os: [ubuntu-latest]
 
     steps:
       - name: Checkout repo
@@ -36,12 +36,9 @@ jobs:
       - name: Unit tests
         run: yarn test
 
-      - name: Integration tests
-        run: yarn test:integration
-
   publish_docs:
     name: Publish Docs
-    if: ${{ github.ref == 'refs/heads/main' }}
+    if: ${{ false && github.ref == 'refs/heads/main' }} # disable for now
     needs: build
     runs-on: ubuntu-latest
 
