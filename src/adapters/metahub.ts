@@ -18,7 +18,7 @@ import {
   RentingEstimationParams,
   RentingParams,
 } from '../types';
-import { assetClassToNamespace, pick } from '../utils';
+import { assertAssetNamespaceAsERC721, assetClassToNamespace, pick } from '../utils';
 import { ListingManager } from './../contracts/contracts/listing/ListingManager';
 import { RentingManager } from './../contracts/contracts/renting/RentingManager';
 
@@ -206,11 +206,7 @@ export class MetahubAdapter extends Adapter {
    * @param asset
    */
   async approveForListing(asset: Asset): Promise<ContractTransaction> {
-    // todo: DRY! Use util function to check asset support and encode it.
-    if (asset.id.assetName.namespace !== assetClasses.ERC721.namespace) {
-      //eslint-disable-next-line sonarjs/no-duplicate-string
-      throw new Error('Invalid namespace');
-    }
+    assertAssetNamespaceAsERC721(asset);
 
     return this.contractResolver
       .resolveERC721Asset(this.assetIdToAddress(asset.id))
@@ -223,10 +219,7 @@ export class MetahubAdapter extends Adapter {
    * @param asset
    */
   async isApprovedForListing(asset: Asset): Promise<boolean> {
-    // todo: DRY! Use util function to check asset support and encode it.
-    if (asset.id.assetName.namespace !== assetClasses.ERC721.namespace) {
-      throw new Error('Invalid namespace');
-    }
+    assertAssetNamespaceAsERC721(asset);
 
     // Check particular token allowance.
     const assetContract = this.contractResolver.resolveERC721Asset(this.assetIdToAddress(asset.id));
