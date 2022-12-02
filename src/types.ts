@@ -22,6 +22,11 @@ export type ListingParams = {
   configurator: AccountId;
 };
 
+export type ListingTerms = {
+  strategyId: BytesLike;
+  strategyData: BytesLike;
+};
+
 export type FixedPriceListingStrategyParams = {
   name: typeof listingStrategies.FIXED_PRICE.name;
   data: {

@@ -1,6 +1,12 @@
 import { AccountId, AssetType, ChainId } from 'caip';
 import { Signer } from 'ethers';
-import { MetahubAdapter, UniverseRegistryAdapter, WarperManagerAdapter, WarperPresetFactoryAdapter } from './adapters';
+import {
+  ListingWizardAdapter,
+  MetahubAdapter,
+  UniverseRegistryAdapter,
+  WarperManagerAdapter,
+  WarperPresetFactoryAdapter,
+} from './adapters';
 import { ERC721WarperAdapter } from './adapters/erc721-warper';
 import { AddressTranslator } from './address-translator';
 import { assetClasses } from './constants';
@@ -78,5 +84,15 @@ export class Multiverse implements ChainAware {
   warperManager(accountId: AccountId): WarperManagerAdapter {
     this.addressTranslator.assertSameChainId(accountId.chainId);
     return new WarperManagerAdapter(accountId, this.contractResolver, this.addressTranslator);
+  }
+
+  /**
+   * Resolves listing wizard adapter.
+   * @param accountId Listing wizard account ID.
+   * @returns
+   */
+  listingWizard(accountId: AccountId): ListingWizardAdapter {
+    this.addressTranslator.assertSameChainId(accountId.chainId);
+    return new ListingWizardAdapter(accountId, this.contractResolver, this.addressTranslator);
   }
 }

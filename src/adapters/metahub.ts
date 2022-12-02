@@ -234,22 +234,6 @@ export class MetahubAdapter extends Adapter {
   }
 
   /**
-   * Creates new asset listing.
-   * @param assetListingParams Listing params.
-   */
-  async listAssets(assetListingParams: AssetListingParams): Promise<ContractTransaction> {
-    const { assets, params, maxLockPeriod, immediatePayout } = assetListingParams;
-
-    const encodedAssets = assets.map(x => this.encodeAsset(x));
-    const listingParams: Listings.ParamsStruct = {
-      lister: this.accountIdToAddress(params.lister),
-      configurator: this.accountIdToAddress(params.configurator),
-    };
-
-    return this.listingManager.createListing(encodedAssets, listingParams, maxLockPeriod, immediatePayout);
-  }
-
-  /**
    * Marks the asset as being delisted. This operation in irreversible.
    * After delisting, the asset can only be withdrawn when it has no active rentals.
    * @param listingId Listing ID.

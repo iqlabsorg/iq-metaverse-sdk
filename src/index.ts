@@ -9,6 +9,7 @@ export type {
   Listing,
   Asset,
   ListingParams,
+  ListingTerms,
   RegisteredWarper,
   RentingEstimationParams,
   RentingParams,
