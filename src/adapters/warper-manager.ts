@@ -1,12 +1,12 @@
-import { ContractResolver } from '../contract-resolver';
+import { AccountId, AssetType } from 'caip';
 import { BigNumber, BigNumberish, ContractTransaction } from 'ethers';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
-import { AccountId, AssetType } from 'caip';
+import { ContractResolver } from '../contract-resolver';
 import { Address, RegisteredWarper } from '../types';
 import { assetClassToNamespace, pick } from '../utils';
 
-import { IWarperManager, WarperManager } from '../contracts';
+import { WarperManager } from '../contracts';
 import { Warpers } from '../contracts/contracts/warper/IWarperManager';
 
 export class WarperManagerAdapter extends Adapter {
@@ -15,19 +15,6 @@ export class WarperManagerAdapter extends Adapter {
   constructor(accountId: AccountId, contractResolver: ContractResolver, addressTranslator: AddressTranslator) {
     super(contractResolver, addressTranslator);
     this.contract = contractResolver.resolveWarperManager(accountId.address);
-  }
-
-  /**
-   * Registers a new warper.
-   * The warper must be deployed and configured prior to registration, since it becomes available for renting immediately.
-   * @param warper Warper reference.
-   * @param params Warper registration params.
-   */
-  async registerWarper(
-    warper: AssetType,
-    params: IWarperManager.WarperRegistrationParamsStruct,
-  ): Promise<ContractTransaction> {
-    return this.contract.registerWarper(this.assetTypeToAddress(warper), params);
   }
 
   /**

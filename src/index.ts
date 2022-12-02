@@ -18,7 +18,9 @@ export type {
   AccountBalance,
   BaseToken,
   WarperRentingConstraints,
+  WarperRegistrationParams,
   UniverseParams,
+  TaxTerms,
 } from './types';
 export { assetClasses, listingStrategies } from './constants';
 export { Multiverse } from './multiverse';
@@ -29,4 +31,5 @@ export {
   WarperManagerAdapter,
   ListingWizardAdapter,
   UniverseWizardAdapter,
+  WarperWizardAdapter,
 } from './adapters';

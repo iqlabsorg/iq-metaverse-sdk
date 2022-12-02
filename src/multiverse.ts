@@ -7,6 +7,7 @@ import {
   UniverseWizardAdapter,
   WarperManagerAdapter,
   WarperPresetFactoryAdapter,
+  WarperWizardAdapter,
 } from './adapters';
 import { ERC721WarperAdapter } from './adapters/erc721-warper';
 import { AddressTranslator } from './address-translator';
@@ -105,5 +106,15 @@ export class Multiverse implements ChainAware {
   universeWizard(accountId: AccountId): UniverseWizardAdapter {
     this.addressTranslator.assertSameChainId(accountId.chainId);
     return new UniverseWizardAdapter(accountId, this.contractResolver, this.addressTranslator);
+  }
+
+  /**
+   * Resolves the warper wizard adapter.
+   * @param accountId Warper wizard account ID.
+   * @returns
+   */
+  warperWizard(accountId: AccountId): WarperWizardAdapter {
+    this.addressTranslator.assertSameChainId(accountId.chainId);
+    return new WarperWizardAdapter(accountId, this.contractResolver, this.addressTranslator);
   }
 }

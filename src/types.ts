@@ -133,7 +133,18 @@ export type WarperRentingConstraints = {
   };
 };
 
+export type WarperRegistrationParams = {
+  name: string;
+  universeId: BigNumberish;
+  paused: boolean;
+};
+
 export type UniverseParams = {
   name: string;
   paymentTokens: AccountId[];
+};
+
+export type TaxTerms = {
+  strategyId: BytesLike;
+  strategyData: BytesLike;
 };
