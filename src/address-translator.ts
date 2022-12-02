@@ -1,4 +1,5 @@
 import { AccountId, AssetId, AssetType, ChainId } from 'caip';
+import { assetClasses } from './constants';
 import { Address } from './types';
 
 export class AddressTranslator {
@@ -18,6 +19,13 @@ export class AddressTranslator {
       throw new Error(`Asset mismatch! Expected asset: ${assetName.toString()}`);
     }
   }
+
+  static assertTypeERC721 = (asset: AssetType | AssetId): void => {
+    const { namespace } = asset.assetName;
+    if (namespace !== assetClasses.ERC721.namespace) {
+      throw new Error(`Invalid asset type: "${namespace}"! Expected: "erc721"`);
+    }
+  };
 
   assertSameChainId(chainId: ChainId): void {
     AddressTranslator.assertSameChainId(chainId, this.chainId);

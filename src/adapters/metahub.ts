@@ -2,7 +2,6 @@ import { AccountId, AssetType } from 'caip';
 import { BigNumber, BigNumberish, ContractTransaction } from 'ethers';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
-import { assetClasses } from '../constants';
 import { ContractResolver } from '../contract-resolver';
 import { Metahub } from '../contracts';
 import { Listings } from '../contracts/contracts/listing/IListingManager';
@@ -10,7 +9,6 @@ import { Rentings } from '../contracts/contracts/metahub/IMetahub';
 import {
   AccountBalance,
   Asset,
-  AssetListingParams,
   BaseToken,
   Listing,
   RentalAgreement,
@@ -18,7 +16,7 @@ import {
   RentingEstimationParams,
   RentingParams,
 } from '../types';
-import { assertAssetNamespaceAsERC721, assetClassToNamespace, pick } from '../utils';
+import { assetClassToNamespace, pick } from '../utils';
 import { ListingManager } from './../contracts/contracts/listing/ListingManager';
 import { RentingManager } from './../contracts/contracts/renting/RentingManager';
 
@@ -206,8 +204,7 @@ export class MetahubAdapter extends Adapter {
    * @param asset
    */
   async approveForListing(asset: Asset): Promise<ContractTransaction> {
-    assertAssetNamespaceAsERC721(asset);
-
+    AddressTranslator.assertTypeERC721(asset.id);
     return this.contractResolver
       .resolveERC721Asset(this.assetIdToAddress(asset.id))
       .approve(this.contract.address, asset.id.tokenId);
@@ -219,7 +216,7 @@ export class MetahubAdapter extends Adapter {
    * @param asset
    */
   async isApprovedForListing(asset: Asset): Promise<boolean> {
-    assertAssetNamespaceAsERC721(asset);
+    AddressTranslator.assertTypeERC721(asset.id);
 
     // Check particular token allowance.
     const assetContract = this.contractResolver.resolveERC721Asset(this.assetIdToAddress(asset.id));

@@ -11,7 +11,6 @@ import {
 } from './adapters';
 import { ERC721WarperAdapter } from './adapters/erc721-warper';
 import { AddressTranslator } from './address-translator';
-import { assetClasses } from './constants';
 import { ContractResolver } from './contract-resolver';
 import { ChainAware } from './types';
 
@@ -43,11 +42,7 @@ export class Multiverse implements ChainAware {
   }
 
   warper(assetType: AssetType): ERC721WarperAdapter {
-    const { namespace } = assetType.assetName;
-    if (namespace !== assetClasses.ERC721.namespace) {
-      throw new Error(`Invalid asset type: "${namespace}"! Expected: "erc721"`);
-    }
-
+    AddressTranslator.assertTypeERC721(assetType);
     return new ERC721WarperAdapter(assetType, this.contractResolver, this.addressTranslator);
   }
 

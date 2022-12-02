@@ -58,10 +58,8 @@ export class WarperPresetFactoryAdapter extends Adapter {
       throw new Error(`Unknown preset ID: "${presetId}"`);
     }
 
-    const { namespace, reference } = data.original.assetName;
-    if (namespace !== assetClasses.ERC721.namespace) {
-      throw new Error(`Invalid asset type: "${namespace}"! Expected: "erc721"`);
-    }
+    const { reference } = data.original.assetName;
+    AddressTranslator.assertTypeERC721(data.original);
 
     return ERC721PresetConfigurable__factory.createInterface().encodeFunctionData('__initialize', [
       defaultAbiCoder.encode(
