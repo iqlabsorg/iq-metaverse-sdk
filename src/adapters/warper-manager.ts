@@ -18,15 +18,6 @@ export class WarperManagerAdapter extends Adapter {
   }
 
   /**
-   * Deletes warper registration information.
-   * All current rental agreements with the warper will stay intact, but the new rentals won't be possible.
-   * @param warper Warper reference.
-   */
-  async deregisterWarper(warper: AssetType): Promise<ContractTransaction> {
-    return this.contract.deregisterWarper(this.assetTypeToAddress(warper));
-  }
-
-  /**
    * Puts the warper on pause.
    * @param warper Warper reference.
    */
