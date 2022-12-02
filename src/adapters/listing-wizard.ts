@@ -15,6 +15,12 @@ export class ListingWizardAdapter extends Adapter {
     this.contract = contractResolver.resolveListingWizard(accountId.address);
   }
 
+  /**
+   * Creates new asset listing.
+   * @param universeId Universe ID.
+   * @param assetListingParams Listing params.
+   * @param listingTerms Listing terms.
+   */
   async createListingWithTerms(
     universeId: BigNumberish,
     assetListingParams: AssetListingParams,

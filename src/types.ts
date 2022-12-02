@@ -132,3 +132,8 @@ export type WarperRentingConstraints = {
     max: number;
   };
 };
+
+export type UniverseParams = {
+  name: string;
+  paymentTokens: AccountId[];
+};

@@ -4,6 +4,7 @@ import {
   ListingWizardAdapter,
   MetahubAdapter,
   UniverseRegistryAdapter,
+  UniverseWizardAdapter,
   WarperManagerAdapter,
   WarperPresetFactoryAdapter,
 } from './adapters';
@@ -87,12 +88,22 @@ export class Multiverse implements ChainAware {
   }
 
   /**
-   * Resolves listing wizard adapter.
+   * Resolves the listing wizard adapter.
    * @param accountId Listing wizard account ID.
    * @returns
    */
   listingWizard(accountId: AccountId): ListingWizardAdapter {
     this.addressTranslator.assertSameChainId(accountId.chainId);
     return new ListingWizardAdapter(accountId, this.contractResolver, this.addressTranslator);
+  }
+
+  /**
+   * Resolves the universe wizard adapter.
+   * @param accountId Universe wizard account ID.
+   * @returns
+   */
+  universeWizard(accountId: AccountId): UniverseWizardAdapter {
+    this.addressTranslator.assertSameChainId(accountId.chainId);
+    return new UniverseWizardAdapter(accountId, this.contractResolver, this.addressTranslator);
   }
 }
