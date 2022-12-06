@@ -30,8 +30,7 @@ jobs:
       - name: Install dependencies (with cache)
         uses: bahmutov/npm-install@v1
         with:
-          install-command: yarn --frozen-lockfile --ignore-scripts
-          useLockFile: false
+          install-command: yarn cache clean && yarn --frozen-lockfile --ignore-scripts
 
       - name: Build packages
         run: yarn build
