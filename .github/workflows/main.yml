@@ -29,9 +29,7 @@ jobs:
 
       - name: Install dependencies (with cache)
         run: yarn --frozen-lockfile --ignore-scripts --skip-integrity-check --network-concurrency 1
-        # uses: bahmutov/npm-install@v1
-        # with:
-        #   install-command: yarn --frozen-lockfile --ignore-scripts
+        # https://github.com/yarnpkg/yarn/issues/6312
 
       - name: Build packages
         run: yarn build
