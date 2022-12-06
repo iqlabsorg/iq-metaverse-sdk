@@ -28,7 +28,8 @@ jobs:
           node-version: ${{ matrix.node }}
 
       - name: Install dependencies (with cache)
-        uses: bahmutov/npm-install@v1
+        run: yarn --ignore-scripts
+        # uses: bahmutov/npm-install@v1
 
       - name: Build packages
         run: yarn build
