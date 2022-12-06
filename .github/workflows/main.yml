@@ -28,8 +28,10 @@ jobs:
           node-version: ${{ matrix.node }}
 
       - name: Install dependencies (with cache)
-        run: yarn --ignore-scripts
-        # uses: bahmutov/npm-install@v1
+        uses: bahmutov/npm-install@v1
+        with:
+          install-command: yarn --frozen-lockfile --ignore-scripts
+          useLockFile: false
 
       - name: Build packages
         run: yarn build
