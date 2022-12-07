@@ -19,15 +19,19 @@
     "build": "yarn typechain && NODE_OPTIONS=--max-old-space-size=5120 rollup -c",
     "build:clean": "rimraf dist",
     "prepublish": "NODE_ENV=production yarn build",
-    "compile": "cp -r ./node_modules/@iqprotocol/solidity-contracts-nft/contracts ./contracts && TS_NODE_TRANSPILE_ONLY=1 hardhat compile && rimraf ./contracts && rimraf ./artifacts && rimraf ./cache",
+    "compile": "run-s contracts:clean contracts:copy contracts:compile",
     "start": "rollup -cw",
+    "contracts:copy": "cp -r ./node_modules/@iqprotocol/solidity-contracts-nft/contracts ./contracts",
+    "contracts:compile": "TS_NODE_TRANSPILE_ONLY=1 hardhat compile",
+    "contracts:clean": "rimraf ./contracts && rimraf ./artifacts && rimraf ./cache",
     "test": "jest --group=unit",
     "typechain": "run-s typechain:clean typechain:generate",
     "typechain:clean": "rimraf src/contracts",
     "typechain:generate": "yarn compile",
     "docs": "run-s docs:clean docs:generate",
     "docs:generate": "NODE_OPTIONS=--max_old_space_size=8192 typedoc --options typedoc.js --entryPointStrategy packages . --out docs && touch docs/.nojekyll",
-    "docs:clean": "rimraf docs"
+    "docs:clean": "rimraf docs",
+    "clean": "run-s build:clean contracts:clean typechain:clean docs:clean"
   },
   "lint-staged": {
     "packages/**/*.ts": "yarn lint:fix",

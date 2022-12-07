@@ -182,9 +182,10 @@ export class MetahubAdapter extends Adapter {
    * @param paymentToken ERC20 payment token.
    * @param amount Allowance amount.
    */
-  async approveForRentalPayment(paymentToken: AccountId, amount: BigNumberish): Promise<ContractTransaction> {
+  async approveForRentalPayment(paymentToken: AssetType, amount: BigNumberish): Promise<ContractTransaction> {
+    AddressTranslator.assertTypeERC20(paymentToken);
     return this.contractResolver
-      .resolveERC20Asset(this.accountIdToAddress(paymentToken))
+      .resolveERC20Asset(this.assetTypeToAddress(paymentToken))
       .approve(this.contract.address, amount);
   }
 
@@ -193,9 +194,10 @@ export class MetahubAdapter extends Adapter {
    * @param paymentToken ERC20 payment token.
    * @param payer Payer account ID.
    */
-  async paymentTokenAllowance(paymentToken: AccountId, payer: AccountId): Promise<BigNumber> {
+  async paymentTokenAllowance(paymentToken: AssetType, payer: AccountId): Promise<BigNumber> {
+    AddressTranslator.assertTypeERC20(paymentToken);
     return this.contractResolver
-      .resolveERC20Asset(this.accountIdToAddress(paymentToken))
+      .resolveERC20Asset(this.assetTypeToAddress(paymentToken))
       .allowance(this.accountIdToAddress(payer), this.contract.address);
   }
 

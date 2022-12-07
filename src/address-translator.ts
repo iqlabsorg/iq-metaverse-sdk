@@ -27,6 +27,13 @@ export class AddressTranslator {
     }
   };
 
+  static assertTypeERC20 = (asset: AssetType | AssetId): void => {
+    const { namespace } = asset.assetName;
+    if (namespace !== assetClasses.ERC20.namespace) {
+      throw new Error(`Invalid asset type: "${namespace}"! Expected: "erc20"`);
+    }
+  };
+
   assertSameChainId(chainId: ChainId): void {
     AddressTranslator.assertSameChainId(chainId, this.chainId);
   }

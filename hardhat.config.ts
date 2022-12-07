@@ -4,6 +4,7 @@ import '@openzeppelin/hardhat-upgrades';
 import '@nomiclabs/hardhat-ethers';
 import '@typechain/hardhat';
 import 'tsconfig-paths/register';
+// import '@iqprotocol/solidity-contracts-nft/tasks';
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -29,6 +30,9 @@ const config: HardhatUserConfig = {
     sources: './contracts',
     artifacts: './artifacts',
   },
+  // external: {
+  //   contracts: [{ artifacts: './artifacts', deploy: 'node_modules/@iqprotocol/solidity-contracts-nft/deploy' }],
+  // },
   networks: {
     hardhat: {
       chainId: 31337, // explicit default
