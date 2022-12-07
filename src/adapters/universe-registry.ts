@@ -16,21 +16,6 @@ export class UniverseRegistryAdapter extends Adapter {
   }
 
   /**
-   * Creates new Universe. This includes minting new universe NFT, where the caller of this method becomes the
-   * universe owner.
-   * @param params The universe properties & initial configuration params.
-   */
-  async createUniverse({
-    name,
-    paymentTokens,
-  }: {
-    name: string;
-    paymentTokens: AccountId[];
-  }): Promise<ContractTransaction> {
-    return this.contract.createUniverse({ name, paymentTokens: paymentTokens.map(x => this.accountIdToAddress(x)) });
-  }
-
-  /**
    * Retrieves the universe details form creation transaction.
    * @param transactionHash
    */

@@ -33,6 +33,12 @@ import {
   WarperManager__factory,
   WarperPresetFactory,
   WarperPresetFactory__factory,
+  ListingWizard,
+  ListingWizard__factory,
+  UniverseWizard,
+  UniverseWizard__factory,
+  WarperWizard,
+  WarperWizard__factory,
 } from './contracts';
 import { ChainId } from 'caip';
 
@@ -110,5 +116,17 @@ export class ContractResolver implements ChainAware {
 
   resolveERC20Metadata(address: Address): IERC20Metadata {
     return IERC20Metadata__factory.connect(address, this.signer);
+  }
+
+  resolveUniverseWizard(address: Address): UniverseWizard {
+    return UniverseWizard__factory.connect(address, this.signer);
+  }
+
+  resolveListingWizard(address: Address): ListingWizard {
+    return ListingWizard__factory.connect(address, this.signer);
+  }
+
+  resolveWarperWizard(address: Address): WarperWizard {
+    return WarperWizard__factory.connect(address, this.signer);
   }
 }

@@ -36,4 +36,5 @@ pids
 **/.DS_Store
 artifacts/
 cache/
+contracts/
 src/contracts

@@ -2,7 +2,6 @@ import { AccountId, AssetType } from 'caip';
 import { BigNumber, BigNumberish, ContractTransaction } from 'ethers';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
-import { assetClasses } from '../constants';
 import { ContractResolver } from '../contract-resolver';
 import { Metahub } from '../contracts';
 import { Listings } from '../contracts/contracts/listing/IListingManager';
@@ -10,7 +9,6 @@ import { Rentings } from '../contracts/contracts/metahub/IMetahub';
 import {
   AccountBalance,
   Asset,
-  AssetListingParams,
   BaseToken,
   Listing,
   RentalAgreement,
@@ -185,6 +183,7 @@ export class MetahubAdapter extends Adapter {
    * @param amount Allowance amount.
    */
   async approveForRentalPayment(paymentToken: AssetType, amount: BigNumberish): Promise<ContractTransaction> {
+    AddressTranslator.assertTypeERC20(paymentToken);
     return this.contractResolver
       .resolveERC20Asset(this.assetTypeToAddress(paymentToken))
       .approve(this.contract.address, amount);
@@ -196,6 +195,7 @@ export class MetahubAdapter extends Adapter {
    * @param payer Payer account ID.
    */
   async paymentTokenAllowance(paymentToken: AssetType, payer: AccountId): Promise<BigNumber> {
+    AddressTranslator.assertTypeERC20(paymentToken);
     return this.contractResolver
       .resolveERC20Asset(this.assetTypeToAddress(paymentToken))
       .allowance(this.accountIdToAddress(payer), this.contract.address);
@@ -206,12 +206,7 @@ export class MetahubAdapter extends Adapter {
    * @param asset
    */
   async approveForListing(asset: Asset): Promise<ContractTransaction> {
-    // todo: DRY! Use util function to check asset support and encode it.
-    if (asset.id.assetName.namespace !== assetClasses.ERC721.namespace) {
-      //eslint-disable-next-line sonarjs/no-duplicate-string
-      throw new Error('Invalid namespace');
-    }
-
+    AddressTranslator.assertTypeERC721(asset.id);
     return this.contractResolver
       .resolveERC721Asset(this.assetIdToAddress(asset.id))
       .approve(this.contract.address, asset.id.tokenId);
@@ -223,10 +218,7 @@ export class MetahubAdapter extends Adapter {
    * @param asset
    */
   async isApprovedForListing(asset: Asset): Promise<boolean> {
-    // todo: DRY! Use util function to check asset support and encode it.
-    if (asset.id.assetName.namespace !== assetClasses.ERC721.namespace) {
-      throw new Error('Invalid namespace');
-    }
+    AddressTranslator.assertTypeERC721(asset.id);
 
     // Check particular token allowance.
     const assetContract = this.contractResolver.resolveERC721Asset(this.assetIdToAddress(asset.id));
@@ -238,22 +230,6 @@ export class MetahubAdapter extends Adapter {
     // Check operator.
     const assumedOwner = await this.signerAddress();
     return assetContract.isApprovedForAll(assumedOwner, this.contract.address);
-  }
-
-  /**
-   * Creates new asset listing.
-   * @param assetListingParams Listing params.
-   */
-  async listAssets(assetListingParams: AssetListingParams): Promise<ContractTransaction> {
-    const { assets, params, maxLockPeriod, immediatePayout } = assetListingParams;
-
-    const encodedAssets = assets.map(x => this.encodeAsset(x));
-    const listingParams: Listings.ParamsStruct = {
-      lister: this.accountIdToAddress(params.lister),
-      configurator: this.accountIdToAddress(params.configurator),
-    };
-
-    return this.listingManager.createListing(encodedAssets, listingParams, maxLockPeriod, immediatePayout);
   }
 
   /**

@@ -1,9 +1,16 @@
 import { AccountId, AssetType, ChainId } from 'caip';
 import { Signer } from 'ethers';
-import { MetahubAdapter, UniverseRegistryAdapter, WarperManagerAdapter, WarperPresetFactoryAdapter } from './adapters';
+import {
+  ListingWizardAdapter,
+  MetahubAdapter,
+  UniverseRegistryAdapter,
+  UniverseWizardAdapter,
+  WarperManagerAdapter,
+  WarperPresetFactoryAdapter,
+  WarperWizardAdapter,
+} from './adapters';
 import { ERC721WarperAdapter } from './adapters/erc721-warper';
 import { AddressTranslator } from './address-translator';
-import { assetClasses } from './constants';
 import { ContractResolver } from './contract-resolver';
 import { ChainAware } from './types';
 
@@ -35,11 +42,7 @@ export class Multiverse implements ChainAware {
   }
 
   warper(assetType: AssetType): ERC721WarperAdapter {
-    const { namespace } = assetType.assetName;
-    if (namespace !== assetClasses.ERC721.namespace) {
-      throw new Error(`Invalid asset type: "${namespace}"! Expected: "erc721"`);
-    }
-
+    AddressTranslator.assertTypeERC721(assetType);
     return new ERC721WarperAdapter(assetType, this.contractResolver, this.addressTranslator);
   }
 
@@ -78,5 +81,35 @@ export class Multiverse implements ChainAware {
   warperManager(accountId: AccountId): WarperManagerAdapter {
     this.addressTranslator.assertSameChainId(accountId.chainId);
     return new WarperManagerAdapter(accountId, this.contractResolver, this.addressTranslator);
+  }
+
+  /**
+   * Resolves the listing wizard adapter.
+   * @param accountId Listing wizard account ID.
+   * @returns
+   */
+  listingWizard(accountId: AccountId): ListingWizardAdapter {
+    this.addressTranslator.assertSameChainId(accountId.chainId);
+    return new ListingWizardAdapter(accountId, this.contractResolver, this.addressTranslator);
+  }
+
+  /**
+   * Resolves the universe wizard adapter.
+   * @param accountId Universe wizard account ID.
+   * @returns
+   */
+  universeWizard(accountId: AccountId): UniverseWizardAdapter {
+    this.addressTranslator.assertSameChainId(accountId.chainId);
+    return new UniverseWizardAdapter(accountId, this.contractResolver, this.addressTranslator);
+  }
+
+  /**
+   * Resolves the warper wizard adapter.
+   * @param accountId Warper wizard account ID.
+   * @returns
+   */
+  warperWizard(accountId: AccountId): WarperWizardAdapter {
+    this.addressTranslator.assertSameChainId(accountId.chainId);
+    return new WarperWizardAdapter(accountId, this.contractResolver, this.addressTranslator);
   }
 }

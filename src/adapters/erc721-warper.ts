@@ -1,9 +1,8 @@
-import { Adapter } from '../adapter';
-import { IAvailabilityPeriodMechanics__factory, IERC721Warper, IRentalPeriodMechanics__factory } from '../contracts';
-import { ContractResolver } from '../contract-resolver';
-import { AddressTranslator } from '../address-translator';
 import { AssetType } from 'caip';
-import { assetClasses } from '../constants';
+import { Adapter } from '../adapter';
+import { AddressTranslator } from '../address-translator';
+import { ContractResolver } from '../contract-resolver';
+import { IAvailabilityPeriodMechanics__factory, IERC721Warper, IRentalPeriodMechanics__factory } from '../contracts';
 import { WarperRentingConstraints } from '../types';
 
 export class ERC721WarperAdapter extends Adapter {
@@ -11,10 +10,7 @@ export class ERC721WarperAdapter extends Adapter {
 
   constructor(assetType: AssetType, contractResolver: ContractResolver, addressTranslator: AddressTranslator) {
     super(contractResolver, addressTranslator);
-    const { namespace } = assetType.assetName;
-    if (namespace !== assetClasses.ERC721.namespace) {
-      throw new Error(`Invalid asset type: "${namespace}"! Expected: "erc721"`);
-    }
+    AddressTranslator.assertTypeERC721(assetType);
     this.contract = contractResolver.resolveERC721Warper(this.assetTypeToAddress(assetType));
   }
 

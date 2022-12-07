@@ -8,6 +8,7 @@ export const solidityId = (string: string): string => {
 // The `namespace` value must be a correct CAIP-19 asset type namespace.
 export const assetClasses = {
   ERC721: { id: solidityId('ERC721'), namespace: 'erc721' }, // id: 0x73ad2146
+  ERC20: { id: solidityId('ERC20'), namespace: 'erc20' },
 } as const;
 
 export const listingStrategies = {

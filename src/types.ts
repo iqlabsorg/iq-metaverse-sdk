@@ -22,6 +22,11 @@ export type ListingParams = {
   configurator: AccountId;
 };
 
+export type ListingTerms = {
+  strategyId: BytesLike;
+  strategyData: BytesLike;
+};
+
 export type FixedPriceListingStrategyParams = {
   name: typeof listingStrategies.FIXED_PRICE.name;
   data: {
@@ -126,4 +131,20 @@ export type WarperRentingConstraints = {
     min: number;
     max: number;
   };
+};
+
+export type WarperRegistrationParams = {
+  name: string;
+  universeId: BigNumberish;
+  paused: boolean;
+};
+
+export type UniverseParams = {
+  name: string;
+  paymentTokens: AccountId[];
+};
+
+export type TaxTerms = {
+  strategyId: BytesLike;
+  strategyData: BytesLike;
 };
