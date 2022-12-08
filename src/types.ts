@@ -100,6 +100,14 @@ export type RentalAgreement = Pick<
   agreementTerms: AgreementTerms;
 };
 
+export enum RentalStatusEnum {
+  NONE,
+  AVAILABLE,
+  RENTED,
+}
+
+export type RentalStatus = 'none' | 'available' | 'rented';
+
 export type PaymentTokenData = Pick<ITokenQuote.PaymentTokenDataStruct, 'paymentTokenQuote'> & {
   paymentToken: AccountId;
 };

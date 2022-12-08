@@ -15,6 +15,7 @@ export type {
   RentingParams,
   RentalFees,
   RentalAgreement,
+  RentalStatus,
   AccountBalance,
   BaseToken,
   WarperRentingConstraints,

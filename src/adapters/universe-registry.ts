@@ -131,12 +131,4 @@ export class UniverseRegistryAdapter extends Adapter {
   async supportsInterface(interfaceId: BytesLike): Promise<boolean> {
     return this.contract.supportsInterface(interfaceId);
   }
-
-  /** @todo */
-  // async checkUniverseOwner(universeId: BigNumberish, account: AccountId) {
-  //   return this.contract.checkUniverseOwner(universeId, this.accountIdToAddress(account));
-  // }
-  // async checkUniversePaymentToken(universeId: BigNumberish, paymentToken: AccountId) {
-  //   return this.contract.checkUniversePaymentToken(universeId, this.accountIdToAddress(paymentToken));
-  // }
 }

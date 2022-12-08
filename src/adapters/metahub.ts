@@ -1,5 +1,6 @@
 import { AccountId, AssetType } from 'caip';
-import { BigNumber, BigNumberish, ContractTransaction } from 'ethers';
+import { BigNumber, BigNumberish, BytesLike, ContractTransaction } from 'ethers';
+import { rentalStatusMap } from '../constants';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
@@ -13,6 +14,7 @@ import {
   Listing,
   RentalAgreement,
   RentalFees,
+  RentalStatus,
   RentingEstimationParams,
   RentingParams,
 } from '../types';
@@ -54,7 +56,8 @@ export class MetahubAdapter extends Adapter {
     return new MetahubAdapter(metahub, rentingManager, listingManager, contractResolver, addressTranslator);
   }
 
-  // Protocol Configuration
+  //#region Protocol Configuration
+
   /**
    * Returns the base token that's used for stable price denomination.
    */
@@ -64,7 +67,9 @@ export class MetahubAdapter extends Adapter {
     return { type, ...metadata };
   }
 
-  // Payment Management
+  //#endregion
+
+  //#region Payment Management
 
   /**
    * Returns the amount of `token`, currently accumulated by the user.
@@ -143,7 +148,9 @@ export class MetahubAdapter extends Adapter {
     );
   }
 
-  // Asset Management
+  //#endregion
+
+  //#region Asset Management
 
   /**
    * Returns the number of currently supported assets.
@@ -175,7 +182,9 @@ export class MetahubAdapter extends Adapter {
     return this.contract.isWarperAdmin(this.assetTypeToAddress(warper), this.accountIdToAddress(account));
   }
 
-  // Listing Management
+  //#endregion
+
+  //#region Listing Management
 
   /**
    * Sets payment token allowance. Allows Metahub to spend specified tokens to cover rental fees.
@@ -330,7 +339,9 @@ export class MetahubAdapter extends Adapter {
     return this.normalizeListings(this.listingManager.assetListings(this.assetTypeToAddress(asset), offset, limit));
   }
 
-  // Renting Management
+  //#endregion
+
+  //#region Renting Management
 
   /**
    * Evaluates renting params and returns rental fee breakdown.
@@ -421,6 +432,25 @@ export class MetahubAdapter extends Adapter {
   }
 
   /**
+   * Returns token amount from specific collection rented by particular account.
+   * @param warpedCollectionId Warped collection ID.
+   * @param renter Renter account ID.
+   */
+  async collectionRentedValue(warpedCollectionId: BytesLike, renter: AccountId): Promise<BigNumberish> {
+    return this.rentingManager.collectionRentedValue(warpedCollectionId, this.accountIdToAddress(renter));
+  }
+
+  /**
+   * Returns the rental status of a given warped asset.
+   * @param asset Asset reference.
+   */
+  async assetRentalStatus(asset: Asset): Promise<RentalStatus> {
+    const encoded = this.encodeAsset(asset);
+    const status = await this.rentingManager.assetRentalStatus(encoded.id);
+    return this.normalizeRentalStatus(status);
+  }
+
+  /**
    * Normalizes rental agreement structure.
    * @param rentalId
    * @param agreement
@@ -464,4 +494,15 @@ export class MetahubAdapter extends Adapter {
       beneficiary: this.addressToAccountId(listing.beneficiary),
     };
   }
+
+  /**
+   * Normalizes rental status
+   * @param status
+   * @private
+   */
+  private normalizeRentalStatus(status: number): RentalStatus {
+    return rentalStatusMap.get(status) || 'none';
+  }
+
+  //#endregion
 }
