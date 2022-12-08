@@ -144,6 +144,11 @@ export type UniverseParams = {
   paymentTokens: AccountId[];
 };
 
+export type UniverseInfo = {
+  name: string;
+  paymentTokens: AccountId[];
+};
+
 export type TaxTerms = {
   strategyId: BytesLike;
   strategyData: BytesLike;

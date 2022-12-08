@@ -47,4 +47,13 @@ export class WarperWizardAdapter extends Adapter {
   async deregisterWarper(warper: AssetType): Promise<ContractTransaction> {
     return this.contract.deregisterWarper(this.assetTypeToAddress(warper));
   }
+
+  /**
+   * Change warper tax terms.
+   * @param warper Warper reference.
+   * @param newTaxTerms New warper tax terms.
+   */
+  async alterWarperTaxTerms(warper: AssetType, newTaxTerms: TaxTerms): Promise<ContractTransaction> {
+    return this.contract.alterWarperTaxTerms(this.assetTypeToAddress(warper), newTaxTerms);
+  }
 }

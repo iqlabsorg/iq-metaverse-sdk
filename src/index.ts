@@ -20,6 +20,7 @@ export type {
   WarperRentingConstraints,
   WarperRegistrationParams,
   UniverseParams,
+  UniverseInfo,
   TaxTerms,
 } from './types';
 export { assetClasses, listingStrategies } from './constants';
