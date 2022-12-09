@@ -1,5 +1,12 @@
 import { hexDataSlice, solidityKeccak256 } from 'ethers/lib/utils';
-import { RentalStatus, RentalStatusEnum } from './types';
+import { ListingWizard__factory, UniverseWizard__factory, WarperWizard__factory } from './contracts';
+import {
+  ListingWizardVersion,
+  RentalStatus,
+  RentalStatusEnum,
+  UniverseWizardVersion,
+  WarperWizardVersion,
+} from './types';
 
 // TODO: use IQ NFT repos exports for this!
 export const solidityId = (string: string): string => {
@@ -22,3 +29,7 @@ export const rentalStatusMap: Map<RentalStatusEnum, RentalStatus> = new Map([
   [RentalStatusEnum.AVAILABLE, 'available'],
   [RentalStatusEnum.RENTED, 'rented'],
 ]);
+
+export const listingWizardVersions = new Map([[ListingWizardVersion.V1, ListingWizard__factory]]);
+export const universeWizardVersions = new Map([[UniverseWizardVersion.V1, UniverseWizard__factory]]);
+export const warperWizardVersions = new Map([[WarperWizardVersion.V1, WarperWizard__factory]]);

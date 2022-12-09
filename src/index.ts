@@ -23,6 +23,9 @@ export type {
   UniverseParams,
   UniverseInfo,
   TaxTerms,
+  ListingWizardVersion,
+  UniverseWizardVersion,
+  WarperWizardVersion,
 } from './types';
 export { assetClasses, listingStrategies } from './constants';
 export { Multiverse } from './multiverse';

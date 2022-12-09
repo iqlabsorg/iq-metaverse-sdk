@@ -3,7 +3,7 @@ import { ListingManager } from './contracts/contracts/listing/ListingManager';
 import { RentingManager__factory } from './contracts/factories/contracts/renting/RentingManager__factory';
 import { RentingManager } from './contracts/contracts/renting/RentingManager';
 import { Signer } from 'ethers';
-import { Address, ChainAware } from './types';
+import { Address, ChainAware, ContractVersions } from './types';
 import {
   ACL,
   ACL__factory,
@@ -41,9 +41,10 @@ import {
   WarperWizard__factory,
 } from './contracts';
 import { ChainId } from 'caip';
+import { listingWizardVersions, universeWizardVersions, warperWizardVersions } from './constants';
 
 export class ContractResolver implements ChainAware {
-  constructor(private readonly signer: Signer) {}
+  constructor(private readonly signer: Signer, private readonly versions: ContractVersions) {}
 
   async getChainId(): Promise<ChainId> {
     const reference = await this.signer.getChainId();
@@ -119,14 +120,29 @@ export class ContractResolver implements ChainAware {
   }
 
   resolveUniverseWizard(address: Address): UniverseWizard {
-    return UniverseWizard__factory.connect(address, this.signer);
+    const factory = universeWizardVersions.get(this.versions.universeWizard.getCurrent());
+    if (!factory) {
+      throw new Error('Could not resolve UniverseWizard');
+    }
+
+    return factory.connect(address, this.signer);
   }
 
   resolveListingWizard(address: Address): ListingWizard {
-    return ListingWizard__factory.connect(address, this.signer);
+    const factory = listingWizardVersions.get(this.versions.listingWizard.getCurrent());
+    if (!factory) {
+      throw new Error('Could not resolve ListingWizard');
+    }
+
+    return factory.connect(address, this.signer);
   }
 
   resolveWarperWizard(address: Address): WarperWizard {
-    return WarperWizard__factory.connect(address, this.signer);
+    const factory = warperWizardVersions.get(this.versions.warperWizard.getCurrent());
+    if (!factory) {
+      throw new Error('Could not resolve WarperWizard');
+    }
+
+    return factory.connect(address, this.signer);
   }
 }

@@ -12,7 +12,8 @@ import {
 import { ERC721WarperAdapter } from './adapters/erc721-warper';
 import { AddressTranslator } from './address-translator';
 import { ContractResolver } from './contract-resolver';
-import { ChainAware } from './types';
+import { ChainAware, Config, ListingWizardVersion, UniverseWizardVersion, WarperWizardVersion } from './types';
+import { VersionManager } from './version-manager';
 
 type MultiverseParams = {
   signer: Signer;
@@ -21,9 +22,28 @@ type MultiverseParams = {
 export class Multiverse implements ChainAware {
   private readonly contractResolver: ContractResolver;
   private readonly addressTranslator: AddressTranslator;
+  private readonly config: Config = {
+    versions: {
+      listingWizard: new VersionManager<ListingWizardVersion>({
+        min: ListingWizardVersion.V1,
+        max: ListingWizardVersion.V1,
+        default: ListingWizardVersion.V1,
+      }),
+      universeWizard: new VersionManager<UniverseWizardVersion>({
+        min: UniverseWizardVersion.V1,
+        max: UniverseWizardVersion.V1,
+        default: UniverseWizardVersion.V1,
+      }),
+      warperWizard: new VersionManager<WarperWizardVersion>({
+        min: WarperWizardVersion.V1,
+        max: WarperWizardVersion.V1,
+        default: WarperWizardVersion.V1,
+      }),
+    },
+  };
 
   private constructor(private readonly signer: Signer, private readonly chainId: ChainId) {
-    this.contractResolver = new ContractResolver(signer);
+    this.contractResolver = new ContractResolver(signer, this.config.versions);
     this.addressTranslator = new AddressTranslator(chainId);
   }
 
@@ -112,4 +132,59 @@ export class Multiverse implements ChainAware {
     this.addressTranslator.assertSameChainId(accountId.chainId);
     return new WarperWizardAdapter(accountId, this.contractResolver, this.addressTranslator);
   }
+
+  //#region Versioned contract management
+
+  // UniverseWizard
+  useDefaultUniverseWizard(): void {
+    this.config.versions.universeWizard.useDefault();
+  }
+
+  useFirstUniverseWizard(): void {
+    this.config.versions.universeWizard.useFirst();
+  }
+
+  useLatestUniverseWizard(): void {
+    this.config.versions.universeWizard.useLatest();
+  }
+
+  useUniverseWizard(version: UniverseWizardVersion): void {
+    this.config.versions.universeWizard.use(version);
+  }
+
+  // ListingWizard
+  useDefaultListingWizard(): void {
+    this.config.versions.listingWizard.useDefault();
+  }
+
+  useFirstListingWizard(): void {
+    this.config.versions.listingWizard.useFirst();
+  }
+
+  useLatestListingWizard(): void {
+    this.config.versions.listingWizard.useLatest();
+  }
+
+  useListingWizard(version: ListingWizardVersion): void {
+    this.config.versions.listingWizard.use(version);
+  }
+
+  // WarperWizard
+  useDefaultWarperWizard(): void {
+    this.config.versions.warperWizard.useDefault();
+  }
+
+  useFirstWarperWizard(): void {
+    this.config.versions.warperWizard.useFirst();
+  }
+
+  useLatestWarperWizard(): void {
+    this.config.versions.warperWizard.useLatest();
+  }
+
+  useWarperWizard(version: WarperWizardVersion): void {
+    this.config.versions.warperWizard.use(version);
+  }
+
+  //#endregion
 }
