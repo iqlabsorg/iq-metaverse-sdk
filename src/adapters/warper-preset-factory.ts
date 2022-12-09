@@ -1,11 +1,10 @@
-import { Adapter } from '../adapter';
-import { ERC721PresetConfigurable__factory, WarperPresetFactory } from '../contracts';
 import { AccountId, AssetType } from 'caip';
-import { ContractResolver } from '../contract-resolver';
-import { AddressTranslator } from '../address-translator';
 import { BytesLike, ContractTransaction } from 'ethers';
 import { defaultAbiCoder, formatBytes32String } from 'ethers/lib/utils';
-import { assetClasses } from '../constants';
+import { Adapter } from '../adapter';
+import { AddressTranslator } from '../address-translator';
+import { ContractResolver } from '../contract-resolver';
+import { ERC721PresetConfigurable__factory, WarperPresetFactory } from '../contracts';
 import { assetClassToNamespace } from '../utils';
 
 export class WarperPresetFactoryAdapter extends Adapter {
