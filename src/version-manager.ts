@@ -36,7 +36,7 @@ export class VersionManager<T> {
   }
 
   use(version: T): void {
-    if (version > this.config.max || version < this.config.min) {
+    if (version < this.config.min || version > this.config.max) {
       throw new Error('Unsupported version');
     }
 
