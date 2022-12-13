@@ -1,13 +1,13 @@
 import { AccountId } from 'caip';
 import { BigNumberish, ContractTransaction } from 'ethers';
-import { Adapter } from '../adapter';
-import { AddressTranslator } from '../address-translator';
-import { ContractResolver } from '../contract-resolver';
-import { ListingWizard } from '../contracts';
-import { Listings } from '../contracts/contracts/listing/IListingManager';
-import { AssetListingParams, ListingTerms } from '../types';
+import { Adapter } from '../../adapter';
+import { AddressTranslator } from '../../address-translator';
+import { ContractResolver } from '../../contract-resolver';
+import { ListingWizard } from '../../contracts';
+import { Listings } from '../../contracts/contracts/listing/IListingManager';
+import { AssetListingParams, ListingTerms } from '../../types';
 
-export class ListingWizardAdapter extends Adapter {
+export class ListingWizardAdapterV1 extends Adapter {
   private readonly contract: ListingWizard;
 
   constructor(accountId: AccountId, contractResolver: ContractResolver, addressTranslator: AddressTranslator) {

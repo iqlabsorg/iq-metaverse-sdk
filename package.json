@@ -38,10 +38,10 @@
     "package.json": "sort-package-json"
   },
   "dependencies": {
-    "caip": "^1.1.0"
+    "caip": "^1.1.0",
+    "@iqprotocol/solidity-contracts-nft": "2.1.1-alpha"
   },
   "devDependencies": {
-    "@iqprotocol/solidity-contracts-nft": "2.1.1-alpha",
     "@nomiclabs/hardhat-ethers": "npm:hardhat-deploy-ethers@latest",
     "@openzeppelin/hardhat-upgrades": "^1.17.0",
     "@typechain/ethers-v5": "10.0.0",

@@ -1,12 +1,12 @@
 import { AccountId, AssetType } from 'caip';
 import { BytesLike, ContractTransaction } from 'ethers';
-import { Adapter } from '../adapter';
-import { AddressTranslator } from '../address-translator';
-import { ContractResolver } from '../contract-resolver';
-import { IUniverseRegistry, UniverseWizard } from '../contracts';
-import { TaxTerms, UniverseParams, WarperRegistrationParams } from '../types';
+import { Adapter } from '../../adapter';
+import { AddressTranslator } from '../../address-translator';
+import { ContractResolver } from '../../contract-resolver';
+import { IUniverseRegistry, UniverseWizard } from '../../contracts';
+import { TaxTerms, UniverseParams, WarperRegistrationParams } from '../../types';
 
-export class UniverseWizardAdapter extends Adapter {
+export class UniverseWizardAdapterV1 extends Adapter {
   private readonly contract: UniverseWizard;
 
   constructor(accountId: AccountId, contractResolver: ContractResolver, addressTranslator: AddressTranslator) {

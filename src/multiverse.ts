@@ -1,13 +1,13 @@
 import { AccountId, AssetType, ChainId } from 'caip';
 import { Signer } from 'ethers';
 import {
-  ListingWizardAdapter,
+  ListingWizardAdapterV1,
   MetahubAdapter,
   UniverseRegistryAdapter,
-  UniverseWizardAdapter,
+  UniverseWizardAdapterV1,
   WarperManagerAdapter,
   WarperPresetFactoryAdapter,
-  WarperWizardAdapter,
+  WarperWizardAdapterV1,
 } from './adapters';
 import { ERC721WarperAdapter } from './adapters/erc721-warper';
 import { AddressTranslator } from './address-translator';
@@ -84,32 +84,32 @@ export class Multiverse implements ChainAware {
   }
 
   /**
-   * Resolves the listing wizard adapter.
+   * Resolves the listing wizard adapter (version 1).
    * @param accountId Listing wizard account ID.
    * @returns
    */
-  listingWizard(accountId: AccountId): ListingWizardAdapter {
+  listingWizardV1(accountId: AccountId): ListingWizardAdapterV1 {
     this.addressTranslator.assertSameChainId(accountId.chainId);
-    return new ListingWizardAdapter(accountId, this.contractResolver, this.addressTranslator);
+    return new ListingWizardAdapterV1(accountId, this.contractResolver, this.addressTranslator);
   }
 
   /**
-   * Resolves the universe wizard adapter.
+   * Resolves the universe wizard adapter (version 1).
    * @param accountId Universe wizard account ID.
    * @returns
    */
-  universeWizard(accountId: AccountId): UniverseWizardAdapter {
+  universeWizardV1(accountId: AccountId): UniverseWizardAdapterV1 {
     this.addressTranslator.assertSameChainId(accountId.chainId);
-    return new UniverseWizardAdapter(accountId, this.contractResolver, this.addressTranslator);
+    return new UniverseWizardAdapterV1(accountId, this.contractResolver, this.addressTranslator);
   }
 
   /**
-   * Resolves the warper wizard adapter.
+   * Resolves the warper wizard adapter (version 1).
    * @param accountId Warper wizard account ID.
    * @returns
    */
-  warperWizard(accountId: AccountId): WarperWizardAdapter {
+  warperWizardV1(accountId: AccountId): WarperWizardAdapterV1 {
     this.addressTranslator.assertSameChainId(accountId.chainId);
-    return new WarperWizardAdapter(accountId, this.contractResolver, this.addressTranslator);
+    return new WarperWizardAdapterV1(accountId, this.contractResolver, this.addressTranslator);
   }
 }
