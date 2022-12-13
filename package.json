@@ -41,7 +41,7 @@
     "caip": "^1.1.0"
   },
   "devDependencies": {
-    "@iqprotocol/solidity-contracts-nft": "https://github.com/iqlabsorg/iq-smart-contracts-nft#36de28b3ee0a8afae5604f87c69976cded7660e5",
+    "@iqprotocol/solidity-contracts-nft": "2.1.1-alpha",
     "@nomiclabs/hardhat-ethers": "npm:hardhat-deploy-ethers@latest",
     "@openzeppelin/hardhat-upgrades": "^1.17.0",
     "@typechain/ethers-v5": "10.0.0",

@@ -61,15 +61,6 @@ export class UniverseRegistryAdapter extends Adapter {
   }
 
   /**
-   * Returns Universe owner address.
-   * @param universeId Universe ID.
-   * @return Universe owner.
-   */
-  async universeOwner(universeId: BigNumberish): Promise<AccountId> {
-    return this.addressToAccountId(await this.contract.universeOwner(universeId));
-  }
-
-  /**
    * Returns the Universe token address.
    */
   async universeToken(): Promise<AssetType> {

@@ -18,6 +18,7 @@ import {
 import { assetClassToNamespace } from '../utils';
 import { ListingManagerAdapter } from './listing-manager';
 import { RentingManagerAdapter } from './renting-manager';
+import { CONTRACT_REGISTRY_KEYS } from '@iqprotocol/solidity-contracts-nft/src';
 
 export class MetahubAdapter extends Adapter {
   private readonly contract: Metahub;
@@ -44,14 +45,14 @@ export class MetahubAdapter extends Adapter {
   ): Promise<MetahubAdapter> {
     const metahub = contractResolver.resolveMetahub(accountId.address);
 
-    const rentingManagerAddress = await metahub.getContract(await metahub.RENTING_MANAGER());
+    const rentingManagerAddress = await metahub.getContract(CONTRACT_REGISTRY_KEYS.RENTING_MANAGER);
     const rentingManager = new RentingManagerAdapter(
       addressTranslator.addressToAccountId(rentingManagerAddress),
       contractResolver,
       addressTranslator,
     );
 
-    const listingManagerAddress = await metahub.getContract(await metahub.LISTING_MANAGER());
+    const listingManagerAddress = await metahub.getContract(CONTRACT_REGISTRY_KEYS.LISTING_MANAGER);
     const listingManager = new ListingManagerAdapter(
       addressTranslator.addressToAccountId(listingManagerAddress),
       contractResolver,
@@ -175,16 +176,6 @@ export class MetahubAdapter extends Adapter {
     return assetConfigs.map((assetConfig, i) =>
       this.addressToAssetType(addresses[i], assetClassToNamespace(assetConfig.assetClass)),
     );
-  }
-
-  /**
-   * Checks whether `account` is the `warper` admin.
-   * @param warper Warper reference.
-   * @param account Admin account ID.
-   * @return True if the `account` is the admin of the `warper` and false otherwise.
-   */
-  async isWarperAdmin(warper: AssetType, account: AccountId): Promise<boolean> {
-    return this.contract.isWarperAdmin(this.assetTypeToAddress(warper), this.accountIdToAddress(account));
   }
 
   //#endregion
