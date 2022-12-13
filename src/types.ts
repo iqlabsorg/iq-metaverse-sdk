@@ -5,7 +5,6 @@ import { BigNumber, BytesLike, Overrides as BaseOverrides } from 'ethers';
 import { listingStrategies } from './constants';
 import { Accounts, Listings, Rentings } from './contracts/contracts/metahub/IMetahub';
 import { Warpers } from './contracts/contracts/warper/IWarperManager';
-import { VersionManager } from './version-manager';
 
 export type Address = string;
 
@@ -161,38 +160,4 @@ export type UniverseInfo = {
 export type TaxTerms = {
   strategyId: BytesLike;
   strategyData: BytesLike;
-};
-
-// Versions
-export interface VersionConfigOptions<T> {
-  min: T;
-  max: T;
-  default: T;
-}
-
-export interface VersionConfig<T> extends VersionConfigOptions<T> {
-  current: T;
-}
-
-export enum ListingWizardVersion {
-  V1 = 1,
-}
-
-export enum UniverseWizardVersion {
-  V1 = 1,
-}
-
-export enum WarperWizardVersion {
-  V1 = 1,
-}
-
-export type ContractVersions = {
-  listingWizard: VersionManager<ListingWizardVersion>;
-  universeWizard: VersionManager<UniverseWizardVersion>;
-  warperWizard: VersionManager<WarperWizardVersion>;
-};
-
-// SDK Configuration
-export type Config = {
-  versions: ContractVersions;
 };
