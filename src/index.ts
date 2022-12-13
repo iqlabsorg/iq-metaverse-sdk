@@ -31,7 +31,7 @@ export {
   UniverseRegistryAdapter,
   WarperPresetFactoryAdapter,
   WarperManagerAdapter,
-  ListingWizardAdapter,
-  UniverseWizardAdapter,
-  WarperWizardAdapter,
+  ListingWizardAdapterV1,
+  UniverseWizardAdapterV1,
+  WarperWizardAdapterV1,
 } from './adapters';
