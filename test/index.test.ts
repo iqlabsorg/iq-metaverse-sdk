@@ -7,28 +7,28 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
  * @group unit
  */
 describe('Metahub Adapter', () => {
-  // let chainId: ChainId;
-  // let deployer: SignerWithAddress;
-  // let multiverse: Multiverse;
-  // let metahub: MetahubAdapter;
+  let chainId: ChainId;
+  let deployer: SignerWithAddress;
+  let multiverse: Multiverse;
+  let metahub: MetahubAdapter;
 
-  // beforeAll(async () => {
-  //   await deployments.fixture();
-  //   deployer = await ethers.getNamedSigner('deployer');
+  beforeAll(async () => {
+    await deployments.fixture();
+    deployer = await ethers.getNamedSigner('deployer');
 
-  //   chainId = new ChainId({
-  //     namespace: 'eip155',
-  //     reference: String(await deployer.getChainId()),
-  //   });
+    // chainId = new ChainId({
+    //   namespace: 'eip155',
+    //   reference: String(await deployer.getChainId()),
+    // });
 
-  //   multiverse = await Multiverse.init({ signer: deployer });
+    // multiverse = await Multiverse.init({ signer: deployer });
 
-  //   const metahubContract = await ethers.getContract('Metahub');
-  //   metahub = await multiverse.metahub(new AccountId({ chainId, address: metahubContract.address }));
-  // }, 20000);
+    const metahubContract = await ethers.getContract('Metahub');
+    console.log(metahubContract.address);
+    // metahub = await multiverse.metahub(new AccountId({ chainId, address: metahubContract.address }));
+  }, 20000);
 
-  // it('returns correct chain ID', async () => {
-  //   await expect(metahub.getChainId()).resolves.toEqual(chainId);
-  // });
-  it('todo', () => console.log('fix fixtures'));
+  it('returns correct chain ID', async () => {
+    // await expect(metahub.getChainId()).resolves.toEqual(chainId);
+  });
 });
