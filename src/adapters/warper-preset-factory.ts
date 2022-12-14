@@ -4,7 +4,7 @@ import { defaultAbiCoder, formatBytes32String } from 'ethers/lib/utils';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
-import { ERC721PresetConfigurable__factory, WarperPresetFactory } from '../contracts';
+import { ERC721ConfigurablePreset__factory, WarperPresetFactory } from '../contracts';
 import { assetClassToNamespace } from '../utils';
 
 export class WarperPresetFactoryAdapter extends Adapter {
@@ -21,7 +21,7 @@ export class WarperPresetFactoryAdapter extends Adapter {
    * @param data Preset specific configuration.
    */
   async deployPreset(
-    presetId: 'ERC721PresetConfigurable',
+    presetId: 'ERC721ConfigurablePreset',
     data: { metahub: AccountId; original: AssetType },
   ): Promise<ContractTransaction> {
     return this.contract.deployPreset(formatBytes32String(presetId), this.encodePresetInitData(presetId, data));
@@ -53,14 +53,14 @@ export class WarperPresetFactoryAdapter extends Adapter {
   }
 
   private encodePresetInitData(presetId: string, data: { metahub: AccountId; original: AssetType }): BytesLike {
-    if (presetId !== 'ERC721PresetConfigurable') {
+    if (presetId !== 'ERC721ConfigurablePreset') {
       throw new Error(`Unknown preset ID: "${presetId}"`);
     }
 
     const { reference } = data.original.assetName;
     AddressTranslator.assertTypeERC721(data.original);
 
-    return ERC721PresetConfigurable__factory.createInterface().encodeFunctionData('__initialize', [
+    return ERC721ConfigurablePreset__factory.createInterface().encodeFunctionData('__initialize', [
       defaultAbiCoder.encode(
         ['address', 'address'],
         [

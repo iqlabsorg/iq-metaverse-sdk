@@ -3,7 +3,7 @@ import { defaultAbiCoder } from 'ethers/lib/utils';
 import { assetClasses } from '../constants';
 import { Asset } from '../types';
 import { BigNumber } from '@ethersproject/bignumber';
-import { Assets } from '../contracts/contracts/metahub/IMetahub';
+import { Assets } from '../contracts/contracts/metahub/core/IMetahub';
 import { AssetId, ChainId } from 'caip';
 import { assetClassToNamespace } from '../utils';
 

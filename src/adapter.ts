@@ -5,7 +5,7 @@ import { AssetCoder } from './coders/asset-coder';
 import { ListingStrategyCoder } from './coders/listing-strategy-coder';
 import { ContractResolver } from './contract-resolver';
 import { IListingTermsRegistry } from './contracts';
-import { Assets, Rentings } from './contracts/contracts/metahub/IMetahub';
+import { Assets, Rentings } from './contracts/contracts/metahub/core/IMetahub';
 import { Address, AgreementTerms, Asset, ChainAware, ListingStrategyParams } from './types';
 
 export abstract class Adapter implements ChainAware {

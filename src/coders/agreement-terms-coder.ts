@@ -1,5 +1,5 @@
 import { AddressTranslator } from '../address-translator';
-import { Rentings } from '../contracts/contracts/metahub/IMetahub';
+import { Rentings } from '../contracts/contracts/metahub/core/IMetahub';
 import { AgreementTerms } from '../types';
 
 export class AgreementTermsCoder {

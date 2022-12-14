@@ -1,7 +1,7 @@
-import { deployments, ethers } from 'hardhat';
-import { AccountId, ChainId } from 'caip';
-import { Multiverse, MetahubAdapter } from '../src';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { AccountId, ChainId } from 'caip';
+import { deployments, ethers } from 'hardhat';
+import { MetahubAdapter, Multiverse } from '../src';
 
 /**
  * @group unit
@@ -16,19 +16,18 @@ describe('Metahub Adapter', () => {
     await deployments.fixture();
     deployer = await ethers.getNamedSigner('deployer');
 
-    // chainId = new ChainId({
-    //   namespace: 'eip155',
-    //   reference: String(await deployer.getChainId()),
-    // });
+    chainId = new ChainId({
+      namespace: 'eip155',
+      reference: String(await deployer.getChainId()),
+    });
 
-    // multiverse = await Multiverse.init({ signer: deployer });
+    multiverse = await Multiverse.init({ signer: deployer });
 
     const metahubContract = await ethers.getContract('Metahub');
-    console.log(metahubContract.address);
-    // metahub = await multiverse.metahub(new AccountId({ chainId, address: metahubContract.address }));
+    metahub = await multiverse.metahub(new AccountId({ chainId, address: metahubContract.address }));
   }, 20000);
 
   it('returns correct chain ID', async () => {
-    // await expect(metahub.getChainId()).resolves.toEqual(chainId);
+    await expect(metahub.getChainId()).resolves.toEqual(chainId);
   });
 });

@@ -1,11 +1,11 @@
 import { AccountId, AssetType } from 'caip';
 import { BigNumberish, BytesLike, ContractTransaction } from 'ethers';
+import { UniverseCreatedEventObject } from '../contracts/contracts/universe/universe-registry/IUniverseRegistry';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { assetClasses } from '../constants';
 import { ContractResolver } from '../contract-resolver';
 import { UniverseRegistry } from '../contracts';
-import { UniverseCreatedEventObject } from '../contracts/contracts/universe/UniverseRegistry';
 import { UniverseInfo } from '../types';
 
 export class UniverseRegistryAdapter extends Adapter {

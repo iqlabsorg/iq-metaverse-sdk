@@ -1,7 +1,3 @@
-import { ListingManager__factory } from './contracts/factories/contracts/listing/ListingManager__factory';
-import { ListingManager } from './contracts/contracts/listing/ListingManager';
-import { RentingManager__factory } from './contracts/factories/contracts/renting/RentingManager__factory';
-import { RentingManager } from './contracts/contracts/renting/RentingManager';
 import { Signer } from 'ethers';
 import { Address, ChainAware } from './types';
 import {
@@ -33,12 +29,16 @@ import {
   WarperManager__factory,
   WarperPresetFactory,
   WarperPresetFactory__factory,
-  ListingWizard,
-  ListingWizard__factory,
-  UniverseWizard,
-  UniverseWizard__factory,
-  WarperWizard,
-  WarperWizard__factory,
+  ListingWizardV1,
+  ListingWizardV1__factory,
+  UniverseWizardV1,
+  UniverseWizardV1__factory,
+  WarperWizardV1,
+  WarperWizardV1__factory,
+  RentingManager,
+  ListingManager,
+  ListingManager__factory,
+  RentingManager__factory,
 } from './contracts';
 import { ChainId } from 'caip';
 
@@ -118,15 +118,15 @@ export class ContractResolver implements ChainAware {
     return IERC20Metadata__factory.connect(address, this.signer);
   }
 
-  resolveUniverseWizard(address: Address): UniverseWizard {
-    return UniverseWizard__factory.connect(address, this.signer);
+  resolveUniverseWizardV1(address: Address): UniverseWizardV1 {
+    return UniverseWizardV1__factory.connect(address, this.signer);
   }
 
-  resolveListingWizard(address: Address): ListingWizard {
-    return ListingWizard__factory.connect(address, this.signer);
+  resolveListingWizardV1(address: Address): ListingWizardV1 {
+    return ListingWizardV1__factory.connect(address, this.signer);
   }
 
-  resolveWarperWizard(address: Address): WarperWizard {
-    return WarperWizard__factory.connect(address, this.signer);
+  resolveWarperWizardV1(address: Address): WarperWizardV1 {
+    return WarperWizardV1__factory.connect(address, this.signer);
   }
 }

@@ -3,15 +3,15 @@ import { BytesLike, ContractTransaction } from 'ethers';
 import { Adapter } from '../../adapter';
 import { AddressTranslator } from '../../address-translator';
 import { ContractResolver } from '../../contract-resolver';
-import { IUniverseRegistry, UniverseWizard } from '../../contracts';
+import { IUniverseRegistry, UniverseWizardV1 } from '../../contracts';
 import { TaxTerms, UniverseParams, WarperRegistrationParams } from '../../types';
 
 export class UniverseWizardAdapterV1 extends Adapter {
-  private readonly contract: UniverseWizard;
+  private readonly contract: UniverseWizardV1;
 
   constructor(accountId: AccountId, contractResolver: ContractResolver, addressTranslator: AddressTranslator) {
     super(contractResolver, addressTranslator);
-    this.contract = contractResolver.resolveUniverseWizard(accountId.address);
+    this.contract = contractResolver.resolveUniverseWizardV1(accountId.address);
   }
 
   /**

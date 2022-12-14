@@ -18,7 +18,7 @@ import {
 import { assetClassToNamespace } from '../utils';
 import { ListingManagerAdapter } from './listing-manager';
 import { RentingManagerAdapter } from './renting-manager';
-import { CONTRACT_REGISTRY_KEYS } from '@iqprotocol/solidity-contracts-nft/src';
+import { CONTRACT_REGISTRY_KEY_IDS } from '@iqprotocol/solidity-contracts-nft/src';
 
 export class MetahubAdapter extends Adapter {
   private readonly contract: Metahub;
@@ -45,14 +45,14 @@ export class MetahubAdapter extends Adapter {
   ): Promise<MetahubAdapter> {
     const metahub = contractResolver.resolveMetahub(accountId.address);
 
-    const rentingManagerAddress = await metahub.getContract(CONTRACT_REGISTRY_KEYS.RENTING_MANAGER);
+    const rentingManagerAddress = await metahub.getContract(CONTRACT_REGISTRY_KEY_IDS.RENTING_MANAGER);
     const rentingManager = new RentingManagerAdapter(
       addressTranslator.addressToAccountId(rentingManagerAddress),
       contractResolver,
       addressTranslator,
     );
 
-    const listingManagerAddress = await metahub.getContract(CONTRACT_REGISTRY_KEYS.LISTING_MANAGER);
+    const listingManagerAddress = await metahub.getContract(CONTRACT_REGISTRY_KEY_IDS.LISTING_MANAGER);
     const listingManager = new ListingManagerAdapter(
       addressTranslator.addressToAccountId(listingManagerAddress),
       contractResolver,
