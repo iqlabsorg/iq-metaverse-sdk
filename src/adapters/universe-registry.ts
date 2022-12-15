@@ -107,19 +107,4 @@ export class UniverseRegistryAdapter extends Adapter {
   async isUniverseWizard(contract: AccountId): Promise<boolean> {
     return this.contract.isUniverseWizard(this.accountIdToAddress(contract));
   }
-
-  /**
-   * Returns universe registry contract key.
-   */
-  async contractKey(): Promise<string> {
-    return this.contract.contractKey();
-  }
-
-  /**
-   * Checks if interface is supported.
-   * @param interfaceId Interface ID.
-   */
-  async supportsInterface(interfaceId: BytesLike): Promise<boolean> {
-    return this.contract.supportsInterface(interfaceId);
-  }
 }
