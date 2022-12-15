@@ -6,7 +6,7 @@ import { MetahubAdapter, Multiverse } from '../src';
 /**
  * @group unit
  */
-describe('Metahub Adapter', () => {
+describe('MetahubAdapter', () => {
   let chainId: ChainId;
   let deployer: SignerWithAddress;
   let multiverse: Multiverse;
@@ -27,7 +27,21 @@ describe('Metahub Adapter', () => {
     metahub = await multiverse.metahub(new AccountId({ chainId, address: metahubContract.address }));
   }, 20000);
 
-  it('returns correct chain ID', async () => {
-    await expect(metahub.getChainId()).resolves.toEqual(chainId);
+  describe('getChainId', () => {
+    it('returns correct chain ID', async () => {
+      await expect(metahub.getChainId()).resolves.toEqual(chainId);
+    });
+  });
+
+  describe('baseToken', () => {
+    it('returns base token', async () => {
+      const baseToken = await metahub.baseToken();
+
+      expect(baseToken.type).toBeDefined();
+      expect(baseToken.name).toBeDefined();
+      expect(baseToken.symbol).toBeDefined();
+      expect(baseToken.decimals).toBeDefined();
+      expect(baseToken.type.chainId).toEqual(chainId);
+    });
   });
 });
