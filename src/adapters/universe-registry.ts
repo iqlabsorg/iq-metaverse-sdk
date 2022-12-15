@@ -1,11 +1,12 @@
 import { AccountId, AssetType } from 'caip';
-import { BigNumberish, ContractTransaction } from 'ethers';
+import { BigNumberish, BytesLike, ContractTransaction } from 'ethers';
+import { UniverseCreatedEventObject } from '../contracts/contracts/universe/universe-registry/IUniverseRegistry';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { assetClasses } from '../constants';
 import { ContractResolver } from '../contract-resolver';
 import { UniverseRegistry } from '../contracts';
-import { UniverseCreatedEventObject } from '../contracts/contracts/universe/UniverseRegistry';
+import { UniverseInfo } from '../types';
 
 export class UniverseRegistryAdapter extends Adapter {
   private readonly contract: UniverseRegistry;
@@ -53,20 +54,10 @@ export class UniverseRegistryAdapter extends Adapter {
   /**
    * Returns aggregated universe data.
    * @param universeId The universe ID.
-   * @return {{ name: string, rentalFeePercent: number }}
    */
-  async universeInfo(universeId: BigNumberish): Promise<{ name: string; paymentTokens: AccountId[] }> {
+  async universeInfo(universeId: BigNumberish): Promise<UniverseInfo> {
     const info = await this.contract.universe(universeId);
     return { name: info.name, paymentTokens: info.paymentTokens.map(x => this.addressToAccountId(x)) };
-  }
-
-  /**
-   * Returns Universe owner address.
-   * @param universeId Universe ID.
-   * @return Universe owner.
-   */
-  async universeOwner(universeId: BigNumberish): Promise<AccountId> {
-    return this.addressToAccountId(await this.contract.universeOwner(universeId));
   }
 
   /**
@@ -81,5 +72,39 @@ export class UniverseRegistryAdapter extends Adapter {
    */
   async universeTokenBaseURI(): Promise<string> {
     return this.contract.universeTokenBaseURI();
+  }
+
+  /**
+   * Sets Universe base URI.
+   * @param baseURI Universe base URI.
+   */
+  async setUniverseTokenBaseURI(baseURI: string): Promise<ContractTransaction> {
+    return this.contract.setUniverseTokenBaseURI(baseURI);
+  }
+
+  /**
+   * Registers new payment token for universe.
+   * @param universeId Universe ID.
+   * @param paymentToken Payment token.
+   */
+  async registerUniversePaymentToken(universeId: BigNumberish, paymentToken: AccountId): Promise<ContractTransaction> {
+    return this.contract.registerUniversePaymentToken(universeId, this.accountIdToAddress(paymentToken));
+  }
+
+  /**
+   * Removes payment token from universe.
+   * @param universeId Universe ID.
+   * @param paymentToken Payment token.
+   */
+  async removeUniversePaymentToken(universeId: BigNumberish, paymentToken: AccountId): Promise<ContractTransaction> {
+    return this.contract.removeUniversePaymentToken(universeId, this.accountIdToAddress(paymentToken));
+  }
+
+  /**
+   * Checks if contract is universe wizard.
+   * @param contract Contract account ID.
+   */
+  async isUniverseWizard(contract: AccountId): Promise<boolean> {
+    return this.contract.isUniverseWizard(this.accountIdToAddress(contract));
   }
 }

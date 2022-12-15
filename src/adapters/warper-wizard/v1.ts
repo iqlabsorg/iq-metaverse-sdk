@@ -1,17 +1,17 @@
 import { AccountId, AssetType } from 'caip';
 import { BytesLike, ContractTransaction } from 'ethers';
-import { Adapter } from '../adapter';
-import { AddressTranslator } from '../address-translator';
-import { ContractResolver } from '../contract-resolver';
-import { WarperWizard } from '../contracts';
-import { TaxTerms, WarperRegistrationParams } from '../types';
+import { WarperWizardV1 } from '../../contracts';
+import { Adapter } from '../../adapter';
+import { AddressTranslator } from '../../address-translator';
+import { ContractResolver } from '../../contract-resolver';
+import { TaxTerms, WarperRegistrationParams } from '../../types';
 
-export class WarperWizardAdapter extends Adapter {
-  private readonly contract: WarperWizard;
+export class WarperWizardAdapterV1 extends Adapter {
+  private readonly contract: WarperWizardV1;
 
   constructor(accountId: AccountId, contractResolver: ContractResolver, addressTranslator: AddressTranslator) {
     super(contractResolver, addressTranslator);
-    this.contract = contractResolver.resolveWarperWizard(accountId.address);
+    this.contract = contractResolver.resolveWarperWizardV1(accountId.address);
   }
 
   /**
@@ -46,5 +46,14 @@ export class WarperWizardAdapter extends Adapter {
    */
   async deregisterWarper(warper: AssetType): Promise<ContractTransaction> {
     return this.contract.deregisterWarper(this.assetTypeToAddress(warper));
+  }
+
+  /**
+   * Change warper tax terms.
+   * @param warper Warper reference.
+   * @param newTaxTerms New warper tax terms.
+   */
+  async alterWarperTaxTerms(warper: AssetType, newTaxTerms: TaxTerms): Promise<ContractTransaction> {
+    return this.contract.alterWarperTaxTerms(this.assetTypeToAddress(warper), newTaxTerms);
   }
 }

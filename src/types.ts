@@ -1,10 +1,9 @@
-import { ITokenQuote } from './contracts/contracts/accounting/ITokenQuote';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { AccountId, AssetId, AssetType, ChainId } from 'caip';
 import { BigNumber, BytesLike, Overrides as BaseOverrides } from 'ethers';
 import { listingStrategies } from './constants';
-import { Accounts, Listings, Rentings } from './contracts/contracts/metahub/IMetahub';
-import { Warpers } from './contracts/contracts/warper/IWarperManager';
+import { Warpers } from './contracts/contracts/warper/IWarperController';
+import { Accounts, ITokenQuote, Listings, Rentings } from './contracts/contracts/metahub/core/IMetahub';
 
 export type Address = string;
 
@@ -100,6 +99,14 @@ export type RentalAgreement = Pick<
   agreementTerms: AgreementTerms;
 };
 
+export enum RentalStatusEnum {
+  NONE,
+  AVAILABLE,
+  RENTED,
+}
+
+export type RentalStatus = 'none' | 'available' | 'rented';
+
 export type PaymentTokenData = Pick<ITokenQuote.PaymentTokenDataStruct, 'paymentTokenQuote'> & {
   paymentToken: AccountId;
 };
@@ -140,6 +147,11 @@ export type WarperRegistrationParams = {
 };
 
 export type UniverseParams = {
+  name: string;
+  paymentTokens: AccountId[];
+};
+
+export type UniverseInfo = {
   name: string;
   paymentTokens: AccountId[];
 };

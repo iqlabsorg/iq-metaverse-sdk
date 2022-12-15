@@ -1,11 +1,9 @@
 import { AccountId, AssetType } from 'caip';
-import { BigNumber, BigNumberish, ContractTransaction } from 'ethers';
+import { BigNumber, BigNumberish, BytesLike, ContractTransaction } from 'ethers';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
 import { Metahub } from '../contracts';
-import { Listings } from '../contracts/contracts/listing/IListingManager';
-import { Rentings } from '../contracts/contracts/metahub/IMetahub';
 import {
   AccountBalance,
   Asset,
@@ -13,22 +11,24 @@ import {
   Listing,
   RentalAgreement,
   RentalFees,
+  RentalStatus,
   RentingEstimationParams,
   RentingParams,
 } from '../types';
-import { assetClassToNamespace, pick } from '../utils';
-import { ListingManager } from './../contracts/contracts/listing/ListingManager';
-import { RentingManager } from './../contracts/contracts/renting/RentingManager';
+import { assetClassToNamespace } from '../utils';
+import { ListingManagerAdapter } from './listing-manager';
+import { RentingManagerAdapter } from './renting-manager';
+import { CONTRACT_REGISTRY_KEY_IDS } from '@iqprotocol/solidity-contracts-nft/src';
 
 export class MetahubAdapter extends Adapter {
   private readonly contract: Metahub;
-  private readonly rentingManager: RentingManager;
-  private readonly listingManager: ListingManager;
+  private readonly rentingManager: RentingManagerAdapter;
+  private readonly listingManager: ListingManagerAdapter;
 
   private constructor(
     metahub: Metahub,
-    rentingManager: RentingManager,
-    listingManager: ListingManager,
+    rentingManager: RentingManagerAdapter,
+    listingManager: ListingManagerAdapter,
     contractResolver: ContractResolver,
     addressTranslator: AddressTranslator,
   ) {
@@ -45,16 +45,25 @@ export class MetahubAdapter extends Adapter {
   ): Promise<MetahubAdapter> {
     const metahub = contractResolver.resolveMetahub(accountId.address);
 
-    const rentingManagerAddress = await metahub.getContract(await metahub.RENTING_MANAGER());
-    const rentingManager = contractResolver.resolveRentingManager(rentingManagerAddress);
+    const rentingManagerAddress = await metahub.getContract(CONTRACT_REGISTRY_KEY_IDS.RENTING_MANAGER);
+    const rentingManager = new RentingManagerAdapter(
+      addressTranslator.addressToAccountId(rentingManagerAddress),
+      contractResolver,
+      addressTranslator,
+    );
 
-    const listingManagerAddress = await metahub.getContract(await metahub.LISTING_MANAGER());
-    const listingManager = contractResolver.resolveListingManager(listingManagerAddress);
+    const listingManagerAddress = await metahub.getContract(CONTRACT_REGISTRY_KEY_IDS.LISTING_MANAGER);
+    const listingManager = new ListingManagerAdapter(
+      addressTranslator.addressToAccountId(listingManagerAddress),
+      contractResolver,
+      addressTranslator,
+    );
 
     return new MetahubAdapter(metahub, rentingManager, listingManager, contractResolver, addressTranslator);
   }
 
-  // Protocol Configuration
+  //#region Protocol Configuration
+
   /**
    * Returns the base token that's used for stable price denomination.
    */
@@ -64,7 +73,9 @@ export class MetahubAdapter extends Adapter {
     return { type, ...metadata };
   }
 
-  // Payment Management
+  //#endregion
+
+  //#region Payment Management
 
   /**
    * Returns the amount of `token`, currently accumulated by the user.
@@ -143,7 +154,9 @@ export class MetahubAdapter extends Adapter {
     );
   }
 
-  // Asset Management
+  //#endregion
+
+  //#region Asset Management
 
   /**
    * Returns the number of currently supported assets.
@@ -165,17 +178,9 @@ export class MetahubAdapter extends Adapter {
     );
   }
 
-  /**
-   * Checks whether `account` is the `warper` admin.
-   * @param warper Warper reference.
-   * @param account Admin account ID.
-   * @return True if the `account` is the admin of the `warper` and false otherwise.
-   */
-  async isWarperAdmin(warper: AssetType, account: AccountId): Promise<boolean> {
-    return this.contract.isWarperAdmin(this.assetTypeToAddress(warper), this.accountIdToAddress(account));
-  }
+  //#endregion
 
-  // Listing Management
+  //#region Listing Management
 
   /**
    * Sets payment token allowance. Allows Metahub to spend specified tokens to cover rental fees.
@@ -271,8 +276,7 @@ export class MetahubAdapter extends Adapter {
    * @return Listing details.
    */
   async listing(listingId: BigNumberish): Promise<Listing> {
-    const listing = await this.listingManager.listingInfo(listingId);
-    return this.normalizeListing(listingId, listing);
+    return this.listingManager.listing(listingId);
   }
 
   /**
@@ -289,7 +293,7 @@ export class MetahubAdapter extends Adapter {
    * @param limit Max number of items.
    */
   async listings(offset: BigNumberish, limit: BigNumberish): Promise<Listing[]> {
-    return this.normalizeListings(this.listingManager.listings(offset, limit));
+    return this.listingManager.listings(offset, limit);
   }
 
   /**
@@ -298,7 +302,7 @@ export class MetahubAdapter extends Adapter {
    * @return Listing count.
    */
   async userListingCount(lister: AccountId): Promise<BigNumber> {
-    return this.listingManager.userListingCount(this.accountIdToAddress(lister));
+    return this.listingManager.userListingCount(lister);
   }
 
   /**
@@ -308,7 +312,7 @@ export class MetahubAdapter extends Adapter {
    * @param limit Max number of items.
    */
   async userListings(lister: AccountId, offset: BigNumberish, limit: BigNumberish): Promise<Listing[]> {
-    return this.normalizeListings(this.listingManager.userListings(this.accountIdToAddress(lister), offset, limit));
+    return this.listingManager.userListings(lister, offset, limit);
   }
 
   /**
@@ -317,7 +321,7 @@ export class MetahubAdapter extends Adapter {
    * @return Listing count.
    */
   async assetListingCount(asset: AssetType): Promise<BigNumber> {
-    return this.listingManager.assetListingCount(this.assetTypeToAddress(asset));
+    return this.listingManager.assetListingCount(asset);
   }
 
   /**
@@ -327,29 +331,19 @@ export class MetahubAdapter extends Adapter {
    * @param limit Max number of items.
    */
   async assetListings(asset: AssetType, offset: BigNumberish, limit: BigNumberish): Promise<Listing[]> {
-    return this.normalizeListings(this.listingManager.assetListings(this.assetTypeToAddress(asset), offset, limit));
+    return this.listingManager.assetListings(asset, offset, limit);
   }
 
-  // Renting Management
+  //#endregion
+
+  //#region Renting Management
 
   /**
    * Evaluates renting params and returns rental fee breakdown.
    * @param params
    */
   async estimateRent(params: RentingEstimationParams): Promise<RentalFees> {
-    const { listingId, paymentToken, rentalPeriod, renter, warper, selectedConfiguratorListingTerms, listingTermsId } =
-      params;
-    const fees = await this.rentingManager.estimateRent({
-      listingId,
-      rentalPeriod,
-      warper: this.assetTypeToAddress(warper),
-      renter: this.accountIdToAddress(renter),
-      paymentToken: this.assetTypeToAddress(paymentToken),
-      selectedConfiguratorListingTerms,
-      listingTermsId,
-    });
-
-    return pick(fees, ['total', 'protocolFee', 'listerBaseFee', 'listerPremium', 'universeBaseFee', 'universePremium']);
+    return this.rentingManager.estimateRent(params);
   }
 
   /**
@@ -357,32 +351,7 @@ export class MetahubAdapter extends Adapter {
    * @param params Renting parameters.
    */
   async rent(params: RentingParams): Promise<ContractTransaction> {
-    const {
-      listingId,
-      paymentToken,
-      rentalPeriod,
-      renter,
-      warper,
-      maxPaymentAmount,
-      selectedConfiguratorListingTerms,
-      listingTermsId,
-      tokenQuote,
-      tokenQuoteSignature,
-    } = params;
-    return this.rentingManager.rent(
-      {
-        listingId,
-        rentalPeriod,
-        warper: this.assetTypeToAddress(warper),
-        renter: this.accountIdToAddress(renter),
-        paymentToken: this.assetTypeToAddress(paymentToken),
-        listingTermsId,
-        selectedConfiguratorListingTerms,
-      },
-      tokenQuote,
-      tokenQuoteSignature,
-      maxPaymentAmount,
-    );
+    return this.rentingManager.rent(params);
   }
 
   /**
@@ -391,8 +360,7 @@ export class MetahubAdapter extends Adapter {
    * @return Rental agreement details.
    */
   async rentalAgreement(rentalId: BigNumberish): Promise<RentalAgreement> {
-    const rentalAgreement = await this.rentingManager.rentalAgreementInfo(rentalId);
-    return this.normalizeRentalAgreement(rentalId, rentalAgreement);
+    return this.rentingManager.rentalAgreement(rentalId);
   }
 
   /**
@@ -401,7 +369,7 @@ export class MetahubAdapter extends Adapter {
    * @return Rental agreement count.
    */
   async userRentalCount(renter: AccountId): Promise<BigNumber> {
-    return this.rentingManager.userRentalCount(this.accountIdToAddress(renter));
+    return this.rentingManager.userRentalCount(renter);
   }
 
   /**
@@ -411,57 +379,24 @@ export class MetahubAdapter extends Adapter {
    * @param limit Max number of items.
    */
   async userRentalAgreements(renter: AccountId, offset: BigNumberish, limit: BigNumberish): Promise<RentalAgreement[]> {
-    const [rentalIds, agreements] = await this.rentingManager.userRentalAgreements(
-      this.accountIdToAddress(renter),
-      offset,
-      limit,
-    );
-
-    return agreements.map((agreement, i) => this.normalizeRentalAgreement(rentalIds[i], agreement));
+    return this.rentingManager.userRentalAgreements(renter, offset, limit);
   }
 
   /**
-   * Normalizes rental agreement structure.
-   * @param rentalId
-   * @param agreement
-   * @private
+   * Returns token amount from specific collection rented by particular account.
+   * @param warpedCollectionId Warped collection ID.
+   * @param renter Renter account ID.
    */
-  private normalizeRentalAgreement(rentalId: BigNumberish, agreement: Rentings.AgreementStructOutput): RentalAgreement {
-    return {
-      ...pick(agreement, ['universeId', 'collectionId', 'listingId', 'startTime', 'endTime']),
-      id: BigNumber.from(rentalId),
-      warpedAssets: agreement.warpedAssets.map(x => this.decodeAsset(x)),
-      renter: this.addressToAccountId(agreement.renter),
-      agreementTerms: this.decodeAgreementTerms(agreement.agreementTerms),
-    };
+  async collectionRentedValue(warpedCollectionId: BytesLike, renter: AccountId): Promise<BigNumberish> {
+    return this.rentingManager.collectionRentedValue(warpedCollectionId, renter);
   }
 
   /**
-   * Resolves listings and normalizes them.
-   * @param listingsRequest
-   * @private
+   * Returns the rental status of a given warped asset.
+   * @param asset Asset reference.
    */
-  private async normalizeListings(
-    listingsRequest: Promise<[BigNumber[], Listings.ListingStructOutput[]]>,
-  ): Promise<Listing[]> {
-    const [listingIds, listings] = await listingsRequest;
-    return listings.map((listing, i) => this.normalizeListing(listingIds[i], listing));
+  async assetRentalStatus(asset: Asset): Promise<RentalStatus> {
+    return this.rentingManager.assetRentalStatus(asset);
   }
-
-  /**
-   * Normalizes listing structure.
-   * @param listingId
-   * @param listing
-   * @private
-   */
-  private normalizeListing(listingId: BigNumberish, listing: Listings.ListingStructOutput): Listing {
-    return {
-      ...pick(listing, ['maxLockPeriod', 'lockedTill', 'immediatePayout', 'enabled', 'paused']),
-      id: BigNumber.from(listingId),
-      assets: listing.assets.map(x => this.decodeAsset(x)),
-      lister: this.addressToAccountId(listing.lister),
-      configurator: this.addressToAccountId(listing.configurator),
-      beneficiary: this.addressToAccountId(listing.beneficiary),
-    };
-  }
+  //#endregion
 }

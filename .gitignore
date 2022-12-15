@@ -38,3 +38,5 @@ artifacts/
 cache/
 contracts/
 src/contracts
+
+addresses.json

@@ -7,7 +7,8 @@ import { Address, RegisteredWarper } from '../types';
 import { assetClassToNamespace, pick } from '../utils';
 
 import { WarperManager } from '../contracts';
-import { Warpers } from '../contracts/contracts/warper/IWarperManager';
+import { CONTRACT_REGISTRY_KEY_IDS } from '@iqprotocol/solidity-contracts-nft/src';
+import { Warpers } from 'src/contracts/contracts/warper/IWarperController';
 
 export class WarperManagerAdapter extends Adapter {
   private readonly contract: WarperManager;
@@ -62,18 +63,29 @@ export class WarperManagerAdapter extends Adapter {
    * @param asset Original asset reference.
    * @return Warper count.
    */
-  async assetWarperCount(asset: AssetType): Promise<BigNumber> {
-    return this.contract.assetWarperCount(this.assetTypeToAddress(asset));
+  async universeAssetWarperCount(universeId: BigNumberish, asset: AssetType): Promise<BigNumber> {
+    return this.contract.universeAssetWarperCount(universeId, this.assetTypeToAddress(asset));
   }
 
   /**
-   * Returns the list of warpers associated with the particular original asset.
+   * Returns the list of warpers belonging to the particular asset in universe.
+   * @param universeId The universe ID.
    * @param asset Original asset reference.
    * @param offset Starting index.
    * @param limit Max number of items.
    */
-  async assetWarpers(asset: AssetType, offset: BigNumberish, limit: BigNumberish): Promise<RegisteredWarper[]> {
-    const [addresses, warpers] = await this.contract.assetWarpers(this.assetTypeToAddress(asset), offset, limit);
+  async universeAssetWarpers(
+    universeId: BigNumberish,
+    asset: AssetType,
+    offset: BigNumberish,
+    limit: BigNumberish,
+  ): Promise<RegisteredWarper[]> {
+    const [addresses, warpers] = await this.contract.universeAssetWarpers(
+      universeId,
+      this.assetTypeToAddress(asset),
+      offset,
+      limit,
+    );
     return warpers.map((warper, i) => this.normalizeWarper(addresses[i], warper));
   }
 
@@ -81,7 +93,7 @@ export class WarperManagerAdapter extends Adapter {
    * @dev Returns warper preset factory address.
    */
   async warperPresetFactory(): Promise<AccountId> {
-    return this.addressToAccountId(await this.contract.warperPresetFactory());
+    return this.addressToAccountId(CONTRACT_REGISTRY_KEY_IDS.WARPER_PRESET_FACTORY);
   }
 
   /**

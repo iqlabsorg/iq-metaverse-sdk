@@ -1,18 +1,18 @@
 import { AccountId } from 'caip';
 import { BigNumberish, ContractTransaction } from 'ethers';
-import { Adapter } from '../adapter';
-import { AddressTranslator } from '../address-translator';
-import { ContractResolver } from '../contract-resolver';
-import { ListingWizard } from '../contracts';
-import { Listings } from '../contracts/contracts/listing/IListingManager';
-import { AssetListingParams, ListingTerms } from '../types';
+import { Listings } from '../../contracts/contracts/listing/listing-manager/ListingManager';
+import { Adapter } from '../../adapter';
+import { AddressTranslator } from '../../address-translator';
+import { ContractResolver } from '../../contract-resolver';
+import { ListingWizardV1 } from '../../contracts';
+import { AssetListingParams, ListingTerms } from '../../types';
 
-export class ListingWizardAdapter extends Adapter {
-  private readonly contract: ListingWizard;
+export class ListingWizardAdapterV1 extends Adapter {
+  private readonly contract: ListingWizardV1;
 
   constructor(accountId: AccountId, contractResolver: ContractResolver, addressTranslator: AddressTranslator) {
     super(contractResolver, addressTranslator);
-    this.contract = contractResolver.resolveListingWizard(accountId.address);
+    this.contract = contractResolver.resolveListingWizardV1(accountId.address);
   }
 
   /**

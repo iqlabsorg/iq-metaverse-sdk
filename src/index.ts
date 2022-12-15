@@ -15,11 +15,13 @@ export type {
   RentingParams,
   RentalFees,
   RentalAgreement,
+  RentalStatus,
   AccountBalance,
   BaseToken,
   WarperRentingConstraints,
   WarperRegistrationParams,
   UniverseParams,
+  UniverseInfo,
   TaxTerms,
 } from './types';
 export { assetClasses, listingStrategies } from './constants';
@@ -29,7 +31,7 @@ export {
   UniverseRegistryAdapter,
   WarperPresetFactoryAdapter,
   WarperManagerAdapter,
-  ListingWizardAdapter,
-  UniverseWizardAdapter,
-  WarperWizardAdapter,
+  ListingWizardAdapterV1,
+  UniverseWizardAdapterV1,
+  WarperWizardAdapterV1,
 } from './adapters';
