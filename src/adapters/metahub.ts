@@ -18,7 +18,7 @@ import {
 import { assetClassToNamespace } from '../utils';
 import { ListingManagerAdapter } from './listing-manager';
 import { RentingManagerAdapter } from './renting-manager';
-import { CONTRACT_REGISTRY_KEY_IDS } from '@iqprotocol/solidity-contracts-nft/src';
+import { CONTRACT_REGISTRY_KEY_IDS } from '@iqprotocol/solidity-contracts-nft/src/contracts-infra';
 
 export class MetahubAdapter extends Adapter {
   private readonly contract: Metahub;

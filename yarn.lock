@@ -678,10 +678,10 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
-"@iqprotocol/solidity-contracts-nft@2.1.7-alpha.2":
-  version "2.1.7-alpha.2"
-  resolved "https://registry.yarnpkg.com/@iqprotocol/solidity-contracts-nft/-/solidity-contracts-nft-2.1.7-alpha.2.tgz#ce51889bdf88cb499dc31b51a31223dde65e759d"
-  integrity sha512-HW2f71NBjqhG1MLV3f/Tqxn7DFfJ3M7WDASGhltrtkZaFGgGpfn3GLe/dPiz8iSPlATPRvr7fqcwzZ+NvMd2iQ==
+"@iqprotocol/solidity-contracts-nft@2.1.7-alpha.3":
+  version "2.1.7-alpha.3"
+  resolved "https://registry.yarnpkg.com/@iqprotocol/solidity-contracts-nft/-/solidity-contracts-nft-2.1.7-alpha.3.tgz#4c54079309577bfc2d3251ca13c1bad2dfa276f3"
+  integrity sha512-kcupNL8JK0b6FPe+2JGjhKZI1Rn2aSRtHH8gN3+ndC/9wpxKs0GCVFSJO+3emqdSgltCVl3llplvk8k06zQAyw==
   dependencies:
     "@openzeppelin/contracts" "^4.6.0"
     "@openzeppelin/contracts-upgradeable" "^4.6.0"
