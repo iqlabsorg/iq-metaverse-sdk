@@ -1,6 +1,6 @@
 import { AccountId, AssetType } from 'caip';
 import { BigNumber, BigNumberish, ContractTransaction } from 'ethers';
-import { Listings } from 'src/contracts/contracts/metahub/core/IMetahub';
+import { Listings } from '../contracts/contracts/metahub/core/IMetahub';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
