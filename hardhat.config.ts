@@ -13,6 +13,10 @@ const config: HardhatUserConfig = {
     deployer: 0,
     nftCreator: 1,
     assetOwner: 2,
+    operator: 3,
+    universeOwner: 4,
+    admin: 5,
+    supervisor: 6,
   },
   external: {
     contracts: [
