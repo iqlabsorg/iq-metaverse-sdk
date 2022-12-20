@@ -6,12 +6,12 @@ import {
   UniverseRegistryAdapter,
   UniverseWizardAdapterV1,
   WarperManagerAdapter,
+  ListingManagerAdapter,
+  RentingManagerAdapter,
   WarperPresetFactoryAdapter,
   WarperWizardAdapterV1,
 } from './adapters';
 import { ERC721WarperAdapter } from './adapters/erc721-warper';
-import { ListingManagerAdapter } from './adapters/listing-manager';
-import { RentingManagerAdapter } from './adapters/renting-manager';
 import { AddressTranslator } from './address-translator';
 import { ContractResolver } from './contract-resolver';
 import { ChainAware } from './types';
