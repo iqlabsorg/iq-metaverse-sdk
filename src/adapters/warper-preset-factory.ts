@@ -16,7 +16,7 @@ export class WarperPresetFactoryAdapter extends Adapter {
   }
 
   /**
-   * Deploys new instance of warper form preset.
+   * Deploys new instance of warper form preset. @todo: fix this one
    * @param presetId
    * @param data Preset specific configuration.
    */
