@@ -5,7 +5,7 @@ import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
 import { ListingManager } from '../contracts';
-import { Listing } from '../types';
+import { Asset, Listing } from '../types';
 import { pick } from '../utils';
 
 export class ListingManagerAdapter extends Adapter {
@@ -14,6 +14,61 @@ export class ListingManagerAdapter extends Adapter {
   constructor(accountId: AccountId, contractResolver: ContractResolver, addressTranslator: AddressTranslator) {
     super(contractResolver, addressTranslator);
     this.contract = contractResolver.resolveListingManager(accountId.address);
+  }
+
+  /**
+   * Sets payment token allowance. Allows Listing Manager to spend specified tokens to cover rental fees.
+   * @param paymentToken ERC20 payment token.
+   * @param amount Allowance amount.
+   */
+  async approveForRentalPayment(paymentToken: AssetType, amount: BigNumberish): Promise<ContractTransaction> {
+    AddressTranslator.assertTypeERC20(paymentToken);
+    return this.contractResolver
+      .resolveERC20Asset(this.assetTypeToAddress(paymentToken))
+      .approve(this.contract.address, amount);
+  }
+
+  /**
+   * Returns current Listing Manager allowance in specified payment tokens for specific payer account.
+   * @param paymentToken ERC20 payment token.
+   * @param payer Payer account ID.
+   */
+  async paymentTokenAllowance(paymentToken: AssetType, payer: AccountId): Promise<BigNumber> {
+    AddressTranslator.assertTypeERC20(paymentToken);
+    return this.contractResolver
+      .resolveERC20Asset(this.assetTypeToAddress(paymentToken))
+      .allowance(this.accountIdToAddress(payer), this.contract.address);
+  }
+
+  /**
+   * Approves Listing Manager to take an asset from lister account during listing process.
+   * @param asset
+   */
+  async approveForListing(asset: Asset): Promise<ContractTransaction> {
+    AddressTranslator.assertTypeERC721(asset.id);
+    return this.contractResolver
+      .resolveERC721Asset(this.assetIdToAddress(asset.id))
+      .approve(this.contract.address, asset.id.tokenId);
+  }
+
+  /**
+   * Checks whether the asset is approved for listing by the owner.
+   * Returns `true` if the asset can be listed, and `false` if the required approval is missing.
+   * @param asset
+   */
+  async isApprovedForListing(asset: Asset): Promise<boolean> {
+    AddressTranslator.assertTypeERC721(asset.id);
+
+    // Check particular token allowance.
+    const assetContract = this.contractResolver.resolveERC721Asset(this.assetIdToAddress(asset.id));
+    //eslint-disable-next-line no-extra-parens
+    if ((await assetContract.getApproved(asset.id.tokenId)) === this.contract.address) {
+      return true;
+    }
+
+    // Check operator.
+    const assumedOwner = await this.signerAddress();
+    return assetContract.isApprovedForAll(assumedOwner, this.contract.address);
   }
 
   /**
