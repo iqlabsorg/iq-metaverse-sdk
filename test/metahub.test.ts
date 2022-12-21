@@ -2,9 +2,10 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AccountId, ChainId } from 'caip';
 import { deployments, ethers } from 'hardhat';
 import { MetahubAdapter, Multiverse } from '../src';
+import { getChainId } from './helpers/caip';
 
 /**
- * @group unit
+ * @group integration
  */
 describe('MetahubAdapter', () => {
   let chainId: ChainId;
@@ -16,10 +17,7 @@ describe('MetahubAdapter', () => {
     await deployments.fixture();
     deployer = await ethers.getNamedSigner('deployer');
 
-    chainId = new ChainId({
-      namespace: 'eip155',
-      reference: String(await deployer.getChainId()),
-    });
+    chainId = getChainId();
 
     multiverse = await Multiverse.init({ signer: deployer });
 
