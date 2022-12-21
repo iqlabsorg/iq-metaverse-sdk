@@ -24,8 +24,8 @@ describe('MetahubAdapter', () => {
     multiverse = await Multiverse.init({ signer: deployer });
 
     const metahubContract = await ethers.getContract('Metahub');
-    metahub = await multiverse.metahub(new AccountId({ chainId, address: metahubContract.address }));
-  }, 20000);
+    metahub = multiverse.metahub(new AccountId({ chainId, address: metahubContract.address }));
+  }, 60000);
 
   describe('getChainId', () => {
     it('returns correct chain ID', async () => {

@@ -6,6 +6,8 @@ import {
   UniverseRegistryAdapter,
   UniverseWizardAdapterV1,
   WarperManagerAdapter,
+  ListingManagerAdapter,
+  RentingManagerAdapter,
   WarperPresetFactoryAdapter,
   WarperWizardAdapterV1,
 } from './adapters';
@@ -59,10 +61,9 @@ export class Multiverse implements ChainAware {
    * Resolves the metahub registry adapter.
    * @param accountId Metahub account ID.
    */
-  async metahub(accountId: AccountId): Promise<MetahubAdapter> {
+  metahub(accountId: AccountId): MetahubAdapter {
     this.addressTranslator.assertSameChainId(accountId.chainId);
-
-    return MetahubAdapter.create(accountId, this.contractResolver, this.addressTranslator);
+    return new MetahubAdapter(accountId, this.contractResolver, this.addressTranslator);
   }
 
   /**
@@ -81,6 +82,24 @@ export class Multiverse implements ChainAware {
   warperManager(accountId: AccountId): WarperManagerAdapter {
     this.addressTranslator.assertSameChainId(accountId.chainId);
     return new WarperManagerAdapter(accountId, this.contractResolver, this.addressTranslator);
+  }
+
+  /**
+   * Resolves the listing manager adapter.
+   * @param accountId Listing manager account ID.
+   */
+  listingManager(accountId: AccountId): ListingManagerAdapter {
+    this.addressTranslator.assertSameChainId(accountId.chainId);
+    return new ListingManagerAdapter(accountId, this.contractResolver, this.addressTranslator);
+  }
+
+  /**
+   * Resolves the renting manager adapter.
+   * @param accountId Renting manager account ID.
+   */
+  rentingManager(accountId: AccountId): RentingManagerAdapter {
+    this.addressTranslator.assertSameChainId(accountId.chainId);
+    return new RentingManagerAdapter(accountId, this.contractResolver, this.addressTranslator);
   }
 
   /**

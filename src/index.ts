@@ -31,6 +31,8 @@ export {
   UniverseRegistryAdapter,
   WarperPresetFactoryAdapter,
   WarperManagerAdapter,
+  ListingManagerAdapter,
+  RentingManagerAdapter,
   ListingWizardAdapterV1,
   UniverseWizardAdapterV1,
   WarperWizardAdapterV1,
