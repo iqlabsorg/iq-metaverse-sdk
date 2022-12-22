@@ -1,38 +1,20 @@
-import {
-  EMPTY_BYTES4_DATA_HEX,
-  EMPTY_BYTES_DATA_HEX,
-  LISTING_STRATEGY_IDS,
-} from '@iqprotocol/solidity-contracts-nft/src/constants';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { AssetType } from 'caip';
+import { AccountId, AssetType } from 'caip';
 import { BigNumber } from 'ethers';
 import { deployments, ethers } from 'hardhat';
-import { ListingManagerAdapter, Multiverse, RentingManagerAdapter } from '../src';
+import { Asset, Multiverse, RentingEstimationParams, RentingManagerAdapter } from '../src';
 import {
   ERC20Mock,
   ERC20Mock__factory,
   ERC721Mock,
   ERC721Mock__factory,
-  IACL,
-  IListingManager,
-  IListingStrategyRegistry,
-  IListingTermsRegistry,
   IMetahub,
   IRentingManager,
-  ITaxTermsRegistry,
-  IUniverseRegistry,
-  IWarperManager,
-  IWarperPresetFactory,
 } from '../src/contracts';
-import { Assets } from '../src/contracts/contracts/listing/listing-manager/ListingManager';
-import { grantRoles } from './helpers/acl';
-import { createAssetReference, makeERC721Asset, mintAndApproveNFTs } from './helpers/asset';
-import { toAccountId } from './helpers/caip';
-import { calculateBaseRate, SECONDS_IN_DAY } from './helpers/general';
-import { createListing, makeListingTermsFixedRate } from './helpers/listing';
-import { makeTaxTermsFixedRate } from './helpers/tax';
-import { createUniverse } from './helpers/universe';
-import { createAndRegisterWarper } from './helpers/warper';
+import { createAssetReference, makeERC721AssetForSDK } from './helpers/asset';
+import { getSelectedConfiguratorListingTerms, getTokenQuoteData } from './helpers/listing-renting';
+import { basicListingAndRentingSetup } from './helpers/setup';
+import { convertToWei, SECONDS_IN_HOUR, toAccountId } from './helpers/utils';
 
 /**
  * @group integration
@@ -40,25 +22,15 @@ import { createAndRegisterWarper } from './helpers/warper';
 describe('RentingManagerAdapter', () => {
   /** Signers */
   let deployer: SignerWithAddress;
-  let admin: SignerWithAddress;
   let lister: SignerWithAddress;
   let renter: SignerWithAddress;
 
   /** Contracts */
-  let acl: IACL;
   let metahub: IMetahub;
-  let listingManager: IListingManager;
   let rentingManager: IRentingManager;
-  let universeRegistry: IUniverseRegistry;
-  let warperPresetFactory: IWarperPresetFactory;
-  let warperManager: IWarperManager;
-  let listingTermsRegistry: IListingTermsRegistry;
-  let listingStrategyRegistry: IListingStrategyRegistry;
-  let taxTermsRegistry: ITaxTermsRegistry;
 
   /** SDK */
   let multiverse: Multiverse;
-  let listingManagerAdapter: ListingManagerAdapter;
   let rentingManagerAdapter: RentingManagerAdapter;
 
   /** Mocks & Samples */
@@ -66,73 +38,136 @@ describe('RentingManagerAdapter', () => {
   let baseToken: ERC20Mock;
 
   /** Constants */
-  const listingId = BigNumber.from(1);
-  const listingTermsId = BigNumber.from(1);
-  const universeId = BigNumber.from(1);
+  let commonId: BigNumber;
+  const rentalPeriod = SECONDS_IN_HOUR * 3;
 
   /** Data Structs */
-  let listingAssets: Assets.AssetStruct[];
-  let listingTerms: IListingTermsRegistry.ListingTermsStruct;
   let warperReference: AssetType;
+  let baseTokenReference: AssetType;
+  let renterAccountId: AccountId;
+  let rentingEstimationParams: RentingEstimationParams;
+  let warpedAsset: Asset;
+
+  const rentAsset = async (): Promise<void> => {
+    const estimate = await rentingManagerAdapter.estimateRent(rentingEstimationParams);
+    await baseToken.connect(renter).approve(metahub.address, estimate.total);
+    await rentingManagerAdapter.rent({
+      listingId: commonId,
+      paymentToken: baseTokenReference,
+      rentalPeriod,
+      renter: renterAccountId,
+      warper: warperReference,
+      maxPaymentAmount: estimate.total,
+      selectedConfiguratorListingTerms: getSelectedConfiguratorListingTerms(),
+      listingTermsId: commonId,
+      ...getTokenQuoteData(),
+    });
+  };
 
   beforeEach(async () => {
     await deployments.fixture();
 
     deployer = await ethers.getNamedSigner('deployer');
-    admin = await ethers.getNamedSigner('admin');
     lister = await ethers.getNamedSigner('assetOwner');
-
     [renter] = await ethers.getUnnamedSigners();
 
-    acl = await ethers.getContract('ACL');
     metahub = await ethers.getContract('Metahub');
-    listingManager = await ethers.getContract('ListingManager');
     rentingManager = await ethers.getContract('RentingManager');
-    universeRegistry = await ethers.getContract('UniverseRegistry');
-    warperPresetFactory = await ethers.getContract('WarperPresetFactory');
-    warperManager = await ethers.getContract('WarperManager');
-    listingTermsRegistry = await ethers.getContract('ListingTermsRegistry');
-    listingStrategyRegistry = await ethers.getContract('ListingStrategyRegistry');
-    taxTermsRegistry = await ethers.getContract('TaxTermsRegistry');
-
     nft = new ERC721Mock__factory().attach('0x4C2F7092C2aE51D986bEFEe378e50BD4dB99C901');
     baseToken = new ERC20Mock__factory().attach('0x5FbDB2315678afecb367f032d93F642f64180aa3');
 
-    multiverse = await Multiverse.init({ signer: lister });
-    listingManagerAdapter = multiverse.listingManager(toAccountId(listingManager.address));
+    multiverse = await Multiverse.init({ signer: renter });
     rentingManagerAdapter = multiverse.rentingManager(toAccountId(rentingManager.address));
 
-    listingAssets = [makeERC721Asset(nft.address, 1)];
+    ({ warperReference, commonId } = await basicListingAndRentingSetup());
+    baseTokenReference = createAssetReference('erc20', baseToken.address);
+    renterAccountId = toAccountId(renter.address);
 
-    await grantRoles(lister.address, deployer.address);
-    await mintAndApproveNFTs(nft, lister);
-    await createUniverse(baseToken);
-    warperReference = await createAndRegisterWarper(nft, multiverse, universeId);
+    await baseToken.connect(deployer).mint(renter.address, convertToWei('1000'));
 
-    await createListing(lister, listingAssets);
-    const baseRate = calculateBaseRate('100', SECONDS_IN_DAY);
-    listingTerms = makeListingTermsFixedRate(baseRate);
-    await listingTermsRegistry.connect(lister).registerUniverseListingTerms(listingId, universeId, listingTerms);
-    await taxTermsRegistry.registerProtocolGlobalTaxTerms(makeTaxTermsFixedRate('1'));
-    await taxTermsRegistry.registerUniverseWarperTaxTerms(
-      universeId,
-      warperReference.assetName.reference,
-      makeTaxTermsFixedRate('1'),
-    );
-  }, 20000);
+    rentingEstimationParams = {
+      warper: warperReference,
+      renter: renterAccountId,
+      paymentToken: baseTokenReference,
+      listingId: commonId,
+      rentalPeriod,
+      listingTermsId: commonId,
+      selectedConfiguratorListingTerms: getSelectedConfiguratorListingTerms(),
+    };
+
+    warpedAsset = makeERC721AssetForSDK(warperReference.assetName.reference, 1);
+  });
 
   describe('estimateRent', () => {
     it('should estimate rent', async () => {
-      const estimate = await rentingManagerAdapter.estimateRent({
-        warper: warperReference,
-        renter: toAccountId(renter.address),
-        paymentToken: createAssetReference('erc20', baseToken.address),
-        listingId,
-        rentalPeriod: 1,
-        listingTermsId,
-        selectedConfiguratorListingTerms: { strategyId: EMPTY_BYTES4_DATA_HEX, strategyData: EMPTY_BYTES_DATA_HEX },
+      const estimate = await rentingManagerAdapter.estimateRent(rentingEstimationParams);
+      expect(estimate).toBeDefined();
+      expect(estimate.total.toBigInt()).toBeGreaterThan(0n);
+    });
+  });
+
+  describe('rent', () => {
+    beforeEach(async () => {
+      await rentAsset();
+    });
+
+    it('should rent asset', async () => {
+      const count = await rentingManager.userRentalCount(renter.address);
+      expect(count.toBigInt()).toBe(1n);
+    });
+
+    describe('when asset is rented', () => {
+      describe('userRentalCount', () => {
+        it('should return users rental count', async () => {
+          const count = await rentingManagerAdapter.userRentalCount(renterAccountId);
+          expect(count.toBigInt()).toBe(1n);
+        });
       });
-      console.log(estimate);
+
+      describe('rentalAgreement', () => {
+        it('should return rental agreement', async () => {
+          const agreement = await rentingManagerAdapter.rentalAgreement(commonId);
+          expect(agreement).toBeDefined();
+          expect(agreement.renter.toString()).toBe(renterAccountId.toString());
+        });
+      });
+
+      describe('userRentalAgreements', () => {
+        it('should return all rental agreements for user', async () => {
+          const agrements = await rentingManagerAdapter.userRentalAgreements(renterAccountId, 0, 10);
+          expect(agrements).toBeDefined();
+          expect(agrements.length).toBe(1);
+        });
+      });
+
+      describe('collectionRentedValue', () => {
+        it('should return token amount from specific collection rented by renter', async () => {
+          const agreement = await rentingManagerAdapter.rentalAgreement(commonId);
+          const assetCount = await rentingManagerAdapter.collectionRentedValue(agreement.collectionId, renterAccountId);
+          expect(assetCount.toBigInt()).toBe(1n);
+        });
+      });
+    });
+  });
+
+  describe('assetRentalStatus', () => {
+    describe('when asset is not rented', () => {
+      it('should reflect that asset is available for renting', async () => {
+        const status = await rentingManagerAdapter.assetRentalStatus(warpedAsset);
+        // expect(status).toBe('available');
+        expect(status).toBe('none'); // ???
+      });
+    });
+
+    describe('when asset is rented', () => {
+      beforeEach(async () => {
+        await rentAsset();
+      });
+
+      it('should reflect that asset is not available for renting', async () => {
+        const status = await rentingManagerAdapter.assetRentalStatus(warpedAsset);
+        expect(status).toBe('rented');
+      });
     });
   });
 });

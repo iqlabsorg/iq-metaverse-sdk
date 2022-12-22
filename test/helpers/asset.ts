@@ -4,9 +4,17 @@ import { AssetType } from 'caip';
 import { BigNumber, BigNumberish } from 'ethers';
 import { BytesLike, defaultAbiCoder } from 'ethers/lib/utils';
 import { ethers } from 'hardhat';
+import { Asset } from 'src';
 import { ERC721Mock } from '../../src/contracts';
 import { Assets } from '../../src/contracts/contracts/listing/listing-manager/ListingManager';
-import { getChainId } from './caip';
+import { getChainId, toAssetId } from './utils';
+
+export const makeERC721AssetForSDK = (token: string, tokenId: number, value: BigNumberish = 1): Asset => {
+  return {
+    id: toAssetId(token, tokenId),
+    value,
+  };
+};
 
 export const makeERC721Asset = (token: string, tokenId: BigNumberish, value: BigNumberish = 1): Assets.AssetStruct => {
   return makeAsset(ASSET_CLASS.ERC721, defaultAbiCoder.encode(['address', 'uint256'], [token, tokenId]), value);
@@ -26,11 +34,15 @@ export const createAssetReference = (namespace: 'erc721' | 'erc20', address: str
   });
 };
 
-export const mintAndApproveNFTs = async (collection: ERC721Mock, owner: SignerWithAddress): Promise<void> => {
+export const mintAndApproveNFTs = async (
+  collection: ERC721Mock,
+  owner: SignerWithAddress,
+  count = 1,
+): Promise<void> => {
   const nftCreator = await ethers.getNamedSigner('nftCreator');
   const metahub = await ethers.getContract('Metahub');
 
-  for (let i = 1; i < 5; i++) {
+  for (let i = 1; i <= count; i++) {
     await collection.connect(nftCreator).mint(owner.address, i);
   }
 

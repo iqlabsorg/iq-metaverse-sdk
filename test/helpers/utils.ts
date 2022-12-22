@@ -4,6 +4,19 @@ import {
   HUNDRED_PERCENT_PRECISION_4,
 } from '@iqprotocol/solidity-contracts-nft/src/constants';
 import { BigNumberish, ethers, FixedNumber } from 'ethers';
+import { AccountId, AssetId, ChainId } from 'caip';
+
+export const toAccountId = (address: string): AccountId => {
+  return new AccountId({ chainId: getChainId(), address });
+};
+
+export const toAssetId = (collectionAddress: string, tokenId: number): AssetId => {
+  return new AssetId(`eip155:31337/erc721:${collectionAddress}/${tokenId}`);
+};
+
+export const getChainId = (): ChainId => {
+  return new ChainId({ namespace: 'eip155', reference: '31337' });
+};
 
 export const convertToWei = (toConvert: string, decimals: number = BASE_TOKEN_DECIMALS): BigNumberish => {
   return ethers.utils.parseUnits(toConvert, decimals);

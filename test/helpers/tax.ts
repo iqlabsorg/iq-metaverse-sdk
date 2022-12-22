@@ -6,7 +6,7 @@ import {
 import { BytesLike } from 'ethers';
 import { defaultAbiCoder } from 'ethers/lib/utils';
 import { ITaxTermsRegistry } from '../../src/contracts/contracts/tax/tax-terms-registry/ITaxTermsRegistry';
-import { convertPercentage } from './general';
+import { convertPercentage } from './utils';
 
 export const makeTaxTerms = (
   strategyId: BytesLike = EMPTY_BYTES4_DATA_HEX,

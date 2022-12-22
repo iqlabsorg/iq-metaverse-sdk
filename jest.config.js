@@ -3,7 +3,7 @@ module.exports = {
   preset: 'ts-jest',
   runner: 'groups',
   testEnvironment: 'node',
-  testTimeout: 10000,
+  testTimeout: 100000,
   transform: {
     '^.+\\.ts?$': 'ts-jest',
   },

@@ -2,7 +2,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AccountId, ChainId } from 'caip';
 import { deployments, ethers } from 'hardhat';
 import { MetahubAdapter, Multiverse } from '../src';
-import { getChainId } from './helpers/caip';
+import { getChainId } from './helpers/utils';
 
 /**
  * @group integration
@@ -23,7 +23,7 @@ describe('MetahubAdapter', () => {
 
     const metahubContract = await ethers.getContract('Metahub');
     metahub = multiverse.metahub(new AccountId({ chainId, address: metahubContract.address }));
-  }, 60000);
+  });
 
   describe('getChainId', () => {
     it('returns correct chain ID', async () => {
