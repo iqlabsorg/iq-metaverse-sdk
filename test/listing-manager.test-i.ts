@@ -1,44 +1,27 @@
-import { ROLES_LIBRARY_IDS, WARPER_PRESET_ERC721_IDS } from '@iqprotocol/solidity-contracts-nft/src/constants';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AssetType } from 'caip';
 import { BigNumber } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import { ListingManagerAdapter, Multiverse } from '../src';
-import {
-  ERC20Mock,
-  ERC20Mock__factory,
-  ERC721Mock,
-  ERC721Mock__factory,
-  IACL,
-  IListingManager,
-  IMetahub,
-  IUniverseRegistry,
-  IWarperManager,
-  IWarperPresetFactory,
-} from '../src/contracts';
-import { Assets, Listings } from '../src/contracts/contracts/listing/listing-manager/ListingManager';
-import { makeERC721Asset } from './helpers/asset';
-import { getChainId, toAccountId } from './helpers/caip';
-import { makeListingParams } from './helpers/listing';
-import { makeUniverseParams } from './helpers/universe';
-import { getERC721ConfigurablePresetInitData } from './helpers/warper';
+import { ERC20Mock, ERC20Mock__factory, ERC721Mock, ERC721Mock__factory, IListingManager } from '../src/contracts';
+import { Assets } from '../src/contracts/contracts/listing/listing-manager/ListingManager';
+import { grantRoles } from './helpers/acl';
+import { createAssetReference, makeERC721Asset, mintAndApproveNFTs } from './helpers/asset';
+import { toAccountId } from './helpers/caip';
+import { createListing } from './helpers/listing';
+import { createUniverse } from './helpers/universe';
+import { createAndRegisterWarper } from './helpers/warper';
 
 /**
  * @group integration
  */
-describe('ListingManagerAdapter (via MetahubAdapter)', () => {
+describe('ListingManagerAdapter', () => {
   /** Signers */
   let deployer: SignerWithAddress;
   let lister: SignerWithAddress;
-  let nftCreator: SignerWithAddress;
 
   /** Contracts */
-  let acl: IACL;
-  let metahub: IMetahub;
   let listingManager: IListingManager;
-  let universeRegistry: IUniverseRegistry;
-  let warperPresetFactory: IWarperPresetFactory;
-  let warperManager: IWarperManager;
 
   /** SDK */
   let multiverse: Multiverse;
@@ -49,92 +32,38 @@ describe('ListingManagerAdapter (via MetahubAdapter)', () => {
   let baseToken: ERC20Mock;
 
   /** Constants */
-  const GLOBAL_MAX_LOCK_PERIOD = 3600;
-  const GLOBAL_IMMEDIATE_PAYOUT = false;
   const listingId = BigNumber.from(1);
   const universeId = BigNumber.from(1);
 
   /** Data Structs */
-  let listingParams: Listings.ParamsStruct;
   let listingAssets: Assets.AssetStruct[];
-  let assetType: AssetType;
-
-  /** Setup */
-  const grantRoles = async (): Promise<void> => {
-    await acl.grantRole(ROLES_LIBRARY_IDS.LISTING_WIZARD_ROLE, lister.address);
-    await acl.grantRole(ROLES_LIBRARY_IDS.UNIVERSE_WIZARD_ROLE, deployer.address);
-  };
-
-  const mintAndApproveNFTs = async (): Promise<void> => {
-    for (let i = 1; i < 5; i++) {
-      await nft.connect(nftCreator).mint(lister.address, i);
-    }
-
-    await nft.connect(lister).setApprovalForAll(metahub.address, true);
-  };
-
-  const createUniverse = async (): Promise<void> => {
-    const universeParams = makeUniverseParams('Test Universe', [baseToken.address]);
-    await universeRegistry.createUniverse(universeParams);
-  };
-
-  const createAndRegisterWarper = async (): Promise<void> => {
-    const tx = await warperPresetFactory.deployPreset(
-      WARPER_PRESET_ERC721_IDS.ERC721_CONFIGURABLE_PRESET,
-      getERC721ConfigurablePresetInitData(metahub.address, nft.address),
-    );
-    const wpfAdapter = multiverse.warperPresetFactory(toAccountId(warperPresetFactory.address));
-    const warperAddress = await wpfAdapter.findWarperByDeploymentTransaction(tx.hash);
-    await warperManager.registerWarper(warperAddress!.assetName.reference!, {
-      name: 'Warper',
-      universeId,
-      paused: true,
-    });
-  };
-
-  const createListing = async (): Promise<void> => {
-    await listingManager
-      .connect(lister)
-      .createListing(listingAssets, listingParams, GLOBAL_MAX_LOCK_PERIOD, GLOBAL_IMMEDIATE_PAYOUT);
-  };
+  let nftReference: AssetType;
 
   beforeEach(async () => {
     await deployments.fixture();
 
     deployer = await ethers.getNamedSigner('deployer');
     lister = await ethers.getNamedSigner('assetOwner');
-    nftCreator = await ethers.getNamedSigner('nftCreator');
 
-    acl = await ethers.getContract('ACL');
-    metahub = await ethers.getContract('Metahub');
     listingManager = await ethers.getContract('ListingManager');
-    universeRegistry = await ethers.getContract('UniverseRegistry');
-    warperPresetFactory = await ethers.getContract('WarperPresetFactory');
-    warperManager = await ethers.getContract('WarperManager');
-
     nft = new ERC721Mock__factory().attach('0x4C2F7092C2aE51D986bEFEe378e50BD4dB99C901');
     baseToken = new ERC20Mock__factory().attach('0x5FbDB2315678afecb367f032d93F642f64180aa3');
 
     multiverse = await Multiverse.init({ signer: lister });
     listingManagerAdapter = multiverse.listingManager(toAccountId(listingManager.address));
 
-    listingParams = makeListingParams(lister.address);
     listingAssets = [makeERC721Asset(nft.address, 1)];
+    nftReference = createAssetReference('erc721', nft.address);
 
-    assetType = new AssetType({
-      chainId: getChainId(),
-      assetName: { namespace: 'erc721', reference: nft.address },
-    });
-
-    await grantRoles();
-    await mintAndApproveNFTs();
-    await createUniverse();
-    await createAndRegisterWarper();
+    await grantRoles(lister.address, deployer.address);
+    await mintAndApproveNFTs(nft, lister);
+    await createUniverse(baseToken);
+    await createAndRegisterWarper(nft, multiverse, universeId);
   }, 20000);
 
   describe('when listing has been created', () => {
     beforeEach(async () => {
-      await createListing();
+      await createListing(lister, listingAssets);
     });
 
     describe('disableListing', () => {
@@ -190,11 +119,6 @@ describe('ListingManagerAdapter (via MetahubAdapter)', () => {
     describe('listing', () => {
       it('should return listing info', async () => {
         const listingInfo = await listingManagerAdapter.listing(listingId);
-        expect(listingInfo.maxLockPeriod).toBe(GLOBAL_MAX_LOCK_PERIOD);
-        expect(listingInfo.lockedTill).toBe(0);
-        expect(listingInfo.immediatePayout).toBe(false);
-        expect(listingInfo.enabled).toBe(true);
-        expect(listingInfo.paused).toBe(false);
         expect(listingInfo.id).toMatchObject(listingId);
         expect(listingInfo.lister.address).toBe(lister.address);
       });
@@ -241,7 +165,7 @@ describe('ListingManagerAdapter (via MetahubAdapter)', () => {
 
     describe('assetListingCount', () => {
       it('should return the number of listings for the asset type', async () => {
-        const count = await listingManagerAdapter.assetListingCount(assetType);
+        const count = await listingManagerAdapter.assetListingCount(nftReference);
         expect(count.toNumber()).toBe(1);
       });
     });
@@ -249,7 +173,7 @@ describe('ListingManagerAdapter (via MetahubAdapter)', () => {
     describe('assetListings', () => {
       it('should return a list of asset type listings', async () => {
         const listing = await listingManagerAdapter.listing(listingId);
-        const listings = await listingManagerAdapter.assetListings(assetType, 0, 1);
+        const listings = await listingManagerAdapter.assetListings(nftReference, 0, 1);
         expect(listings[0]).toMatchObject(listing);
       });
     });
