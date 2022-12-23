@@ -3,7 +3,7 @@ import {
   HUNDRED_PERCENT,
   HUNDRED_PERCENT_PRECISION_4,
 } from '@iqprotocol/solidity-contracts-nft/src/constants';
-import { BigNumberish, ethers, FixedNumber } from 'ethers';
+import { BigNumber, BigNumberish, ethers, FixedNumber } from 'ethers';
 import { AccountId, AssetId, ChainId } from 'caip';
 
 export const toAccountId = (address: string): AccountId => {
@@ -46,3 +46,5 @@ export const convertPercentage = (
 
 export const SECONDS_IN_DAY = 86400;
 export const SECONDS_IN_HOUR = 3600;
+
+export const COMMON_ID = BigNumber.from(1);

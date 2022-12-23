@@ -1,6 +1,5 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AccountId, AssetType } from 'caip';
-import { BigNumber } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import { Asset, Multiverse, RentingEstimationParams, RentingManagerAdapter } from '../src';
 import {
@@ -13,8 +12,8 @@ import {
 } from '../src/contracts';
 import { createAssetReference, makeERC721AssetForSDK } from './helpers/asset';
 import { getSelectedConfiguratorListingTerms, getTokenQuoteData } from './helpers/listing-renting';
-import { basicListingAndRentingSetup } from './helpers/setup';
-import { convertToWei, SECONDS_IN_HOUR, toAccountId } from './helpers/utils';
+import { listingAndRentingSetup } from './helpers/setup';
+import { COMMON_ID, convertToWei, SECONDS_IN_HOUR, toAccountId } from './helpers/utils';
 
 /**
  * @group integration
@@ -22,7 +21,6 @@ import { convertToWei, SECONDS_IN_HOUR, toAccountId } from './helpers/utils';
 describe('RentingManagerAdapter', () => {
   /** Signers */
   let deployer: SignerWithAddress;
-  let lister: SignerWithAddress;
   let renter: SignerWithAddress;
 
   /** Contracts */
@@ -38,7 +36,6 @@ describe('RentingManagerAdapter', () => {
   let baseToken: ERC20Mock;
 
   /** Constants */
-  let commonId: BigNumber;
   const rentalPeriod = SECONDS_IN_HOUR * 3;
 
   /** Data Structs */
@@ -52,14 +49,14 @@ describe('RentingManagerAdapter', () => {
     const estimate = await rentingManagerAdapter.estimateRent(rentingEstimationParams);
     await baseToken.connect(renter).approve(metahub.address, estimate.total);
     await rentingManagerAdapter.rent({
-      listingId: commonId,
+      listingId: COMMON_ID,
       paymentToken: baseTokenReference,
       rentalPeriod,
       renter: renterAccountId,
       warper: warperReference,
       maxPaymentAmount: estimate.total,
       selectedConfiguratorListingTerms: getSelectedConfiguratorListingTerms(),
-      listingTermsId: commonId,
+      listingTermsId: COMMON_ID,
       ...getTokenQuoteData(),
     });
   };
@@ -68,7 +65,6 @@ describe('RentingManagerAdapter', () => {
     await deployments.fixture();
 
     deployer = await ethers.getNamedSigner('deployer');
-    lister = await ethers.getNamedSigner('assetOwner');
     [renter] = await ethers.getUnnamedSigners();
 
     metahub = await ethers.getContract('Metahub');
@@ -79,7 +75,7 @@ describe('RentingManagerAdapter', () => {
     multiverse = await Multiverse.init({ signer: renter });
     rentingManagerAdapter = multiverse.rentingManager(toAccountId(rentingManager.address));
 
-    ({ warperReference, commonId } = await basicListingAndRentingSetup());
+    ({ warperReference } = await listingAndRentingSetup());
     baseTokenReference = createAssetReference('erc20', baseToken.address);
     renterAccountId = toAccountId(renter.address);
 
@@ -89,9 +85,9 @@ describe('RentingManagerAdapter', () => {
       warper: warperReference,
       renter: renterAccountId,
       paymentToken: baseTokenReference,
-      listingId: commonId,
+      listingId: COMMON_ID,
       rentalPeriod,
-      listingTermsId: commonId,
+      listingTermsId: COMMON_ID,
       selectedConfiguratorListingTerms: getSelectedConfiguratorListingTerms(),
     };
 
@@ -126,7 +122,7 @@ describe('RentingManagerAdapter', () => {
 
       describe('rentalAgreement', () => {
         it('should return rental agreement', async () => {
-          const agreement = await rentingManagerAdapter.rentalAgreement(commonId);
+          const agreement = await rentingManagerAdapter.rentalAgreement(COMMON_ID);
           expect(agreement).toBeDefined();
           expect(agreement.renter.toString()).toBe(renterAccountId.toString());
         });
@@ -142,7 +138,7 @@ describe('RentingManagerAdapter', () => {
 
       describe('collectionRentedValue', () => {
         it('should return token amount from specific collection rented by renter', async () => {
-          const agreement = await rentingManagerAdapter.rentalAgreement(commonId);
+          const agreement = await rentingManagerAdapter.rentalAgreement(COMMON_ID);
           const assetCount = await rentingManagerAdapter.collectionRentedValue(agreement.collectionId, renterAccountId);
           expect(assetCount.toBigInt()).toBe(1n);
         });

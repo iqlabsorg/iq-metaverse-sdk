@@ -1,11 +1,10 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AssetType } from 'caip';
-import { BigNumber } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import { ListingManagerAdapter, Multiverse } from '../src';
 import { IListingManager } from '../src/contracts';
-import { toAccountId } from './helpers/utils';
-import { basicListingAndRentingSetup } from './helpers/setup';
+import { listingAndRentingSetup } from './helpers/setup';
+import { COMMON_ID, toAccountId } from './helpers/utils';
 
 /**
  * @group integration
@@ -24,7 +23,6 @@ describe('ListingManagerAdapter', () => {
 
   /** Data Structs */
   let collectionReference: AssetType;
-  let listingId: BigNumber;
 
   beforeEach(async () => {
     await deployments.fixture();
@@ -37,54 +35,54 @@ describe('ListingManagerAdapter', () => {
     multiverse = await Multiverse.init({ signer: lister });
     listingManagerAdapter = multiverse.listingManager(toAccountId(listingManager.address));
 
-    ({ collectionReference, commonId: listingId } = await basicListingAndRentingSetup());
+    ({ collectionReference } = await listingAndRentingSetup());
   });
 
   describe('disableListing', () => {
     beforeEach(async () => {
-      await listingManagerAdapter.disableListing(listingId);
+      await listingManagerAdapter.disableListing(COMMON_ID);
     });
 
     it('should disable listing', async () => {
-      const listingInfo = await listingManager.listingInfo(listingId);
+      const listingInfo = await listingManager.listingInfo(COMMON_ID);
       expect(listingInfo.enabled).toBe(false);
     });
   });
 
   describe('withdrawListingAssets', () => {
     beforeEach(async () => {
-      await listingManagerAdapter.withdrawListingAssets(listingId);
+      await listingManagerAdapter.withdrawListingAssets(COMMON_ID);
     });
 
     it('should disable listing', async () => {
-      const listingInfo = await listingManager.listingInfo(listingId);
+      const listingInfo = await listingManager.listingInfo(COMMON_ID);
       expect(listingInfo.enabled).toBe(false);
     });
   });
 
   describe('pauseListing', () => {
     beforeEach(async () => {
-      await listingManagerAdapter.pauseListing(listingId);
+      await listingManagerAdapter.pauseListing(COMMON_ID);
     });
 
     it('should pause listing', async () => {
-      const listingInfo = await listingManager.listingInfo(listingId);
+      const listingInfo = await listingManager.listingInfo(COMMON_ID);
       expect(listingInfo.paused).toBe(true);
     });
   });
 
   describe('when listing has been paused', () => {
     beforeEach(async () => {
-      await listingManager.connect(lister).pauseListing(listingId);
+      await listingManager.connect(lister).pauseListing(COMMON_ID);
     });
 
     describe('unpauseListing', () => {
       beforeEach(async () => {
-        await listingManagerAdapter.unpauseListing(listingId);
+        await listingManagerAdapter.unpauseListing(COMMON_ID);
       });
 
       it('should unpause listing', async () => {
-        const listingInfo = await listingManager.listingInfo(listingId);
+        const listingInfo = await listingManager.listingInfo(COMMON_ID);
         expect(listingInfo.paused).toBe(false);
       });
     });
@@ -92,8 +90,8 @@ describe('ListingManagerAdapter', () => {
 
   describe('listing', () => {
     it('should return listing info', async () => {
-      const listingInfo = await listingManagerAdapter.listing(listingId);
-      expect(listingInfo.id).toMatchObject(listingId);
+      const listingInfo = await listingManagerAdapter.listing(COMMON_ID);
+      expect(listingInfo.id).toMatchObject(COMMON_ID);
       expect(listingInfo.lister.address).toBe(lister.address);
     });
   });
@@ -107,7 +105,7 @@ describe('ListingManagerAdapter', () => {
 
   describe('listings', () => {
     it('should return a list of listings', async () => {
-      const listing = await listingManagerAdapter.listing(listingId);
+      const listing = await listingManagerAdapter.listing(COMMON_ID);
       const listings = await listingManagerAdapter.listings(0, 1);
       expect(listings[0]).toMatchObject(listing);
     });
@@ -131,7 +129,7 @@ describe('ListingManagerAdapter', () => {
 
   describe('userListings', () => {
     it('should return a list of user listings', async () => {
-      const listing = await listingManagerAdapter.listing(listingId);
+      const listing = await listingManagerAdapter.listing(COMMON_ID);
       const listings = await listingManagerAdapter.userListings(toAccountId(lister.address), 0, 1);
       expect(listings[0]).toMatchObject(listing);
     });
@@ -146,7 +144,7 @@ describe('ListingManagerAdapter', () => {
 
   describe('assetListings', () => {
     it('should return a list of asset type listings', async () => {
-      const listing = await listingManagerAdapter.listing(listingId);
+      const listing = await listingManagerAdapter.listing(COMMON_ID);
       const listings = await listingManagerAdapter.assetListings(collectionReference, 0, 1);
       expect(listings[0]).toMatchObject(listing);
     });

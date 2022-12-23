@@ -11,18 +11,20 @@ import {
   UniverseWizardV1__factory,
 } from '../../src/contracts';
 import { createAssetReference, makeERC721Asset, mintAndApproveNFTs } from './asset';
-import { calculateBaseRate, SECONDS_IN_DAY } from './utils';
+import { calculateBaseRate, COMMON_ID, SECONDS_IN_DAY } from './utils';
 import { makeListingParams, makeListingTermsFixedRate } from './listing-renting';
 import { makeTaxTermsFixedRate } from './tax';
 import { makeUniverseParams } from './universe';
 import { getERC721ConfigurablePresetInitData } from './warper';
+import { AssetType } from 'caip';
 
 /**
  * Basic listing & renting setup with single universe, warper, asset and listing
  */
-export const basicListingAndRentingSetup = async () => {
-  const commonId = BigNumber.from(1); // common id for universe, listing, etc.
-
+export const listingAndRentingSetup = async (): Promise<{
+  warperReference: AssetType;
+  collectionReference: AssetType;
+}> => {
   const deployer = await ethers.getNamedSigner('deployer');
   const lister = await ethers.getNamedSigner('assetOwner');
 
@@ -72,16 +74,34 @@ export const basicListingAndRentingSetup = async () => {
     listingTerms,
     SECONDS_IN_DAY * 7,
     true,
-    commonId,
+    COMMON_ID,
   );
 
   const warperManager = (await ethers.getContract('WarperManager')) as IWarperManager;
-  const [addresses] = await warperManager.universeWarpers(commonId, 0, 1);
+  const [addresses] = await warperManager.universeWarpers(COMMON_ID, 0, 1);
   const warperAddress = addresses[0];
 
   return {
     collectionReference: createAssetReference('erc721', collection.address),
     warperReference: createAssetReference('erc721', warperAddress),
-    commonId,
   };
+};
+
+export const universeSetup = async (): Promise<{
+  universeCreationTxHash: string;
+  universeName: string;
+  universePaymentTokens: string[];
+}> => {
+  const deployer = await ethers.getNamedSigner('deployer');
+
+  const universeWizard = new UniverseWizardV1__factory()
+    .attach('0xcbEAF3BDe82155F56486Fb5a1072cb8baAf547cc')
+    .connect(deployer);
+  const baseToken = new ERC20Mock__factory().attach('0x5FbDB2315678afecb367f032d93F642f64180aa3');
+
+  const universeName = 'Test Universe';
+  const universePaymentTokens = [baseToken.address];
+  const universeParams = makeUniverseParams(universeName, universePaymentTokens);
+  const tx = await universeWizard.setupUniverse(universeParams);
+  return { universeCreationTxHash: tx.hash, universeName, universePaymentTokens };
 };
