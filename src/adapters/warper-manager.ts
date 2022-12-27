@@ -90,13 +90,6 @@ export class WarperManagerAdapter extends Adapter {
   }
 
   /**
-   * @dev Returns warper preset factory address.
-   */
-  async warperPresetFactory(): Promise<AccountId> {
-    return this.addressToAccountId(CONTRACT_REGISTRY_KEY_IDS.WARPER_PRESET_FACTORY);
-  }
-
-  /**
    * Checks whether `account` is the `warper` admin.
    * @param warper Warper reference.
    * @param account Admin account ID.

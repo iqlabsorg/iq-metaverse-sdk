@@ -2,7 +2,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { deployments, ethers } from 'hardhat';
 import { Multiverse, UniverseRegistryAdapter } from '../src';
 import { IUniverseRegistry } from '../src/contracts';
-import { universeSetup } from './helpers/setup';
+import { universeSetup, UNIVERSE_WIZARD } from './helpers/setup';
 import { COMMON_ID, toAccountId } from './helpers/utils';
 
 /**
@@ -24,8 +24,6 @@ describe('UniverseRegistryAdapter', () => {
   let universeCreationTxHash: string;
   let universeName: string;
   let universePaymentTokens: string[];
-
-  const universeWizard = '0xcbEAF3BDe82155F56486Fb5a1072cb8baAf547cc';
 
   beforeEach(async () => {
     await deployments.fixture();
@@ -152,7 +150,7 @@ describe('UniverseRegistryAdapter', () => {
 
     describe('if account is universe wizard', () => {
       it('should return true', async () => {
-        const isWizard = await universeRegistryAdapter.isUniverseWizard(toAccountId(universeWizard));
+        const isWizard = await universeRegistryAdapter.isUniverseWizard(toAccountId(UNIVERSE_WIZARD));
         expect(isWizard).toBe(true);
       });
     });

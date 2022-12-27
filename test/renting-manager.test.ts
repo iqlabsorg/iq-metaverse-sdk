@@ -2,17 +2,10 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AccountId, AssetType } from 'caip';
 import { deployments, ethers } from 'hardhat';
 import { Asset, Multiverse, RentingEstimationParams, RentingManagerAdapter } from '../src';
-import {
-  ERC20Mock,
-  ERC20Mock__factory,
-  ERC721Mock,
-  ERC721Mock__factory,
-  IMetahub,
-  IRentingManager,
-} from '../src/contracts';
+import { ERC20Mock, ERC20Mock__factory, IMetahub, IRentingManager } from '../src/contracts';
 import { createAssetReference, makeERC721AssetForSDK } from './helpers/asset';
 import { getSelectedConfiguratorListingTerms, getTokenQuoteData } from './helpers/listing-renting';
-import { listingAndRentingSetup } from './helpers/setup';
+import { BASE_TOKEN, listingAndRentingSetup } from './helpers/setup';
 import { COMMON_ID, convertToWei, SECONDS_IN_HOUR, toAccountId } from './helpers/utils';
 
 /**
@@ -32,7 +25,6 @@ describe('RentingManagerAdapter', () => {
   let rentingManagerAdapter: RentingManagerAdapter;
 
   /** Mocks & Samples */
-  let nft: ERC721Mock;
   let baseToken: ERC20Mock;
 
   /** Constants */
@@ -69,8 +61,7 @@ describe('RentingManagerAdapter', () => {
 
     metahub = await ethers.getContract('Metahub');
     rentingManager = await ethers.getContract('RentingManager');
-    nft = new ERC721Mock__factory().attach('0x4C2F7092C2aE51D986bEFEe378e50BD4dB99C901');
-    baseToken = new ERC20Mock__factory().attach('0x5FbDB2315678afecb367f032d93F642f64180aa3');
+    baseToken = new ERC20Mock__factory().attach(BASE_TOKEN);
 
     multiverse = await Multiverse.init({ signer: renter });
     rentingManagerAdapter = multiverse.rentingManager(toAccountId(rentingManager.address));
