@@ -18,7 +18,7 @@ import { makeListingParams, makeListingTermsFixedRate } from './listing-renting'
 import { makeTaxTermsFixedRate } from './tax';
 import { makeUniverseParams } from './universe';
 import { calculateBaseRate, COMMON_ID, SECONDS_IN_DAY } from './utils';
-import { getERC721ConfigurablePresetInitData } from './warper';
+import { findWarperByDeploymentTransaction, getERC721ConfigurablePresetInitData } from './warper';
 
 /** Hard-coded contract addresses (temp solution) */
 export const BASE_TOKEN = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
@@ -91,6 +91,7 @@ export const listingAndRentingSetup = async (): Promise<{
   };
 };
 
+/** Universe setup with single test universe */
 export const universeSetup = async (): Promise<{
   universeCreationTxHash: string;
   universeName: string;
@@ -108,6 +109,7 @@ export const universeSetup = async (): Promise<{
   return { universeCreationTxHash: tx.hash, universeName, universePaymentTokens };
 };
 
+/** Warper setup with single universe and warper  */
 export const warperSetup = async (): Promise<{ warperName: string; warperReference: AssetType }> => {
   await grantWizardRolesToDeployer();
   await universeSetup();
@@ -135,24 +137,4 @@ export const warperSetup = async (): Promise<{ warperName: string; warperReferen
   });
 
   return { warperName, warperReference: createAssetReference('erc721', warperAddress) };
-};
-
-const findWarperByDeploymentTransaction = async (
-  warperPresetFactory: IWarperPresetFactory,
-  transactionHash: string,
-) => {
-  const tx = await warperPresetFactory.provider.getTransaction(transactionHash);
-  if (!tx.blockHash) {
-    return undefined;
-  }
-
-  const event = (
-    await warperPresetFactory.queryFilter(warperPresetFactory.filters.WarperPresetDeployed(), tx.blockHash)
-  ).find(event => event.transactionHash === transactionHash);
-
-  if (!event) {
-    return undefined;
-  }
-
-  return event.args.warper;
 };
