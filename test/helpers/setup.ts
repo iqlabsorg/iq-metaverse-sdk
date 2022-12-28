@@ -58,7 +58,7 @@ export const listingAndRentingSetup = async (): Promise<{
     universeId: BigNumber.from(0), // will be replaced on-chain with actual
     paused: false,
   };
-  await universeWizard.setupUniverseAndWarper(
+  const tx = await universeWizard.setupUniverseAndWarper(
     universeParams,
     universeWarperTaxTerms,
     ethers.constants.AddressZero,
@@ -66,6 +66,9 @@ export const listingAndRentingSetup = async (): Promise<{
     WARPER_PRESET_ERC721_IDS.ERC721_CONFIGURABLE_PRESET,
     getERC721ConfigurablePresetInitData(metahub.address, collection.address),
   );
+
+  const warperPresetFactory = (await ethers.getContract('WarperPresetFactory')) as IWarperPresetFactory;
+  const warperAddress = await findWarperByDeploymentTransaction(warperPresetFactory, tx.hash);
 
   /** Create listing */
   const listingAssets = [makeERC721Asset(collection.address, 1)];
@@ -81,13 +84,9 @@ export const listingAndRentingSetup = async (): Promise<{
     COMMON_ID,
   );
 
-  const warperManager = (await ethers.getContract('WarperManager')) as IWarperManager;
-  const [addresses] = await warperManager.universeWarpers(COMMON_ID, 0, 1);
-  const warperAddress = addresses[0];
-
   return {
     collectionReference: createAssetReference('erc721', collection.address),
-    warperReference: createAssetReference('erc721', warperAddress),
+    warperReference: createAssetReference('erc721', warperAddress!),
   };
 };
 
