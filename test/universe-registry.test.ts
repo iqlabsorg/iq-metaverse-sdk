@@ -3,7 +3,7 @@ import { AccountId } from 'caip';
 import { deployments, ethers } from 'hardhat';
 import { Multiverse, UniverseRegistryAdapter } from '../src';
 import { IUniverseRegistry } from '../src/contracts';
-import { universeSetup, UNIVERSE_WIZARD } from './helpers/setup';
+import { setupUniverse, UNIVERSE_WIZARD } from './helpers/setup';
 import { COMMON_ID, toAccountId } from './helpers/utils';
 
 /**
@@ -37,7 +37,7 @@ describe('UniverseRegistryAdapter', () => {
     multiverse = await Multiverse.init({ signer: deployer });
     universeRegistryAdapter = multiverse.universeRegistry(toAccountId(universeRegistry.address));
 
-    ({ universeCreationTxHash, universeName, universePaymentTokens } = await universeSetup());
+    ({ universeCreationTxHash, universeName, universePaymentTokens } = await setupUniverse());
   });
 
   describe('findUniverseByCreationTransaction', () => {

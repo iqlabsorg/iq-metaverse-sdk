@@ -3,7 +3,7 @@ import { AssetType } from 'caip';
 import { deployments, ethers } from 'hardhat';
 import { ListingManagerAdapter, Multiverse } from '../src';
 import { IListingManager } from '../src/contracts';
-import { listingAndRentingSetup } from './helpers/setup';
+import { setupListingAndRenting } from './helpers/setup';
 import { COMMON_ID, toAccountId } from './helpers/utils';
 
 /**
@@ -35,7 +35,7 @@ describe('ListingManagerAdapter', () => {
     multiverse = await Multiverse.init({ signer: lister });
     listingManagerAdapter = multiverse.listingManager(toAccountId(listingManager.address));
 
-    ({ collectionReference } = await listingAndRentingSetup());
+    ({ collectionReference } = await setupListingAndRenting());
   });
 
   describe('disableListing', () => {

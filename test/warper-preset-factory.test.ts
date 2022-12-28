@@ -4,9 +4,8 @@ import { ContractTransaction } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import { Multiverse, WarperPresetFactoryAdapter } from '../src';
 import { IMetahub, IWarperPresetFactory } from '../src/contracts';
-import { grantWizardRolesToDeployer } from './helpers/acl';
 import { createAssetReference } from './helpers/asset';
-import { COLLECTION, universeSetup } from './helpers/setup';
+import { COLLECTION, setupUniverseAndWarper } from './helpers/setup';
 import { toAccountId } from './helpers/utils';
 import { findWarperByDeploymentTransaction } from './helpers/warper';
 
@@ -36,8 +35,7 @@ describe('WarperPresetFactoryAdapter', () => {
     multiverse = await Multiverse.init({ signer: deployer });
     warperPresetFactoryAdapter = multiverse.warperPresetFactory(toAccountId(warperPresetFactory.address));
 
-    await grantWizardRolesToDeployer();
-    await universeSetup();
+    await setupUniverseAndWarper();
   });
 
   describe('deployPreset', () => {

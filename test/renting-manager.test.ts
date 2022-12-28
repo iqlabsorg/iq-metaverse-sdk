@@ -5,7 +5,7 @@ import { Asset, Multiverse, RentingEstimationParams, RentingManagerAdapter } fro
 import { ERC20Mock, ERC20Mock__factory, IMetahub, IRentingManager } from '../src/contracts';
 import { createAssetReference, makeERC721AssetForSDK } from './helpers/asset';
 import { getSelectedConfiguratorListingTerms, getTokenQuoteData } from './helpers/listing-renting';
-import { BASE_TOKEN, listingAndRentingSetup } from './helpers/setup';
+import { BASE_TOKEN, setupListingAndRenting } from './helpers/setup';
 import { COMMON_ID, convertToWei, SECONDS_IN_HOUR, toAccountId } from './helpers/utils';
 
 /**
@@ -66,7 +66,7 @@ describe('RentingManagerAdapter', () => {
     multiverse = await Multiverse.init({ signer: renter });
     rentingManagerAdapter = multiverse.rentingManager(toAccountId(rentingManager.address));
 
-    ({ warperReference } = await listingAndRentingSetup());
+    ({ warperReference } = await setupListingAndRenting());
     baseTokenReference = createAssetReference('erc20', baseToken.address);
     renterAccountId = toAccountId(renter.address);
 

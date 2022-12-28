@@ -25,32 +25,44 @@ export const BASE_TOKEN = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
 export const COLLECTION = '0x4C2F7092C2aE51D986bEFEe378e50BD4dB99C901';
 export const UNIVERSE_WIZARD = '0xcbEAF3BDe82155F56486Fb5a1072cb8baAf547cc';
 export const LISTING_WIZARD = '0x82e01223d51Eb87e16A03E24687EDF0F294da6f1';
+export const WARPER_WIZARD = '0x162A433068F51e18b7d13932F27e66a3f99E6890';
 
-/**
- * Basic listing & renting setup with single universe, warper, asset and listing
- */
-export const listingAndRentingSetup = async (): Promise<{
+export type UniverseSetup = {
+  universeCreationTxHash: string;
+  universeName: string;
+  universePaymentTokens: AccountId[];
+};
+
+export type WarperSetup = {
+  warperName: string;
   warperReference: AssetType;
-  collectionReference: AssetType;
-}> => {
+};
+
+const createUniverse = async (): Promise<UniverseSetup> => {
   const deployer = await ethers.getNamedSigner('deployer');
-  const lister = await ethers.getNamedSigner('assetOwner');
 
   const universeWizard = new UniverseWizardV1__factory().attach(UNIVERSE_WIZARD).connect(deployer);
-  const listingWizard = new ListingWizardV1__factory().attach(LISTING_WIZARD).connect(lister);
+  const baseToken = new ERC20Mock__factory().attach(BASE_TOKEN);
+
+  const universeName = 'Test Universe';
+  const universePaymentTokens = [baseToken.address];
+  const universeParams = makeUniverseParams(universeName, universePaymentTokens);
+  const tx = await universeWizard.setupUniverse(universeParams);
+  return {
+    universeCreationTxHash: tx.hash,
+    universeName,
+    universePaymentTokens: universePaymentTokens.map(x => toAccountId(x)),
+  };
+};
+
+const createUniverseAndWarperWithWizards = async (): Promise<{ warperReference: AssetType }> => {
+  const deployer = await ethers.getNamedSigner('deployer');
+
+  const universeWizard = new UniverseWizardV1__factory().attach(UNIVERSE_WIZARD).connect(deployer);
   const metahub = (await ethers.getContract('Metahub')) as IMetahub;
-  const taxTermsRegistry = (await ethers.getContract('TaxTermsRegistry')) as ITaxTermsRegistry;
   const baseToken = new ERC20Mock__factory().attach(BASE_TOKEN);
   const collection = new ERC721Mock__factory().attach(COLLECTION);
 
-  /** Mint NFTs to lister */
-  await mintAndApproveNFTs(collection, lister);
-
-  /** Set global tax terms */
-  const globalTaxTerms = makeTaxTermsFixedRate('1');
-  await taxTermsRegistry.registerProtocolGlobalTaxTerms(globalTaxTerms);
-
-  /** Create universe and warper */
   const universeParams = makeUniverseParams('Test Universe', [baseToken.address]);
   const universeWarperTaxTerms = makeTaxTermsFixedRate('1');
   const warperParams = {
@@ -70,53 +82,14 @@ export const listingAndRentingSetup = async (): Promise<{
   const warperPresetFactory = (await ethers.getContract('WarperPresetFactory')) as IWarperPresetFactory;
   const warperAddress = await findWarperByDeploymentTransaction(warperPresetFactory, tx.hash);
 
-  /** Create listing */
-  const listingAssets = [makeERC721Asset(collection.address, 1)];
-  const baseRate = calculateBaseRate('100', SECONDS_IN_DAY);
-  const listingTerms = makeListingTermsFixedRate(baseRate);
-  const listingParams = makeListingParams(lister.address);
-  await listingWizard.createListingWithTerms(
-    listingAssets,
-    listingParams,
-    listingTerms,
-    SECONDS_IN_DAY * 7,
-    true,
-    COMMON_ID,
-  );
+  if (!warperAddress) {
+    throw new Error('Failed to deploy warper');
+  }
 
-  return {
-    collectionReference: createAssetReference('erc721', collection.address),
-    warperReference: createAssetReference('erc721', warperAddress!),
-  };
+  return { warperReference: createAssetReference('erc721', warperAddress) };
 };
 
-/** Universe setup with single test universe */
-export const universeSetup = async (): Promise<{
-  universeCreationTxHash: string;
-  universeName: string;
-  universePaymentTokens: AccountId[];
-}> => {
-  const deployer = await ethers.getNamedSigner('deployer');
-
-  const universeWizard = new UniverseWizardV1__factory().attach(UNIVERSE_WIZARD).connect(deployer);
-  const baseToken = new ERC20Mock__factory().attach(BASE_TOKEN);
-
-  const universeName = 'Test Universe';
-  const universePaymentTokens = [baseToken.address];
-  const universeParams = makeUniverseParams(universeName, universePaymentTokens);
-  const tx = await universeWizard.setupUniverse(universeParams);
-  return {
-    universeCreationTxHash: tx.hash,
-    universeName,
-    universePaymentTokens: universePaymentTokens.map(x => toAccountId(x)),
-  };
-};
-
-/** Warper setup with single universe and warper  */
-export const warperSetup = async (): Promise<{ warperName: string; warperReference: AssetType }> => {
-  await grantWizardRolesToDeployer();
-  await universeSetup();
-
+const createAndRegisterWarper = async (): Promise<WarperSetup> => {
   const warperPresetFactory = (await ethers.getContract('WarperPresetFactory')) as IWarperPresetFactory;
   const metahub = (await ethers.getContract('Metahub')) as IMetahub;
   const warperManager = (await ethers.getContract('WarperManager')) as IWarperManager;
@@ -140,4 +113,71 @@ export const warperSetup = async (): Promise<{ warperName: string; warperReferen
   });
 
   return { warperName, warperReference: createAssetReference('erc721', warperAddress) };
+};
+
+const createListing = async (): Promise<void> => {
+  const lister = await ethers.getNamedSigner('assetOwner');
+
+  const collection = new ERC721Mock__factory().attach(COLLECTION);
+  const listingWizard = new ListingWizardV1__factory().attach(LISTING_WIZARD).connect(lister);
+
+  const listingAssets = [makeERC721Asset(collection.address, 1)];
+  const baseRate = calculateBaseRate('100', SECONDS_IN_DAY);
+  const listingTerms = makeListingTermsFixedRate(baseRate);
+  const listingParams = makeListingParams(lister.address);
+  await listingWizard.createListingWithTerms(
+    listingAssets,
+    listingParams,
+    listingTerms,
+    SECONDS_IN_DAY * 7,
+    true,
+    COMMON_ID,
+  );
+};
+
+/** Creates universe */
+export const setupUniverse = async (): Promise<UniverseSetup> => {
+  await grantWizardRolesToDeployer();
+  return createUniverse();
+};
+
+/** Creates universe with registered warper */
+export const setupUniverseAndWarper = async (): Promise<{
+  universeData: UniverseSetup;
+  warperData: WarperSetup;
+}> => {
+  const universeData = await setupUniverse();
+  const warperData = await createAndRegisterWarper();
+  return { universeData, warperData };
+};
+
+/**
+ * Listing & renting setup with single universe, warper, asset, listing and tax terms
+ */
+export const setupListingAndRenting = async (): Promise<{
+  warperReference: AssetType;
+  collectionReference: AssetType;
+}> => {
+  const lister = await ethers.getNamedSigner('assetOwner');
+
+  const taxTermsRegistry = (await ethers.getContract('TaxTermsRegistry')) as ITaxTermsRegistry;
+  const collection = new ERC721Mock__factory().attach(COLLECTION);
+
+  /** Mint NFTs to lister */
+  await mintAndApproveNFTs(collection, lister);
+
+  /** Set global tax terms */
+  const globalTaxTerms = makeTaxTermsFixedRate('1');
+  await taxTermsRegistry.registerProtocolGlobalTaxTerms(globalTaxTerms);
+
+  /** Create universe and warper */
+  const { warperReference } = await createUniverseAndWarperWithWizards();
+
+  /** Create listing */
+  await createListing();
+
+  return {
+    collectionReference: createAssetReference('erc721', collection.address),
+    warperReference,
+  };
 };
