@@ -5,7 +5,7 @@ import { deployments, ethers } from 'hardhat';
 import { Multiverse, WarperPresetFactoryAdapter } from '../src';
 import { IMetahub, IWarperPresetFactory } from '../src/contracts';
 import { createAssetReference } from './helpers/asset';
-import { COLLECTION, setupUniverseAndWarper } from './helpers/setup';
+import { COLLECTION, setupUniverse } from './helpers/setup';
 import { toAccountId } from './helpers/utils';
 import { findWarperByDeploymentTransaction } from './helpers/warper';
 
@@ -35,7 +35,7 @@ describe('WarperPresetFactoryAdapter', () => {
     multiverse = await Multiverse.init({ signer: deployer });
     warperPresetFactoryAdapter = multiverse.warperPresetFactory(toAccountId(warperPresetFactory.address));
 
-    await setupUniverseAndWarper();
+    await setupUniverse();
   });
 
   describe('deployPreset', () => {
@@ -49,7 +49,7 @@ describe('WarperPresetFactoryAdapter', () => {
     });
 
     it('should deploy warper from a preset', async () => {
-      const warper = await findWarperByDeploymentTransaction(warperPresetFactory, tx.hash);
+      const warper = await findWarperByDeploymentTransaction(tx.hash);
       expect(warper).toBeDefined();
       expect(warper?.length).toBeGreaterThan(0);
     });
@@ -58,7 +58,7 @@ describe('WarperPresetFactoryAdapter', () => {
       let reference: AssetType;
 
       beforeEach(async () => {
-        const warper = await findWarperByDeploymentTransaction(warperPresetFactory, tx.hash);
+        const warper = await findWarperByDeploymentTransaction(tx.hash);
         reference = createAssetReference('erc721', warper!);
       });
 

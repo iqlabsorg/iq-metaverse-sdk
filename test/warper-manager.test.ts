@@ -4,7 +4,7 @@ import { deployments, ethers } from 'hardhat';
 import { Multiverse, WarperManagerAdapter } from '../src';
 import { IWarperManager, IWarperPresetFactory } from '../src/contracts';
 import { createAssetReference } from './helpers/asset';
-import { COLLECTION, setupUniverseAndWarper } from './helpers/setup';
+import { COLLECTION, setupUniverseAndRegisteredWarper } from './helpers/setup';
 import { COMMON_ID, toAccountId } from './helpers/utils';
 
 /**
@@ -39,7 +39,7 @@ describe('WarperManagerAdapter', () => {
     multiverse = await Multiverse.init({ signer: deployer });
     warperManagerAdapter = multiverse.warperManager(toAccountId(warperManager.address));
 
-    const { warperData } = await setupUniverseAndWarper();
+    const { warperData } = await setupUniverseAndRegisteredWarper();
     warperName = warperData.warperName;
     warperReference = warperData.warperReference;
   });

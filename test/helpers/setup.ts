@@ -27,18 +27,22 @@ export const UNIVERSE_WIZARD = '0xcbEAF3BDe82155F56486Fb5a1072cb8baAf547cc';
 export const LISTING_WIZARD = '0x82e01223d51Eb87e16A03E24687EDF0F294da6f1';
 export const WARPER_WIZARD = '0x162A433068F51e18b7d13932F27e66a3f99E6890';
 
-export type UniverseSetup = {
+export type UniverseCreated = {
   universeCreationTxHash: string;
   universeName: string;
   universePaymentTokens: AccountId[];
 };
 
-export type WarperSetup = {
+export type WarperCreated = {
+  warperReference: AssetType;
+};
+
+export type WarperCreatedAndRegistered = {
   warperName: string;
   warperReference: AssetType;
 };
 
-const createUniverse = async (): Promise<UniverseSetup> => {
+const createUniverse = async (): Promise<UniverseCreated> => {
   const deployer = await ethers.getNamedSigner('deployer');
 
   const universeWizard = new UniverseWizardV1__factory().attach(UNIVERSE_WIZARD).connect(deployer);
@@ -79,8 +83,7 @@ const createUniverseAndWarperWithWizards = async (): Promise<{ warperReference: 
     getERC721ConfigurablePresetInitData(metahub.address, collection.address),
   );
 
-  const warperPresetFactory = (await ethers.getContract('WarperPresetFactory')) as IWarperPresetFactory;
-  const warperAddress = await findWarperByDeploymentTransaction(warperPresetFactory, tx.hash);
+  const warperAddress = await findWarperByDeploymentTransaction(tx.hash);
 
   if (!warperAddress) {
     throw new Error('Failed to deploy warper');
@@ -89,30 +92,37 @@ const createUniverseAndWarperWithWizards = async (): Promise<{ warperReference: 
   return { warperReference: createAssetReference('erc721', warperAddress) };
 };
 
-const createAndRegisterWarper = async (): Promise<WarperSetup> => {
+const createWarper = async (): Promise<WarperCreated> => {
   const warperPresetFactory = (await ethers.getContract('WarperPresetFactory')) as IWarperPresetFactory;
   const metahub = (await ethers.getContract('Metahub')) as IMetahub;
-  const warperManager = (await ethers.getContract('WarperManager')) as IWarperManager;
 
   const tx = await warperPresetFactory.deployPreset(
     WARPER_PRESET_ERC721_IDS.ERC721_CONFIGURABLE_PRESET,
     getERC721ConfigurablePresetInitData(metahub.address, COLLECTION),
   );
 
-  const warperAddress = await findWarperByDeploymentTransaction(warperPresetFactory, tx.hash);
-  const warperName = 'Test Warper';
+  const warperAddress = await findWarperByDeploymentTransaction(tx.hash);
 
   if (!warperAddress) {
     throw new Error('Failed to deploy warper');
   }
 
-  await warperManager.registerWarper(warperAddress, {
+  return { warperReference: createAssetReference('erc721', warperAddress) };
+};
+
+const createAndRegisterWarper = async (): Promise<WarperCreatedAndRegistered> => {
+  const warperManager = (await ethers.getContract('WarperManager')) as IWarperManager;
+
+  const { warperReference } = await createWarper();
+  const warperName = 'Test Warper';
+
+  await warperManager.registerWarper(warperReference.assetName.reference, {
     name: warperName,
     universeId: COMMON_ID,
     paused: false,
   });
 
-  return { warperName, warperReference: createAssetReference('erc721', warperAddress) };
+  return { warperName, warperReference };
 };
 
 const createListing = async (): Promise<void> => {
@@ -136,15 +146,25 @@ const createListing = async (): Promise<void> => {
 };
 
 /** Creates universe */
-export const setupUniverse = async (): Promise<UniverseSetup> => {
+export const setupUniverse = async (): Promise<UniverseCreated> => {
   await grantWizardRolesToDeployer();
   return createUniverse();
 };
 
-/** Creates universe with registered warper */
+/** Creates universe with unregistered warper */
 export const setupUniverseAndWarper = async (): Promise<{
-  universeData: UniverseSetup;
-  warperData: WarperSetup;
+  universeData: UniverseCreated;
+  warperData: WarperCreated;
+}> => {
+  const universeData = await setupUniverse();
+  const warperData = await createWarper();
+  return { universeData, warperData };
+};
+
+/** Creates universe with registered warper */
+export const setupUniverseAndRegisteredWarper = async (): Promise<{
+  universeData: UniverseCreated;
+  warperData: WarperCreatedAndRegistered;
 }> => {
   const universeData = await setupUniverse();
   const warperData = await createAndRegisterWarper();
