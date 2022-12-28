@@ -152,6 +152,7 @@ export type UniverseParams = {
 };
 
 export type UniverseInfo = {
+  id: BigNumber;
   name: string;
   paymentTokens: AccountId[];
 };

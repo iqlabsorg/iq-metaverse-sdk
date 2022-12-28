@@ -1,5 +1,5 @@
 import { WARPER_PRESET_ERC721_IDS } from '@iqprotocol/solidity-contracts-nft/src/constants';
-import { AssetType } from 'caip';
+import { AccountId, AssetType } from 'caip';
 import { BigNumber } from 'ethers';
 import { ethers } from 'hardhat';
 import {
@@ -17,7 +17,7 @@ import { createAssetReference, makeERC721Asset, mintAndApproveNFTs } from './ass
 import { makeListingParams, makeListingTermsFixedRate } from './listing-renting';
 import { makeTaxTermsFixedRate } from './tax';
 import { makeUniverseParams } from './universe';
-import { calculateBaseRate, COMMON_ID, SECONDS_IN_DAY } from './utils';
+import { calculateBaseRate, COMMON_ID, SECONDS_IN_DAY, toAccountId } from './utils';
 import { findWarperByDeploymentTransaction, getERC721ConfigurablePresetInitData } from './warper';
 
 /** Hard-coded contract addresses (temp solution) */
@@ -94,7 +94,7 @@ export const listingAndRentingSetup = async (): Promise<{
 export const universeSetup = async (): Promise<{
   universeCreationTxHash: string;
   universeName: string;
-  universePaymentTokens: string[];
+  universePaymentTokens: AccountId[];
 }> => {
   const deployer = await ethers.getNamedSigner('deployer');
 
@@ -105,7 +105,11 @@ export const universeSetup = async (): Promise<{
   const universePaymentTokens = [baseToken.address];
   const universeParams = makeUniverseParams(universeName, universePaymentTokens);
   const tx = await universeWizard.setupUniverse(universeParams);
-  return { universeCreationTxHash: tx.hash, universeName, universePaymentTokens };
+  return {
+    universeCreationTxHash: tx.hash,
+    universeName,
+    universePaymentTokens: universePaymentTokens.map(x => toAccountId(x)),
+  };
 };
 
 /** Warper setup with single universe and warper  */

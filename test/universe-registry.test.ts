@@ -1,4 +1,5 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { AccountId } from 'caip';
 import { deployments, ethers } from 'hardhat';
 import { Multiverse, UniverseRegistryAdapter } from '../src';
 import { IUniverseRegistry } from '../src/contracts';
@@ -23,7 +24,7 @@ describe('UniverseRegistryAdapter', () => {
   /** Data Structs */
   let universeCreationTxHash: string;
   let universeName: string;
-  let universePaymentTokens: string[];
+  let universePaymentTokens: AccountId[];
 
   beforeEach(async () => {
     await deployments.fixture();
@@ -40,12 +41,12 @@ describe('UniverseRegistryAdapter', () => {
   });
 
   describe('findUniverseByCreationTransaction', () => {
-    it('should return universe creation data', async () => {
+    it('should return universe creation data (info)', async () => {
       const data = await universeRegistryAdapter.findUniverseByCreationTransaction(universeCreationTxHash);
       expect(data).toBeDefined();
       expect(data?.name).toBe(universeName);
       expect(data?.paymentTokens).toMatchObject(universePaymentTokens);
-      expect(data?.universeId.toBigInt()).toBe(COMMON_ID.toBigInt());
+      expect(data?.id.toBigInt()).toBe(COMMON_ID.toBigInt());
     });
   });
 
@@ -83,7 +84,7 @@ describe('UniverseRegistryAdapter', () => {
       const info = await universeRegistryAdapter.universeInfo(COMMON_ID);
       expect(info).toBeDefined();
       expect(info?.name).toBe(universeName);
-      expect(info?.paymentTokens).toMatchObject(universePaymentTokens.map(x => toAccountId(x)));
+      expect(info?.paymentTokens).toMatchObject(universePaymentTokens);
     });
   });
 
@@ -130,7 +131,7 @@ describe('UniverseRegistryAdapter', () => {
   describe('removeUniversePaymentToken', () => {
     beforeEach(async () => {
       await universeRegistry.registerUniversePaymentToken(COMMON_ID, random.address);
-      await universeRegistry.removeUniversePaymentToken(COMMON_ID, universePaymentTokens[0]);
+      await universeRegistry.removeUniversePaymentToken(COMMON_ID, universePaymentTokens[0].address);
     });
 
     it('should remove payment token from universe', async () => {
