@@ -21,7 +21,7 @@ import { getERC721ConfigurablePresetInitData } from './helpers/warper';
 /**
  * @group integration
  */
-describe('UniverseWizardAdapterV1', () => {
+describe('WarperWizardAdapterV1', () => {
   /** Signers */
   let deployer: SignerWithAddress;
 

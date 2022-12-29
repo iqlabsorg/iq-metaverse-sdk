@@ -172,9 +172,9 @@ export const setupUniverseAndRegisteredWarper = async (): Promise<{
 };
 
 /**
- * Listing & renting setup with single universe, warper, asset, listing and tax terms
+ * Setup with single universe, warper, asset and tax terms
  */
-export const setupListingAndRenting = async (): Promise<{
+export const setupForListing = async (): Promise<{
   warperReference: AssetType;
   collectionReference: AssetType;
 }> => {
@@ -193,11 +193,26 @@ export const setupListingAndRenting = async (): Promise<{
   /** Create universe and warper */
   const { warperReference } = await createUniverseAndWarperWithWizards();
 
+  return {
+    collectionReference: createAssetReference('erc721', collection.address),
+    warperReference,
+  };
+};
+
+/**
+ * Setup with single universe, warper, asset, tax terms and listing
+ */
+export const setupForRenting = async (): Promise<{
+  warperReference: AssetType;
+  collectionReference: AssetType;
+}> => {
+  const { collectionReference, warperReference } = await setupForListing();
+
   /** Create listing */
   await createListing();
 
   return {
-    collectionReference: createAssetReference('erc721', collection.address),
+    collectionReference,
     warperReference,
   };
 };
