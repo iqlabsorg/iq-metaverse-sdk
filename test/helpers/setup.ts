@@ -140,7 +140,7 @@ const createListing = async (): Promise<void> => {
     listingParams,
     listingTerms,
     SECONDS_IN_DAY * 7,
-    true,
+    false,
     COMMON_ID,
   );
 };

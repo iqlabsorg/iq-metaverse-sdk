@@ -3,7 +3,8 @@ import {
   HUNDRED_PERCENT,
   HUNDRED_PERCENT_PRECISION_4,
 } from '@iqprotocol/solidity-contracts-nft/src/constants';
-import { BigNumber, BigNumberish, ethers, FixedNumber } from 'ethers';
+import { BigNumber, BigNumberish, FixedNumber } from 'ethers';
+import { ethers } from 'hardhat';
 import { AccountId, AssetId, ChainId } from 'caip';
 
 export const toAccountId = (address: string): AccountId => {
@@ -42,6 +43,19 @@ export const convertPercentage = (
       .toString(),
     0,
   );
+};
+
+export const mineBlock = async (timestamp = 0): Promise<unknown> => {
+  return ethers.provider.send('evm_mine', timestamp > 0 ? [timestamp] : []);
+};
+
+export const latestBlockTimestamp = async (): Promise<number> => {
+  return (await ethers.provider.getBlock('latest')).timestamp;
+};
+
+export const waitBlockchainTime = async (seconds: number): Promise<void> => {
+  const time = await latestBlockTimestamp();
+  await mineBlock(time + seconds);
 };
 
 export const SECONDS_IN_DAY = 86400;
