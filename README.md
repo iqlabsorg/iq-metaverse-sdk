@@ -296,8 +296,8 @@ await approvalTx.wait();
 const tx = await metahub.listAsset({
   asset,
   strategy: {
-    // One of the listing strategies must be chosen. The simplest one - 'FIXED_PRICE'
-    name: 'FIXED_PRICE',
+    // One of the listing strategies must be chosen. The simplest one - 'FIXED_RATE'
+    name: 'FIXED_RATE',
     data: {
       price: BigNumber.from(777),
     },
