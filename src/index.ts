@@ -10,6 +10,7 @@ export type {
   Asset,
   ListingParams,
   ListingTerms,
+  ListingTermsInfo,
   RegisteredWarper,
   RentingEstimationParams,
   RentingParams,
@@ -36,4 +37,5 @@ export {
   ListingWizardAdapterV1,
   UniverseWizardAdapterV1,
   WarperWizardAdapterV1,
+  ListingTermsRegistryAdapter,
 } from './adapters';

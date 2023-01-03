@@ -115,6 +115,41 @@ export class ListingManagerAdapter extends Adapter {
   }
 
   /**
+   * Retrieves the listing ID from creation transaction.
+   * @param transactionHash
+   */
+  async findListingIdByCreationTransaction(transactionHash: string): Promise<BigNumber | null> {
+    const tx = await this.contract.provider.getTransaction(transactionHash);
+    if (!tx.blockHash) {
+      return null;
+    }
+
+    const event = (await this.contract.queryFilter(this.contract.filters.ListingCreated(), tx.blockHash)).find(
+      event => event.transactionHash === transactionHash,
+    );
+
+    if (!event) {
+      return null;
+    }
+
+    return event.args.listingId;
+  }
+
+  /**
+   * Retrieves the listing details from creation transaction.
+   * @param transactionHash
+   */
+  async findListingByCreationTransaction(transactionHash: string): Promise<Listing | null> {
+    const listingId = await this.findListingIdByCreationTransaction(transactionHash);
+
+    if (!listingId) {
+      return null;
+    }
+
+    return this.listing(listingId);
+  }
+
+  /**
    * Resolves listings and normalizes them.
    * @param listingsRequest
    * @private

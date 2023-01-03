@@ -5,6 +5,8 @@ import { ethers } from 'hardhat';
 import {
   ERC20Mock__factory,
   ERC721Mock__factory,
+  IListingManager,
+  IListingTermsRegistry,
   IMetahub,
   ITaxTermsRegistry,
   IWarperManager,
@@ -125,7 +127,7 @@ const createAndRegisterWarper = async (): Promise<WarperCreatedAndRegistered> =>
   return { warperName, warperReference };
 };
 
-const createListing = async (): Promise<void> => {
+const createListing = async (): Promise<{ txHash: string; listingTerms: IListingTermsRegistry.ListingTermsStruct }> => {
   const lister = await ethers.getNamedSigner('assetOwner');
 
   const collection = new ERC721Mock__factory().attach(COLLECTION);
@@ -135,7 +137,7 @@ const createListing = async (): Promise<void> => {
   const baseRate = calculateBaseRate('100', SECONDS_IN_DAY);
   const listingTerms = makeListingTermsFixedRate(baseRate);
   const listingParams = makeListingParams(lister.address);
-  await listingWizard.createListingWithTerms(
+  const tx = await listingWizard.createListingWithTerms(
     listingAssets,
     listingParams,
     listingTerms,
@@ -143,6 +145,8 @@ const createListing = async (): Promise<void> => {
     false,
     COMMON_ID,
   );
+
+  return { txHash: tx.hash, listingTerms };
 };
 
 /** Creates universe */
@@ -205,14 +209,18 @@ export const setupForListing = async (): Promise<{
 export const setupForRenting = async (): Promise<{
   warperReference: AssetType;
   collectionReference: AssetType;
+  listingCreationTxHash: string;
+  listingTerms: IListingTermsRegistry.ListingTermsStruct;
 }> => {
   const { collectionReference, warperReference } = await setupForListing();
 
   /** Create listing */
-  await createListing();
+  const { txHash: listingCreationTxHash, listingTerms } = await createListing();
 
   return {
     collectionReference,
     warperReference,
+    listingCreationTxHash,
+    listingTerms,
   };
 };

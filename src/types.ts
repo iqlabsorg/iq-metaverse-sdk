@@ -26,6 +26,12 @@ export type ListingTerms = {
   strategyData: BytesLike;
 };
 
+export type ListingTermsInfo = {
+  id: BigNumber;
+  strategyId: BytesLike;
+  strategyData: BytesLike;
+};
+
 export type FixedPriceListingStrategyParams = {
   name: typeof listingStrategies.FIXED_RATE.name;
   data: {

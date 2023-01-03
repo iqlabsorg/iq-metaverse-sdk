@@ -17,7 +17,7 @@ export class UniverseRegistryAdapter extends Adapter {
   }
 
   /**
-   * Retrieves the universe details form creation transaction.
+   * Retrieves the universe details from creation transaction.
    * @param transactionHash
    */
   async findUniverseByCreationTransaction(transactionHash: string): Promise<UniverseInfo | undefined> {

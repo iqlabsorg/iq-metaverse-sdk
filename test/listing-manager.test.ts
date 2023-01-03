@@ -23,6 +23,7 @@ describe('ListingManagerAdapter', () => {
 
   /** Data Structs */
   let collectionReference: AssetType;
+  let listingCreationTxHash: string;
 
   beforeEach(async () => {
     await deployments.fixture();
@@ -35,7 +36,7 @@ describe('ListingManagerAdapter', () => {
     multiverse = await Multiverse.init({ signer: lister });
     listingManagerAdapter = multiverse.listingManager(toAccountId(listingManager.address));
 
-    ({ collectionReference } = await setupForRenting());
+    ({ collectionReference, listingCreationTxHash } = await setupForRenting());
   });
 
   describe('disableListing', () => {
@@ -147,6 +148,23 @@ describe('ListingManagerAdapter', () => {
       const listing = await listingManagerAdapter.listing(COMMON_ID);
       const listings = await listingManagerAdapter.assetListings(collectionReference, 0, 1);
       expect(listings[0]).toMatchObject(listing);
+    });
+  });
+
+  describe('findListingIdByCreationTransaction', () => {
+    it('should return created listing id from transaction hash', async () => {
+      const listingId = await listingManagerAdapter.findListingIdByCreationTransaction(listingCreationTxHash);
+      expect(listingId).toBeDefined();
+      expect(listingId).toMatchObject(COMMON_ID);
+    });
+  });
+
+  describe('findListingByCreationTransaction', () => {
+    it('should return created listing info from transaction hash', async () => {
+      const listing = await listingManagerAdapter.findListingByCreationTransaction(listingCreationTxHash);
+      expect(listing).toBeDefined();
+      expect(listing?.id).toMatchObject(COMMON_ID);
+      expect(listing?.lister.address).toBe(lister.address);
     });
   });
 });
