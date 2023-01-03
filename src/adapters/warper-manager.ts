@@ -7,7 +7,6 @@ import { Address, RegisteredWarper } from '../types';
 import { assetClassToNamespace, pick } from '../utils';
 
 import { WarperManager } from '../contracts';
-import { CONTRACT_REGISTRY_KEY_IDS } from '@iqprotocol/solidity-contracts-nft/src/contracts-infra';
 import { Warpers } from '../contracts/contracts/warper/IWarperController';
 
 export class WarperManagerAdapter extends Adapter {

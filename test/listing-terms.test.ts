@@ -1,6 +1,6 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { deployments, ethers } from 'hardhat';
-import { ListingTermsRegistryAdapter, Multiverse } from '../src';
+import { ListingTermsRegistryAdapter, IQSpace } from '../src';
 import { IListingTermsRegistry } from '../src/contracts';
 import { setupForRenting } from './helpers/setup';
 import { COMMON_ID, toAccountId } from './helpers/utils';
@@ -17,7 +17,7 @@ describe('ListingTermsRegistryAdapter', () => {
   let listingTermsRegistry: IListingTermsRegistry;
 
   /** SDK */
-  let multiverse: Multiverse;
+  let iqspace: IQSpace;
   let listingTermsRegistryAdapter: ListingTermsRegistryAdapter;
 
   /** Data Structs */
@@ -32,8 +32,8 @@ describe('ListingTermsRegistryAdapter', () => {
 
     listingTermsRegistry = await ethers.getContract('ListingTermsRegistry');
 
-    multiverse = await Multiverse.init({ signer: lister });
-    listingTermsRegistryAdapter = multiverse.listingTermsRegistry(toAccountId(listingTermsRegistry.address));
+    iqspace = await IQSpace.init({ signer: lister });
+    listingTermsRegistryAdapter = iqspace.listingTermsRegistry(toAccountId(listingTermsRegistry.address));
 
     ({ listingCreationTxHash, listingTerms } = await setupForRenting());
   });

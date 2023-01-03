@@ -1,6 +1,6 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { deployments, ethers } from 'hardhat';
-import { AssetListingParams, ListingParams, ListingTerms, ListingWizardAdapterV1, Multiverse } from '../src';
+import { AssetListingParams, ListingParams, ListingTerms, ListingWizardAdapterV1, IQSpace } from '../src';
 import {
   ERC721Mock,
   ERC721Mock__factory,
@@ -29,7 +29,7 @@ describe('ListingWizardAdapterV1', () => {
   let collection: ERC721Mock;
 
   /** SDK */
-  let multiverse: Multiverse;
+  let iqspace: IQSpace;
   let listingWizardAdapter: ListingWizardAdapterV1;
 
   /** Data Structs */
@@ -49,8 +49,8 @@ describe('ListingWizardAdapterV1', () => {
     metahub = await ethers.getContract('Metahub');
     collection = new ERC721Mock__factory().attach(COLLECTION);
 
-    multiverse = await Multiverse.init({ signer: lister });
-    listingWizardAdapter = multiverse.listingWizardV1(toAccountId(listingWizard.address));
+    iqspace = await IQSpace.init({ signer: lister });
+    listingWizardAdapter = iqspace.listingWizardV1(toAccountId(listingWizard.address));
 
     await setupForListing();
 

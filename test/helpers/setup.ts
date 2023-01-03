@@ -5,7 +5,6 @@ import { ethers } from 'hardhat';
 import {
   ERC20Mock__factory,
   ERC721Mock__factory,
-  IListingManager,
   IListingTermsRegistry,
   IMetahub,
   ITaxTermsRegistry,

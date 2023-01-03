@@ -1,11 +1,11 @@
 import { AccountId, AssetType } from 'caip';
 import { BigNumber, BigNumberish, ContractTransaction } from 'ethers';
-import { Listings } from '../contracts/contracts/metahub/core/IMetahub';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
 import { ListingManager } from '../contracts';
-import { Asset, Listing } from '../types';
+import { Listings } from '../contracts/contracts/metahub/core/IMetahub';
+import { Listing } from '../types';
 import { pick } from '../utils';
 
 export class ListingManagerAdapter extends Adapter {

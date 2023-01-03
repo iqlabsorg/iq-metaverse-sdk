@@ -1,6 +1,5 @@
 import { AccountId, AssetType } from 'caip';
-import { BigNumber, BigNumberish, BytesLike, ContractTransaction } from 'ethers';
-import { UniverseCreatedEventObject } from '../contracts/contracts/universe/universe-registry/IUniverseRegistry';
+import { BigNumber, BigNumberish, ContractTransaction } from 'ethers';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { assetClasses } from '../constants';

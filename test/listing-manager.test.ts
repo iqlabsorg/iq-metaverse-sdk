@@ -1,7 +1,7 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AssetType } from 'caip';
 import { deployments, ethers } from 'hardhat';
-import { ListingManagerAdapter, Multiverse } from '../src';
+import { ListingManagerAdapter, IQSpace } from '../src';
 import { IListingManager } from '../src/contracts';
 import { setupForRenting } from './helpers/setup';
 import { COMMON_ID, toAccountId } from './helpers/utils';
@@ -18,7 +18,7 @@ describe('ListingManagerAdapter', () => {
   let listingManager: IListingManager;
 
   /** SDK */
-  let multiverse: Multiverse;
+  let iqspace: IQSpace;
   let listingManagerAdapter: ListingManagerAdapter;
 
   /** Data Structs */
@@ -33,8 +33,8 @@ describe('ListingManagerAdapter', () => {
 
     listingManager = await ethers.getContract('ListingManager');
 
-    multiverse = await Multiverse.init({ signer: lister });
-    listingManagerAdapter = multiverse.listingManager(toAccountId(listingManager.address));
+    iqspace = await IQSpace.init({ signer: lister });
+    listingManagerAdapter = iqspace.listingManager(toAccountId(listingManager.address));
 
     ({ collectionReference, listingCreationTxHash } = await setupForRenting());
   });

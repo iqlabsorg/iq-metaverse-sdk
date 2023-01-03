@@ -17,11 +17,11 @@ import { AddressTranslator } from './address-translator';
 import { ContractResolver } from './contract-resolver';
 import { ChainAware } from './types';
 
-type MultiverseParams = {
+type IQSpaceParams = {
   signer: Signer;
 };
 
-export class Multiverse implements ChainAware {
+export class IQSpace implements ChainAware {
   private readonly contractResolver: ContractResolver;
   private readonly addressTranslator: AddressTranslator;
 
@@ -31,13 +31,13 @@ export class Multiverse implements ChainAware {
   }
 
   /**
-   * Multiverse connection initializer.
+   * iqspace connection initializer.
    * @param params
    */
-  static async init(params: MultiverseParams): Promise<Multiverse> {
+  static async init(params: IQSpaceParams): Promise<IQSpace> {
     const { signer } = params;
     const chainId = await signer.getChainId();
-    return new Multiverse(signer, new ChainId({ namespace: 'eip155', reference: chainId.toString() }));
+    return new IQSpace(signer, new ChainId({ namespace: 'eip155', reference: chainId.toString() }));
   }
 
   async getChainId(): Promise<ChainId> {

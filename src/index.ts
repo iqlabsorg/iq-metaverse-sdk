@@ -1,5 +1,5 @@
 /**
- * @module multiverse
+ * @module iqspace
  */
 export { AccountId, ChainId, AssetType, AssetId } from 'caip';
 export type {
@@ -26,7 +26,7 @@ export type {
   TaxTerms,
 } from './types';
 export { assetClasses, listingStrategies } from './constants';
-export { Multiverse } from './multiverse';
+export { IQSpace } from './iqspace';
 export {
   MetahubAdapter,
   UniverseRegistryAdapter,

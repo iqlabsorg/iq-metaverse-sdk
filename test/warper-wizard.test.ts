@@ -3,7 +3,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AssetType } from 'caip';
 import { BytesLike } from 'ethers';
 import { deployments, ethers } from 'hardhat';
-import { Multiverse, WarperWizardAdapterV1 } from '../src';
+import { IQSpace, WarperWizardAdapterV1 } from '../src';
 import {
   ERC721Mock,
   ERC721Mock__factory,
@@ -32,7 +32,7 @@ describe('WarperWizardAdapterV1', () => {
   let collection: ERC721Mock;
 
   /** SDK */
-  let multiverse: Multiverse;
+  let iqspace: IQSpace;
   let warperWizardAdapter: WarperWizardAdapterV1;
 
   /** Data Structs */
@@ -61,8 +61,8 @@ describe('WarperWizardAdapterV1', () => {
     metahub = await ethers.getContract('Metahub');
     collection = new ERC721Mock__factory().attach(COLLECTION);
 
-    multiverse = await Multiverse.init({ signer: deployer });
-    warperWizardAdapter = multiverse.warperWizardV1(toAccountId(warperWizard.address));
+    iqspace = await IQSpace.init({ signer: deployer });
+    warperWizardAdapter = iqspace.warperWizardV1(toAccountId(warperWizard.address));
 
     const { warperData } = await setupUniverseAndWarper();
     warperReference = warperData.warperReference;

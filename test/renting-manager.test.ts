@@ -1,7 +1,7 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AccountId, AssetType } from 'caip';
 import { deployments, ethers } from 'hardhat';
-import { Asset, Multiverse, RentingEstimationParams, RentingManagerAdapter } from '../src';
+import { Asset, IQSpace, RentingEstimationParams, RentingManagerAdapter } from '../src';
 import { ERC20Mock, ERC20Mock__factory, IMetahub, IRentingManager } from '../src/contracts';
 import { createAssetReference, makeERC721AssetForSDK } from './helpers/asset';
 import { getSelectedConfiguratorListingTerms, getTokenQuoteData } from './helpers/listing-renting';
@@ -21,7 +21,7 @@ describe('RentingManagerAdapter', () => {
   let rentingManager: IRentingManager;
 
   /** SDK */
-  let multiverse: Multiverse;
+  let iqspace: IQSpace;
   let rentingManagerAdapter: RentingManagerAdapter;
 
   /** Mocks & Samples */
@@ -63,8 +63,8 @@ describe('RentingManagerAdapter', () => {
     rentingManager = await ethers.getContract('RentingManager');
     baseToken = new ERC20Mock__factory().attach(BASE_TOKEN);
 
-    multiverse = await Multiverse.init({ signer: renter });
-    rentingManagerAdapter = multiverse.rentingManager(toAccountId(rentingManager.address));
+    iqspace = await IQSpace.init({ signer: renter });
+    rentingManagerAdapter = iqspace.rentingManager(toAccountId(rentingManager.address));
 
     ({ warperReference } = await setupForRenting());
     baseTokenReference = createAssetReference('erc20', baseToken.address);

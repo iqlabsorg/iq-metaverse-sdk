@@ -1,7 +1,7 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AccountId } from 'caip';
 import { deployments, ethers } from 'hardhat';
-import { Multiverse, UniverseRegistryAdapter } from '../src';
+import { IQSpace, UniverseRegistryAdapter } from '../src';
 import { IUniverseRegistry } from '../src/contracts';
 import { setupUniverse, UNIVERSE_WIZARD } from './helpers/setup';
 import { COMMON_ID, toAccountId } from './helpers/utils';
@@ -18,7 +18,7 @@ describe('UniverseRegistryAdapter', () => {
   let universeRegistry: IUniverseRegistry;
 
   /** SDK */
-  let multiverse: Multiverse;
+  let iqspace: IQSpace;
   let universeRegistryAdapter: UniverseRegistryAdapter;
 
   /** Data Structs */
@@ -34,8 +34,8 @@ describe('UniverseRegistryAdapter', () => {
 
     universeRegistry = await ethers.getContract('UniverseRegistry');
 
-    multiverse = await Multiverse.init({ signer: deployer });
-    universeRegistryAdapter = multiverse.universeRegistry(toAccountId(universeRegistry.address));
+    iqspace = await IQSpace.init({ signer: deployer });
+    universeRegistryAdapter = iqspace.universeRegistry(toAccountId(universeRegistry.address));
 
     ({ universeCreationTxHash, universeName, universePaymentTokens } = await setupUniverse());
   });

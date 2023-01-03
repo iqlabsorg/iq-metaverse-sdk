@@ -1,7 +1,7 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AssetType } from 'caip';
 import { deployments, ethers } from 'hardhat';
-import { Multiverse, WarperManagerAdapter } from '../src';
+import { IQSpace, WarperManagerAdapter } from '../src';
 import { IWarperManager, IWarperPresetFactory } from '../src/contracts';
 import { createAssetReference } from './helpers/asset';
 import { COLLECTION, setupUniverseAndRegisteredWarper } from './helpers/setup';
@@ -20,7 +20,7 @@ describe('WarperManagerAdapter', () => {
   let warperPresetFactory: IWarperPresetFactory;
 
   /** SDK */
-  let multiverse: Multiverse;
+  let iqspace: IQSpace;
   let warperManagerAdapter: WarperManagerAdapter;
 
   /** Data Structs */
@@ -36,8 +36,8 @@ describe('WarperManagerAdapter', () => {
     warperManager = await ethers.getContract('WarperManager');
     warperPresetFactory = await ethers.getContract('WarperPresetFactory');
 
-    multiverse = await Multiverse.init({ signer: deployer });
-    warperManagerAdapter = multiverse.warperManager(toAccountId(warperManager.address));
+    iqspace = await IQSpace.init({ signer: deployer });
+    warperManagerAdapter = iqspace.warperManager(toAccountId(warperManager.address));
 
     const { warperData } = await setupUniverseAndRegisteredWarper();
     warperName = warperData.warperName;

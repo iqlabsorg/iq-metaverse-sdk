@@ -2,7 +2,7 @@ import { WARPER_PRESET_ERC721_IDS } from '@iqprotocol/solidity-contracts-nft/src
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { BigNumber, BytesLike, ContractTransaction } from 'ethers';
 import { deployments, ethers } from 'hardhat';
-import { Multiverse, UniverseParams, UniverseWizardAdapterV1 } from '../src';
+import { IQSpace, UniverseParams, UniverseWizardAdapterV1 } from '../src';
 import {
   ERC20Mock,
   ERC20Mock__factory,
@@ -37,7 +37,7 @@ describe('UniverseWizardAdapterV1', () => {
   let collection: ERC721Mock;
 
   /** SDK */
-  let multiverse: Multiverse;
+  let iqspace: IQSpace;
   let universeWizardAdapter: UniverseWizardAdapterV1;
 
   /** Data Structs */
@@ -61,8 +61,8 @@ describe('UniverseWizardAdapterV1', () => {
     baseToken = new ERC20Mock__factory().attach(BASE_TOKEN);
     collection = new ERC721Mock__factory().attach(COLLECTION);
 
-    multiverse = await Multiverse.init({ signer: deployer });
-    universeWizardAdapter = multiverse.universeWizardV1(toAccountId(universeWizard.address));
+    iqspace = await IQSpace.init({ signer: deployer });
+    universeWizardAdapter = iqspace.universeWizardV1(toAccountId(universeWizard.address));
 
     universeParams = { name: 'Test Universe', paymentTokens: [toAccountId(baseToken.address)] };
     warperTaxTerms = makeTaxTermsFixedRate('1');

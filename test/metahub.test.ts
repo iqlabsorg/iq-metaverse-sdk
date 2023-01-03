@@ -2,7 +2,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AccountId, AssetType } from 'caip';
 import { BigNumber } from 'ethers';
 import { deployments, ethers } from 'hardhat';
-import { BaseToken, MetahubAdapter, Multiverse, RentingEstimationParams, RentingManagerAdapter } from '../src';
+import { BaseToken, MetahubAdapter, IQSpace, RentingEstimationParams, RentingManagerAdapter } from '../src';
 import {
   ERC20Mock,
   ERC20Mock__factory,
@@ -96,14 +96,14 @@ describe('MetahubAdapter', () => {
     baseToken = new ERC20Mock__factory().attach(BASE_TOKEN);
     collection = new ERC721Mock__factory().attach(COLLECTION);
 
-    const multiverse = await Multiverse.init({ signer: deployer });
-    metahubAdapter = multiverse.metahub(toAccountId(metahub.address));
+    const iqspace = await IQSpace.init({ signer: deployer });
+    metahubAdapter = iqspace.metahub(toAccountId(metahub.address));
 
-    const listerMultiverse = await Multiverse.init({ signer: lister });
-    metahubAdapterLister = listerMultiverse.metahub(toAccountId(metahub.address));
+    const listeriqspace = await IQSpace.init({ signer: lister });
+    metahubAdapterLister = listeriqspace.metahub(toAccountId(metahub.address));
 
-    const renterMultiverse = await Multiverse.init({ signer: renter });
-    rentingManagerAdapter = renterMultiverse.rentingManager(toAccountId(rentingManager.address));
+    const renteriqspace = await IQSpace.init({ signer: renter });
+    rentingManagerAdapter = renteriqspace.rentingManager(toAccountId(rentingManager.address));
 
     listerAccountId = toAccountId(lister.address);
     renterAccountId = toAccountId(renter.address);
