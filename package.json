@@ -29,7 +29,9 @@
     "docs:generate": "NODE_OPTIONS=--max_old_space_size=8192 typedoc --options typedoc.js --entryPointStrategy packages . --out docs && touch docs/.nojekyll",
     "docs:clean": "rimraf docs",
     "cache:clean": "rimraf cache",
-    "clean": "run-s build:clean typechain:clean cache:clean docs:clean"
+    "logs:clean": "rimraf logs && rimraf tslog.log",
+    "deploy:clean": "rimraf addresses.json",
+    "clean": "run-s build:clean typechain:clean cache:clean docs:clean logs:clean deploy:clean"
   },
   "lint-staged": {
     "packages/**/*.ts": "yarn lint:fix",
