@@ -110,7 +110,7 @@ export class RentingManagerAdapter extends Adapter {
    * @param warpedCollectionId Warped collection ID.
    * @param renter Renter account ID.
    */
-  async collectionRentedValue(warpedCollectionId: BytesLike, renter: AccountId): Promise<BigNumberish> {
+  async collectionRentedValue(warpedCollectionId: BytesLike, renter: AccountId): Promise<BigNumber> {
     return this.contract.collectionRentedValue(warpedCollectionId, this.accountIdToAddress(renter));
   }
 

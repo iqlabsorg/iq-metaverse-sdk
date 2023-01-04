@@ -8,3 +8,4 @@ export * from './renting-manager';
 export * from './listing-wizard';
 export * from './universe-wizard';
 export * from './warper-wizard';
+export * from './listing-terms';

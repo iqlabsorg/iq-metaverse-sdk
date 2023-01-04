@@ -39,6 +39,8 @@ import {
   ListingManager,
   ListingManager__factory,
   RentingManager__factory,
+  ListingTermsRegistry,
+  ListingTermsRegistry__factory,
 } from './contracts';
 import { ChainId } from 'caip';
 
@@ -84,6 +86,10 @@ export class ContractResolver implements ChainAware {
 
   resolveListingManager(address: string): ListingManager {
     return ListingManager__factory.connect(address, this.signer);
+  }
+
+  resolveListingTermsRegistry(address: string): ListingTermsRegistry {
+    return ListingTermsRegistry__factory.connect(address, this.signer);
   }
 
   resolveRentingManager(address: Address): RentingManager {

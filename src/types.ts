@@ -26,15 +26,21 @@ export type ListingTerms = {
   strategyData: BytesLike;
 };
 
+export type ListingTermsInfo = {
+  id: BigNumber;
+  strategyId: BytesLike;
+  strategyData: BytesLike;
+};
+
 export type FixedPriceListingStrategyParams = {
-  name: typeof listingStrategies.FIXED_PRICE.name;
+  name: typeof listingStrategies.FIXED_RATE.name;
   data: {
     price: BigNumberish;
   };
 };
 
 export type FixedPriceWithRewardListingStrategyParams = {
-  name: typeof listingStrategies.FIXED_PRICE_WITH_REWARD.name;
+  name: typeof listingStrategies.FIXED_RATE_WITH_REWARD.name;
   data: {
     price: BigNumberish;
     rewardPercent: BigNumberish;
@@ -152,6 +158,7 @@ export type UniverseParams = {
 };
 
 export type UniverseInfo = {
+  id: BigNumber;
   name: string;
   paymentTokens: AccountId[];
 };

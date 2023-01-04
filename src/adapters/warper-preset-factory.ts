@@ -1,6 +1,7 @@
 import { AccountId, AssetType } from 'caip';
 import { BytesLike, ContractTransaction } from 'ethers';
-import { defaultAbiCoder, formatBytes32String } from 'ethers/lib/utils';
+import { defaultAbiCoder } from 'ethers/lib/utils';
+import { warperPresetMap } from '../constants';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
@@ -16,7 +17,7 @@ export class WarperPresetFactoryAdapter extends Adapter {
   }
 
   /**
-   * Deploys new instance of warper form preset.
+   * Deploys new instance of warper from preset.
    * @param presetId
    * @param data Preset specific configuration.
    */
@@ -24,7 +25,12 @@ export class WarperPresetFactoryAdapter extends Adapter {
     presetId: 'ERC721ConfigurablePreset',
     data: { metahub: AccountId; original: AssetType },
   ): Promise<ContractTransaction> {
-    return this.contract.deployPreset(formatBytes32String(presetId), this.encodePresetInitData(presetId, data));
+    const encodedPresetId = warperPresetMap.get(presetId);
+    if (!encodedPresetId) {
+      throw new Error('Invalid warper preset ID');
+    }
+
+    return this.contract.deployPreset(encodedPresetId, this.encodePresetInitData(presetId, data));
   }
 
   /**

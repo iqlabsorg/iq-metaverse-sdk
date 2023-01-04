@@ -1,6 +1,5 @@
 import { AccountId, AssetType } from 'caip';
-import { BigNumberish, BytesLike, ContractTransaction } from 'ethers';
-import { UniverseCreatedEventObject } from '../contracts/contracts/universe/universe-registry/IUniverseRegistry';
+import { BigNumber, BigNumberish, ContractTransaction } from 'ethers';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { assetClasses } from '../constants';
@@ -17,10 +16,10 @@ export class UniverseRegistryAdapter extends Adapter {
   }
 
   /**
-   * Retrieves the universe details form creation transaction.
+   * Retrieves the universe details from creation transaction.
    * @param transactionHash
    */
-  async findUniverseByCreationTransaction(transactionHash: string): Promise<UniverseCreatedEventObject | undefined> {
+  async findUniverseByCreationTransaction(transactionHash: string): Promise<UniverseInfo | undefined> {
     const tx = await this.contract.provider.getTransaction(transactionHash);
     if (!tx.blockHash) {
       return undefined;
@@ -30,7 +29,13 @@ export class UniverseRegistryAdapter extends Adapter {
       event => event.transactionHash === transactionHash,
     );
 
-    return event ? event.args : undefined;
+    return event
+      ? {
+          id: event.args.universeId,
+          name: event.args.name,
+          paymentTokens: event.args.paymentTokens.map(x => this.addressToAccountId(x)),
+        }
+      : undefined;
   }
 
   /**
@@ -57,7 +62,11 @@ export class UniverseRegistryAdapter extends Adapter {
    */
   async universeInfo(universeId: BigNumberish): Promise<UniverseInfo> {
     const info = await this.contract.universe(universeId);
-    return { name: info.name, paymentTokens: info.paymentTokens.map(x => this.addressToAccountId(x)) };
+    return {
+      id: BigNumber.from(universeId),
+      name: info.name,
+      paymentTokens: info.paymentTokens.map(x => this.addressToAccountId(x)),
+    };
   }
 
   /**

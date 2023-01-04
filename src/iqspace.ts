@@ -10,17 +10,18 @@ import {
   RentingManagerAdapter,
   WarperPresetFactoryAdapter,
   WarperWizardAdapterV1,
+  ListingTermsRegistryAdapter,
 } from './adapters';
 import { ERC721WarperAdapter } from './adapters/erc721-warper';
 import { AddressTranslator } from './address-translator';
 import { ContractResolver } from './contract-resolver';
 import { ChainAware } from './types';
 
-type MultiverseParams = {
+type IQSpaceParams = {
   signer: Signer;
 };
 
-export class Multiverse implements ChainAware {
+export class IQSpace implements ChainAware {
   private readonly contractResolver: ContractResolver;
   private readonly addressTranslator: AddressTranslator;
 
@@ -30,13 +31,13 @@ export class Multiverse implements ChainAware {
   }
 
   /**
-   * Multiverse connection initializer.
+   * iqspace connection initializer.
    * @param params
    */
-  static async init(params: MultiverseParams): Promise<Multiverse> {
+  static async init(params: IQSpaceParams): Promise<IQSpace> {
     const { signer } = params;
     const chainId = await signer.getChainId();
-    return new Multiverse(signer, new ChainId({ namespace: 'eip155', reference: chainId.toString() }));
+    return new IQSpace(signer, new ChainId({ namespace: 'eip155', reference: chainId.toString() }));
   }
 
   async getChainId(): Promise<ChainId> {
@@ -100,6 +101,15 @@ export class Multiverse implements ChainAware {
   rentingManager(accountId: AccountId): RentingManagerAdapter {
     this.addressTranslator.assertSameChainId(accountId.chainId);
     return new RentingManagerAdapter(accountId, this.contractResolver, this.addressTranslator);
+  }
+
+  /**
+   * Resolves the listing terms registry adapter.
+   * @param accountId Listing terms registry account ID.
+   */
+  listingTermsRegistry(accountId: AccountId): ListingTermsRegistryAdapter {
+    this.addressTranslator.assertSameChainId(accountId.chainId);
+    return new ListingTermsRegistryAdapter(accountId, this.contractResolver, this.addressTranslator);
   }
 
   /**

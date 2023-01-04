@@ -7,7 +7,6 @@ import { Address, RegisteredWarper } from '../types';
 import { assetClassToNamespace, pick } from '../utils';
 
 import { WarperManager } from '../contracts';
-import { CONTRACT_REGISTRY_KEY_IDS } from '@iqprotocol/solidity-contracts-nft/src/contracts-infra';
 import { Warpers } from '../contracts/contracts/warper/IWarperController';
 
 export class WarperManagerAdapter extends Adapter {
@@ -87,13 +86,6 @@ export class WarperManagerAdapter extends Adapter {
       limit,
     );
     return warpers.map((warper, i) => this.normalizeWarper(addresses[i], warper));
-  }
-
-  /**
-   * @dev Returns warper preset factory address.
-   */
-  async warperPresetFactory(): Promise<AccountId> {
-    return this.addressToAccountId(CONTRACT_REGISTRY_KEY_IDS.WARPER_PRESET_FACTORY);
   }
 
   /**

@@ -1,10 +1,11 @@
+import { CONTRACT_REGISTRY_KEY_IDS } from '@iqprotocol/solidity-contracts-nft/src/contracts-infra';
 import { AccountId, AssetType } from 'caip';
 import { BigNumber, BigNumberish, ContractTransaction } from 'ethers';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
 import { Metahub } from '../contracts';
-import { AccountBalance, BaseToken } from '../types';
+import { AccountBalance, Asset, BaseToken } from '../types';
 import { assetClassToNamespace } from '../utils';
 
 export class MetahubAdapter extends Adapter {
@@ -132,4 +133,71 @@ export class MetahubAdapter extends Adapter {
   }
 
   //#endregion
+
+  //#region Approvals
+
+  /**
+   * Sets payment token allowance. Allows Metahub to spend specified tokens to cover rental fees.
+   * @param paymentToken ERC20 payment token.
+   * @param amount Allowance amount.
+   */
+  async approveForRentalPayment(paymentToken: AssetType, amount: BigNumberish): Promise<ContractTransaction> {
+    AddressTranslator.assertTypeERC20(paymentToken);
+    return this.contractResolver
+      .resolveERC20Asset(this.assetTypeToAddress(paymentToken))
+      .approve(this.contract.address, amount);
+  }
+
+  /**
+   * Returns current Metahub allowance in specified payment tokens for specific payer account.
+   * @param paymentToken ERC20 payment token.
+   * @param payer Payer account ID.
+   */
+  async paymentTokenAllowance(paymentToken: AssetType, payer: AccountId): Promise<BigNumber> {
+    AddressTranslator.assertTypeERC20(paymentToken);
+    return this.contractResolver
+      .resolveERC20Asset(this.assetTypeToAddress(paymentToken))
+      .allowance(this.accountIdToAddress(payer), this.contract.address);
+  }
+
+  /**
+   * Approves Metahub to take an asset from lister account during listing process.
+   * @param asset
+   */
+  async approveForListing(asset: Asset): Promise<ContractTransaction> {
+    AddressTranslator.assertTypeERC721(asset.id);
+    return this.contractResolver
+      .resolveERC721Asset(this.assetIdToAddress(asset.id))
+      .approve(this.contract.address, asset.id.tokenId);
+  }
+
+  /**
+   * Checks whether the asset is approved for listing by the owner.
+   * Returns `true` if the asset can be listed, and `false` if the required approval is missing.
+   * @param asset
+   */
+  async isApprovedForListing(asset: Asset): Promise<boolean> {
+    AddressTranslator.assertTypeERC721(asset.id);
+
+    // Check particular token allowance.
+    const assetContract = this.contractResolver.resolveERC721Asset(this.assetIdToAddress(asset.id));
+    //eslint-disable-next-line no-extra-parens
+    if ((await assetContract.getApproved(asset.id.tokenId)) === this.contract.address) {
+      return true;
+    }
+
+    // Check operator.
+    const assumedOwner = await this.signerAddress();
+    return assetContract.isApprovedForAll(assumedOwner, this.contract.address);
+  }
+
+  //#endregion
+
+  /**
+   * @dev Returns warper preset factory address.
+   */
+  async warperPresetFactory(): Promise<AccountId> {
+    const address = await this.contract.getContract(CONTRACT_REGISTRY_KEY_IDS.WARPER_PRESET_FACTORY);
+    return this.addressToAccountId(address);
+  }
 }
