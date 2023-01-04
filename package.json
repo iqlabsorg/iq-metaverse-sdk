@@ -1,10 +1,10 @@
 {
   "name": "@iqprotocol/iq-space-sdk-js",
   "version": "0.1.0-alpha.6",
-  "bugs": "https://github.com/iqlabsorg/iq-platform-sdk/issues",
+  "bugs": "https://github.com/iqlabsorg/iq-space-sdk-js/issues",
   "repository": {
     "type": "git",
-    "url": "https://github.com/iqlabsorg/iq-platform-sdk"
+    "url": "https://github.com/iqlabsorg/iq-space-sdk-js"
   },
   "license": "MIT",
   "author": "IQ Labs (https://iq.space)",
