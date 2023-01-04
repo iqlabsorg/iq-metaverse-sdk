@@ -1,81 +1,78 @@
-# Multiverse NFT Renting
+# IQ Space NFT Renting
 
-[![CI](https://github.com/iqlabsorg/iq-sdk-js/actions/workflows/main.yml/badge.svg)](https://github.com/iqlabsorg/iq-sdk-js/actions/workflows/main.yml)
+[![CI](https://github.com/iqlabsorg/iq-space-sdk-js/actions/workflows/main.yml/badge.svg)](https://github.com/iqlabsorg/iq-space-sdk-js/actions/workflows/main.yml)
 
-This package is part of [IQ Protocol JS SDK.](https://github.com/iqlabsorg/iq-sdk-js)
+This package is part of [IQ Protocol JS SDK.](https://github.com/iqlabsorg/iq-space-sdk-js)
 
 | :exclamation: The package is in development and breaking changes should be expected. Use at your own risk! |
 | :--------------------------------------------------------------------------------------------------------- |
 
 This package provides higher level abstraction over IQ Protocol smart contracts, allowing application developers to work with IQ NFT renting platform regardless of the underlying blockchain.
 
-Use this package to create IQVerse, deploy Warper and communicate with Metahub to implement NFT listing & renting
-functionality.
+Use this package to create IQVerse, deploy Warper and communicate with Metahub to implement NFT listing & renting functionality.
 
 ## Installation
 
 This package requires [ethers.js](https://github.com/ethers-io/ethers.js) peer dependency, so it needs to be installed too.
 
 ```bash
-yarn add @iqprotocol/multiverse ethers
+yarn add @iqprotocol/iq-space-sdk-js ethers
 ```
 
 ## Usage
 
-Start with `Multiverse` client initialization. Then you can use the client to resolve adapters for various
-contracts.
+Start with `IQSpace` client initialization. Then you can use the client to resolve adapters for various contracts.
 
-### Multiverse
+### IQSpace
 
-The architecture consists of the main entrypoint, which we call `Multiverse`. To be able to interact with the rest of the SDK, one needs to instantiate the `Multiverse` instance.
+The architecture consists of the main entrypoint, which we call `IQSpace`. To be able to interact with the rest of the SDK, one needs to instantiate the `IQSpace` instance.
 
 #### Initialization
 
 You need to provide a [Signer](https://docs.ethers.io/v5/api/signer/#Signer) which suits your use-case. For example, `VoidSigner` will be enough for reading data, but for listing, renting and other state-changing operations you need a signer, with private key.
 
 ```ts
-import { Multiverse } from '@iqprotocol/multiverse';
+import { IQSpace } from '@iqprotocol/iq-space-sdk-js';
 import { ethers } from 'ethers';
 
 const provider = new ethers.providers.JsonRpcProvider('<RPC URL>');
 const accountAddress = '0x...';
 
-const multiverse = await Multiverse.init({
+const iqSpace = await IQSpace.init({
   signer: new VoidSigner(accountAddress, provider),
 });
 ```
 
-After the Multiverse has been instantiated, it can be used to resolve other crucial adapters of the SDK.
-
-```mermaid
-  graph LR;
-      Multiverse-->MetahubAdapter;
-      Multiverse-->UniverseRegistryAdapter;
-      Multiverse-->WarperPresetFactoryAdapter;
-      Multiverse-->WarperManagerAdapter;
-      Multiverse-->WarperAdapter;
-```
+After the IQSpace has been instantiated, it can be used to resolve other crucial adapters of the SDK.
 
 #### Chain ID
 
 Since IQ Protocol SDK is made to be used for interacting with contracts deployed on various blockchains, it is crucial to make sure the correct contract addresses and asset identifiers are used. Therefor the SDK relies on [CAIP](https://www.npmjs.com/package/caip) standard identifiers for referencing accounts and assets. Often you will need to know the chain ID to construct such identifiers.
 
 ```ts
-const chainId = await multiverse.getChainId();
+const chainId = await iqSpace.getChainId();
 ```
 
 ### Universe (IQVerse)
 
-In order to create and manage your IQVerse you will need to use the `UniverseRegistryAdapter`.
+In order to create and manage your IQVerse you will need to use `UniverseWizardAdapter` (can have multiple versions) and `UniverseRegistryAdapter`.
 
 ```ts
-import { AccountId, ChainId } from '@iqprotocol/multiverse';
+import { AccountId, ChainId } from '@iqprotocol/iq-space-sdk-js';
 
 const universeRegistryAddress = '0x...';
-const universeRegistry = multiverse.universeRegistry(
+const universeRegistry = iqSpace.universeRegistry(
   new AccountId({
     chainId,
     address: universeRegistryAddress,
+  }),
+);
+
+const universeWizardAddress = '0x...';
+const universeWizard = iqSpace.universeWizardV1(
+  new AccountId({
+    chainId,
+    address: universeWizardAddress,
   }),
 );
 ```
@@ -85,17 +82,20 @@ const universeRegistry = multiverse.universeRegistry(
 A crucial part of the IQProtocol ecosystem is the ability to create and manage your own IQVerse. Each IQVerse has its own unique identifier, which is used to reference it in the universe registry. It is important for you to make sure that you do not _forget_ the universe ID.
 
 ```ts
+const paymentTokenA = new AccountId({ chainId, address: '0x...' });
+const paymentTokenB = new AccountId({ chainId, address: '0x...' });
+
 // Create a new universe
-const tx = await universeRegistry.createUniverse({
+const tx = await universeWizard.setupUniverse({
   name: 'My IQVerse',
-  rentalFeePercent: 500, // NOTE: 100 is 1%, 10_000 is 100%.
+  payemntTokens: [paymentTokenA, paymentTokenB],
 });
 
 // Retrieve the event that has encoded the universe ID
-const universeCreatedEvent = await universeRegistry.findUniverseByCreationTransaction(tx.hash);
+const universeInfo = await universeRegistry.findUniverseByCreationTransaction(tx.hash);
 
 // Log the universe ID
-const universeId = universe!.universeId;
+const universeId = universeInfo!.id;
 ```
 
 ### Warper
@@ -103,11 +103,11 @@ const universeId = universe!.universeId;
 In order to deploy a warper from a preset you will need to use the `WarperPresetFactoryAdapter`.
 
 ```ts
-import { AccountId, ChainId } from '@iqprotocol/multiverse';
+import { AccountId, ChainId } from '@iqprotocol/iq-space-sdk-js';
 
 // Resolve WarperPresetFactoryAdapter.
 const warperPresetFactoryAddress = '0x...';
-const warperPresetFactory = multiverse.warperPresetFactory(
+const warperPresetFactory = iqSpace.warperPresetFactory(
   new AccountId({
     chainId,
     address: warperPresetFactoryAddress,
@@ -121,8 +121,8 @@ The Preset Factory allows you to easily deploy warpers from presets. These prese
 IQ Protocol team.
 
 ```ts
-// Deploy ERC721PresetConfigurable preset.
-const presetId = 'ERC721PresetConfigurable';
+// Deploy ERC721ConfigurablePreset preset.
+const presetId = 'ERC721ConfigurablePreset';
 const metahubAddress = '0x...';
 const originalAssetAddress = '0x...';
 
@@ -150,13 +150,21 @@ const warperAddress = warperAssetType!.assetName.reference;
 
 ### Warper Manager
 
-In order to manage your warpers, you will need to use `WarperManagerAdapter`.
+In order to manage your warpers, you will need to use `WarperWizardAdapter` (can have multiple versions) and `WarperManagerAdapter`.
 
 ```ts
-import { AccountId, ChainId } from '@iqprotocol/multiverse';
+import { AccountId, ChainId } from '@iqprotocol/iq-space-sdk-js';
+
+const warperWizardAddress = '0x...';
+const warperWizard = iqSpace.warperWizardV1(
+  new AccountId({
+    chainId,
+    address: warperWizardAddress,
+  }),
+);
 
 const warperManagerAddress = '0x...';
-const warperManager = multiverse.warperManager(
+const warperManager = iqSpace.warperManager(
   new AccountId({
     chainId,
     address: warperManagerAddress,
@@ -166,23 +174,32 @@ const warperManager = multiverse.warperManager(
 
 #### Custom Warper registration
 
-Anyone can create a custom warper and register it with Warper Manager.
+Anyone can create a custom warper and register it with Warper Wizard.
 Please refer to the code snippet below for more details for how to exactly register a custom warper.
 The code snippet assumes that the custom Warper has already been deployed.
 
 ```ts
-const warperAddress = '0x...';
+import { WARPER_PRESET_ERC721_IDS } from '@iqprotocol/solidity-contracts-nft/src/constants'; // @todo: expose through SDK
 
-await warperManager.registerWarper(
-  new AssetType({
-    chainId,
-    assetName: { namespace: 'erc721', reference: warperAddress },
-  }),
-  {
-    universeId: '<your universe ID>',
-    name: 'My Warper',
-    paused: false,
-  },
+const warperAddress = '0x...';
+const warperAssetType = new AssetType({
+  chainId,
+  assetName: { namespace: 'erc721', reference: warperAddress },
+});
+const warperTaxTerms = '...'; // @todo: create and expose helper for this
+const warperInitData = '...'; // @todo: create and expose helper for this
+const warperParams = {
+  name: 'My Warper',
+  universeId: '<your universe ID>',
+  paused: false,
+};
+
+await warperWizard.registerWarper(
+  warperAssetType,
+  warperTaxTerms,
+  warperParams,
+  WARPER_PRESET_ERC721_IDS.ERC721_CONFIGURABLE_PRESET,
+  warperInitData,
 );
 ```
 
@@ -234,7 +251,8 @@ const warper = new AssetType({
 });
 const registeredWarper = await warperManager.warper(warper);
 
-// If we want to enumerate all warpers and we know the original asset, we can use the `assetWarpers` method.
+// If we want to enumerate all warpers in universe and we know the original asset, we can use the `universeAssetWarpers` method.
+const universeId = '<your universe ID>';
 const originalAddress = '0x0...';
 const originalAsset = new AssetType({
   chainId,
@@ -243,24 +261,44 @@ const originalAsset = new AssetType({
     reference: originalAddress,
   },
 });
-const registeredWarpersForAsset = await warperManager.assetWarpers(originalAsset, 0, 20);
+const registeredWarpersForAsset = await warperManager.universeAssetWarpers(universeId, originalAsset, 0, 20);
 
 // If we want to enumerate all warpers and we know the universe ID, we can use the `universeWarpers` method.
-const universeId = 1;
 const registeredWarpersForUniverse = await warperManager.universeWarpers(universeId, 0, 20);
 ```
 
-### Metahub
+### Listing & Renting
 
-In order to interact with the Metahub, it will need to be resolved from the Multiverse.
+In order to list and rent, you will need to use `MetahubAdapater`, `ListingManagerAdapter`, `RentingManagerAdapter` and `ListingWizardAdapter` (can have multiple versions).
 
 ```ts
-import { AccountId, ChainId } from '@iqprotocol/multiverse';
+import { AccountId, ChainId } from '@iqprotocol/iq-space-sdk-js';
 
-const metahub = multiverse.metahub(
+const metahub = iqSpace.metahub(
   new AccountId({
     chainId,
-    address: metahub.address,
+    address: '0x...',
+  }),
+);
+
+const listingManager = iqSpace.listingManager(
+  new AccountId({
+    chainId,
+    address: '0x...',
+  }),
+);
+
+const rentingManager = iqSpace.rentingManager(
+  new AccountId({
+    chainId,
+    address: '0x...',
+  }),
+);
+
+const listingWizard = iqSpace.listingWizardV1(
+  new AccountId({
+    chainId,
+    address: '0x...',
   }),
 );
 ```
@@ -272,6 +310,7 @@ To list an asset for rent, there must be at least one IQVerse with a registered 
 ```ts
 import { BigNumber } from 'ethers';
 
+const universeId = '<your universe ID>';
 const originalAssetAddress = '0x0...';
 
 // Encode the asset
@@ -293,20 +332,23 @@ const approvalTx = await metahub.approveForListing(asset);
 await approvalTx.wait();
 
 // List the token
-const tx = await metahub.listAsset({
-  asset,
-  strategy: {
-    // One of the listing strategies must be chosen. The simplest one - 'FIXED_RATE'
-    name: 'FIXED_RATE',
-    data: {
-      price: BigNumber.from(777),
-    },
+const assetListingParams = {
+  assets: [asset],
+  params: {
+    lister: new AccountId({ chainId, address: '0x...' })
+    configurator: new AccountId({ chainId, address: '0x...' })
   },
   // The maximum amount of time the asset owner can wait before getting the asset back.
   maxLockPeriod: BigNumber.from(99604800),
   // Whether or not the lister will receive the funds immediately on rent, or
   // will let the funds accumulate on the protocol before withdrawing them.
   immediatePayout: true,
+};
+const listingTerms = {} // @todo: expose helper
+const tx = await listingWizard.createListingWithTerms({
+  universeId,
+  assetListingParams,
+  listingTerms
 });
 console.log(`Tx ${tx.hash}`);
 ```
@@ -317,16 +359,16 @@ After an asset has been listed, you can view the listings of the asset.
 
 ```ts
 // If we know the ID of a listing, we can retrieve the whole Listing structure
-const listing = await metahub.listing(15);
+const listing = await listingManager.listing(15);
 
 // If we want to enumerate ALL listings, then we can use the `listings` method to paginate it.
 // The following code will fetch the first 20 listings.
-const listings = await metahub.listings(0, 20);
+const listings = await listingManager.listings(0, 20);
 
-// If we want to see all listings for a specific asset, we can use the `listingsForAsset` method.
+// If we want to see all listings for a specific user, we can use the `userListings` method.
 // The following code will fetch the 20 listings with an offset of 5 initial ones for the given user.
 const listerAddress = '0x0...';
-const userListings = await metahub.userListings(
+const userListings = await listingManager.userListings(
   new AccountId({
     chainId,
     address: listerAddress,
@@ -338,7 +380,7 @@ const userListings = await metahub.userListings(
 // If we want to see all listings for a specific asset, we can use the `listingsForAsset` method.
 // The following code will fetch the 20 listings with an offset of 4 initial ones for the given asset.
 const originalAssetAddress = '0x0...';
-const assetListings = await metahub.assetListings(
+const assetListings = await listingManager.assetListings(
   new AssetType({
     chainId,
     assetName: {
@@ -357,7 +399,7 @@ To be able to delist an asset, we need to know the listing ID beforehand.
 
 ```ts
 const listingId = 15;
-await metahub.delistAsset(listingId);
+await listingManager.disableListing(listingId);
 ```
 
 #### Withdraw asset
@@ -366,7 +408,7 @@ To be able to withdraw an asset, we need to know the listing ID beforehand, and 
 
 ```ts
 const listingId = 15;
-await metahub.withdrawAsset(listingId);
+await metahub.withdrawListingAssets(listingId);
 ```
 
 #### Rent
@@ -375,8 +417,9 @@ await metahub.withdrawAsset(listingId);
 // Retrieve the base token used as a rent payment.
 const baseToken = await metahub.baseToken();
 
-// Estimate the rental costs
+// Set listing ID and listing terms ID
 const listingId = 15; // Assume that this is the listing ID of the asset we want to rent.
+const listingTermsId = 99; // Assume that this is the listing terms ID of the listing.
 
 // Prepare asset types and account structures.
 const renterAddress = '0x0...';
@@ -393,16 +436,18 @@ const warperAsset = new AssetType({
 
 // Estimate rental costs.
 const rentalParams = {
-  listingId: listingId,
-  rentalPeriod: rentalPeriod,
-  paymentToken: baseToken.type,
-  renter: renter,
   warper: warperAsset,
+  renter,
+  paymentToken: baseToken.type,
+  listingId,
+  rentalPeriod: 3600 * 3, // 3 hours
+  listingTermsId,
+  selectedConfiguratorListingTerms: {}, // @todo: ?
 };
-const estimation = await metahub.estimateRent(rentalParams);
+const estimation = await rentingManager.estimateRent(rentalParams);
 
 // Perform the actual rental
-tx = await metahub.rent({ ...rentalParams, maxPaymentAmount: estimation.total });
+tx = await rentingManager.rent({ ...rentalParams, maxPaymentAmount: estimation.total }); // @todo: token quote?
 
 // Wait for the rental transaction to succeed
 await tx.wait();
@@ -414,13 +459,13 @@ await tx.wait();
 // To get an individual rental, we can use the `rentalAgreement` method.
 // The rental Id needs to be known beforehand.
 const rentalId = 15;
-const rentalAgreement = await metahub.rentalAgreement(rentalId);
+const rentalAgreement = await rentingManager.rentalAgreement(rentalId);
 
 // To get all rentals for a specific user, we can use the `userRentalAgreements` method.
 // The function takes an account ID and an offset and a limit to paginate the results.
 const renterAddress = '0x0...';
 const renter = new AccountId({ chainId, address: renterAddress });
-const userRentalAgreement = await metahub.userRentalAgreements(renter, 0, 20);
+const userRentalAgreement = await rentingManager.userRentalAgreements(renter, 0, 20);
 ```
 
 #### Get accumulated user balance
@@ -436,7 +481,7 @@ const userBalance = await metahub.balance(user, baseToken.type);
 const userBalances = await metahub.balances(user);
 ```
 
-#### Get accumulated user balance
+#### Get accumulated universe balance
 
 ```ts
 const universeId = 1;
