@@ -1,9 +1,11 @@
 import {
   BASE_TOKEN_DECIMALS,
+  EMPTY_BYTES4_DATA_HEX,
+  EMPTY_BYTES_DATA_HEX,
   HUNDRED_PERCENT,
   HUNDRED_PERCENT_PRECISION_4,
 } from '@iqprotocol/solidity-contracts-nft/src/constants';
-import { BigNumberish, ethers, FixedNumber } from 'ethers';
+import { BigNumberish, BytesLike, ethers, FixedNumber } from 'ethers';
 import { assetClasses } from './constants';
 
 export const pick = <T extends object, K extends keyof T>(obj: T, names: readonly K[]): Pick<T, K> => {
@@ -56,4 +58,8 @@ export const convertPercentage = (
       .toString(),
     0,
   );
+};
+
+export const createEmptyListingTerms = (): { strategyId: BytesLike; strategyData: BytesLike } => {
+  return { strategyId: EMPTY_BYTES4_DATA_HEX, strategyData: EMPTY_BYTES_DATA_HEX };
 };

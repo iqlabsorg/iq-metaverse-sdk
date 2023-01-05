@@ -87,13 +87,11 @@ export type RegisteredWarper = Pick<Warpers.WarperStructOutput, 'name' | 'univer
   original: AssetType;
 };
 
-export type RentingEstimationParams = Pick<
-  Rentings.ParamsStruct,
-  'listingId' | 'rentalPeriod' | 'listingTermsId' | 'selectedConfiguratorListingTerms'
-> & {
+export type RentingEstimationParams = Pick<Rentings.ParamsStruct, 'listingId' | 'rentalPeriod' | 'listingTermsId'> & {
   warper: AssetType;
   renter: AccountId;
   paymentToken: AssetType;
+  selectedConfiguratorListingTerms?: ListingTermsParams;
 };
 
 export type RentingParams = RentingEstimationParams & {

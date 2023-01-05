@@ -14,7 +14,7 @@ import {
   IWarperPresetFactory,
 } from '../src/contracts';
 import { createAssetReference } from './helpers/asset';
-import { getSelectedConfiguratorListingTerms, getTokenQuoteData } from './helpers/listing-renting';
+import { getTokenQuoteData } from './helpers/listing-renting';
 import { BASE_TOKEN, COLLECTION, setupForRenting, setupUniverseAndRegisteredWarper } from './helpers/setup';
 import { COMMON_ID, getChainId, SECONDS_IN_HOUR, toAccountId, waitBlockchainTime } from './helpers/utils';
 
@@ -62,7 +62,6 @@ describe('MetahubAdapter', () => {
       listingId: COMMON_ID,
       rentalPeriod,
       listingTermsId: COMMON_ID,
-      selectedConfiguratorListingTerms: getSelectedConfiguratorListingTerms(),
     };
     const estimate = await rentingManagerAdapter.estimateRent(rentingEstimationParams);
     await baseToken.connect(renter).approve(metahub.address, estimate.total);
@@ -73,7 +72,6 @@ describe('MetahubAdapter', () => {
       renter: renterAccountId,
       warper: warperReference,
       maxPaymentAmount: estimate.total,
-      selectedConfiguratorListingTerms: getSelectedConfiguratorListingTerms(),
       listingTermsId: COMMON_ID,
       ...getTokenQuoteData(),
     });

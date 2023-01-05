@@ -7,7 +7,7 @@ import { ContractResolver } from '../contract-resolver';
 import { RentingManager } from '../contracts';
 import { Rentings } from '../contracts/contracts/metahub/core/IMetahub';
 import { Asset, RentalAgreement, RentalFees, RentalStatus, RentingEstimationParams, RentingParams } from '../types';
-import { pick } from '../utils';
+import { createEmptyListingTerms, pick } from '../utils';
 
 export class RentingManagerAdapter extends Adapter {
   private readonly contract: RentingManager;
@@ -24,13 +24,16 @@ export class RentingManagerAdapter extends Adapter {
   async estimateRent(params: RentingEstimationParams): Promise<RentalFees> {
     const { listingId, paymentToken, rentalPeriod, renter, warper, selectedConfiguratorListingTerms, listingTermsId } =
       params;
+    const configuratorListingTerms = selectedConfiguratorListingTerms
+      ? this.encodeListingTermsParams(selectedConfiguratorListingTerms)
+      : createEmptyListingTerms();
     const fees = await this.contract.estimateRent({
       listingId,
       rentalPeriod,
       warper: this.assetTypeToAddress(warper),
       renter: this.accountIdToAddress(renter),
       paymentToken: this.assetTypeToAddress(paymentToken),
-      selectedConfiguratorListingTerms,
+      selectedConfiguratorListingTerms: configuratorListingTerms,
       listingTermsId,
     });
 
@@ -54,6 +57,9 @@ export class RentingManagerAdapter extends Adapter {
       tokenQuote,
       tokenQuoteSignature,
     } = params;
+    const configuratorListingTerms = selectedConfiguratorListingTerms
+      ? this.encodeListingTermsParams(selectedConfiguratorListingTerms)
+      : createEmptyListingTerms();
     return this.contract.rent(
       {
         listingId,
@@ -62,7 +68,7 @@ export class RentingManagerAdapter extends Adapter {
         renter: this.accountIdToAddress(renter),
         paymentToken: this.assetTypeToAddress(paymentToken),
         listingTermsId,
-        selectedConfiguratorListingTerms,
+        selectedConfiguratorListingTerms: configuratorListingTerms,
       },
       tokenQuote,
       tokenQuoteSignature,
