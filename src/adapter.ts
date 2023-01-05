@@ -63,16 +63,8 @@ export abstract class Adapter implements ChainAware {
     return ListingTermsCoder.encode(params);
   }
 
-  protected decodeListingTermsParams(params: IListingTermsRegistry.ListingTermsStruct): ListingTermsParams {
-    return ListingTermsCoder.decode(params);
-  }
-
   protected encodeTaxTermsParams(params: TaxTermsParams): ITaxTermsRegistry.TaxTermsStruct {
     return TaxTermsCoder.encode(params);
-  }
-
-  protected decodeTaxTermsParams(params: ITaxTermsRegistry.TaxTermsStruct): TaxTermsParams {
-    return TaxTermsCoder.decode(params);
   }
 
   protected decodeAgreementTerms(params: Rentings.AgreementTermsStruct): AgreementTerms {

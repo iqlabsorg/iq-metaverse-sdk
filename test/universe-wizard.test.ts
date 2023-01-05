@@ -63,7 +63,7 @@ describe('UniverseWizardAdapterV1', () => {
     universeWizardAdapter = iqspace.universeWizardV1(toAccountId(universeWizard.address));
 
     universeParams = { name: 'Test Universe', paymentTokens: [toAccountId(baseToken.address)] };
-    warperTaxTerms = { name: TAX_STRATEGIES.FIXED_RATE_TAX, data: { rate: '1' } }; //makeTaxTermsFixedRate('1');
+    warperTaxTerms = { name: TAX_STRATEGIES.FIXED_RATE_TAX, data: { ratePercent: '1' } };
     warperParams = {
       name: 'Warper',
       universeId: BigNumber.from(0),

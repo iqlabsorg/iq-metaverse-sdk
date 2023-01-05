@@ -13,7 +13,7 @@ import {
   ListingWizardV1__factory,
   UniverseWizardV1__factory,
 } from '../../src/contracts';
-import { calculateBaseRate } from '../../src/utils';
+import { calculatePricePerSecondInEthers } from '../../src/utils';
 import { grantWizardRolesToDeployer } from './acl';
 import { createAssetReference, makeERC721Asset, mintAndApproveNFTs } from './asset';
 import { makeListingParams, makeListingTermsFixedRate } from './listing-renting';
@@ -134,7 +134,7 @@ const createListing = async (): Promise<{ txHash: string; listingTerms: IListing
   const listingWizard = new ListingWizardV1__factory().attach(LISTING_WIZARD).connect(lister);
 
   const listingAssets = [makeERC721Asset(collection.address, 1)];
-  const baseRate = calculateBaseRate('100', SECONDS_IN_DAY);
+  const baseRate = calculatePricePerSecondInEthers('100', SECONDS_IN_DAY);
   const listingTerms = makeListingTermsFixedRate(baseRate);
   const listingParams = makeListingParams(lister.address);
   const tx = await listingWizard.createListingWithTerms(

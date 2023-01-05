@@ -1,7 +1,7 @@
+import { LISTING_STRATEGIES } from '@iqprotocol/solidity-contracts-nft/src/constants';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { deployments, ethers } from 'hardhat';
-import { calculateBaseRate } from '../src/utils';
-import { AssetListingParams, ListingParams, ListingTerms, ListingWizardAdapterV1, IQSpace } from '../src';
+import { AssetListingParams, IQSpace, ListingParams, ListingTermsParams, ListingWizardAdapterV1 } from '../src';
 import {
   ERC721Mock,
   ERC721Mock__factory,
@@ -10,8 +10,8 @@ import {
   IMetahub,
   ListingWizardV1__factory,
 } from '../src/contracts';
+import { calculatePricePerSecondInEthers } from '../src/utils';
 import { makeERC721AssetForSDK } from './helpers/asset';
-import { makeListingTermsFixedRate } from './helpers/listing-renting';
 import { COLLECTION, LISTING_WIZARD, setupForListing } from './helpers/setup';
 import { COMMON_ID, SECONDS_IN_DAY, toAccountId } from './helpers/utils';
 
@@ -34,8 +34,8 @@ describe('ListingWizardAdapterV1', () => {
   let listingWizardAdapter: ListingWizardAdapterV1;
 
   /** Data Structs */
-  let baseRate: string;
-  let listingTerms: ListingTerms;
+  let pricePerSecondInEthers: string;
+  let listingTerms: ListingTermsParams;
   let listingParams: ListingParams;
   let assetListingParams: AssetListingParams;
 
@@ -55,8 +55,8 @@ describe('ListingWizardAdapterV1', () => {
 
     await setupForListing();
 
-    baseRate = calculateBaseRate('100', SECONDS_IN_DAY);
-    listingTerms = makeListingTermsFixedRate(baseRate);
+    pricePerSecondInEthers = calculatePricePerSecondInEthers('100', SECONDS_IN_DAY);
+    listingTerms = { name: LISTING_STRATEGIES.FIXED_RATE, data: { pricePerSecondInEthers } };
     listingParams = { lister: toAccountId(lister.address), configurator: toAccountId(ethers.constants.AddressZero) };
     assetListingParams = {
       assets: [makeERC721AssetForSDK(collection.address, 1)],

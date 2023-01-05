@@ -68,7 +68,7 @@ describe('WarperWizardAdapterV1', () => {
       universeId: COMMON_ID,
       paused: false,
     };
-    warperTaxTerms = { name: TAX_STRATEGIES.FIXED_RATE_TAX, data: { rate: '1' } };
+    warperTaxTerms = { name: TAX_STRATEGIES.FIXED_RATE_TAX, data: { ratePercent: '1' } };
     warperInitData = {
       metahub: toAccountId(metahub.address),
       original: createAssetReference('erc721', collection.address),

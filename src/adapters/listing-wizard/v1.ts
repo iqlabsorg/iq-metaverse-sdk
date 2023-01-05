@@ -5,7 +5,7 @@ import { Adapter } from '../../adapter';
 import { AddressTranslator } from '../../address-translator';
 import { ContractResolver } from '../../contract-resolver';
 import { ListingWizardV1 } from '../../contracts';
-import { AssetListingParams, ListingTerms } from '../../types';
+import { AssetListingParams, ListingTermsParams } from '../../types';
 
 export class ListingWizardAdapterV1 extends Adapter {
   private readonly contract: ListingWizardV1;
@@ -24,7 +24,7 @@ export class ListingWizardAdapterV1 extends Adapter {
   async createListingWithTerms(
     universeId: BigNumberish,
     assetListingParams: AssetListingParams,
-    listingTerms: ListingTerms,
+    listingTerms: ListingTermsParams,
   ): Promise<ContractTransaction> {
     const { assets, params, maxLockPeriod, immediatePayout } = assetListingParams;
 
@@ -37,7 +37,7 @@ export class ListingWizardAdapterV1 extends Adapter {
     return this.contract.createListingWithTerms(
       encodedAssets,
       listingParams,
-      listingTerms,
+      this.encodeListingTermsParams(listingTerms),
       maxLockPeriod,
       immediatePayout,
       universeId,

@@ -28,12 +28,19 @@ export const convertToWei = (toConvert: string, decimals: number = BASE_TOKEN_DE
   return ethers.utils.parseUnits(toConvert, decimals);
 };
 
-export const calculateBaseRate = (
-  expectedForPeriodFee: string,
+/**
+ * Calculate price per second in ethers
+ * @param ethersPerPeriod Price in ethers per period
+ * @param periodInSeconds Period length in seconds
+ * @param decimals Precision (default = 18)
+ * @returns Price per second in ethers (as a decimal string)
+ */
+export const calculatePricePerSecondInEthers = (
+  ethersPerPeriod: string,
   periodInSeconds: number,
   decimals = BASE_TOKEN_DECIMALS,
 ): string => {
-  return FixedNumber.from(expectedForPeriodFee).divUnsafe(FixedNumber.from(periodInSeconds)).round(decimals).toString();
+  return FixedNumber.from(ethersPerPeriod).divUnsafe(FixedNumber.from(periodInSeconds)).round(decimals).toString();
 };
 
 /** Converts a percentage value to Wei */
