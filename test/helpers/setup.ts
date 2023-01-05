@@ -1,7 +1,7 @@
-import { WARPER_PRESET_ERC721_IDS } from '@iqprotocol/solidity-contracts-nft/src/constants';
 import { AccountId, AssetType } from 'caip';
 import { BigNumber } from 'ethers';
 import { ethers } from 'hardhat';
+import { WARPER_PRESET_ERC721_IDS } from '../../src';
 import {
   ERC20Mock__factory,
   ERC721Mock__factory,

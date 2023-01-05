@@ -1,10 +1,6 @@
-import {
-  EMPTY_BYTES4_DATA_HEX,
-  EMPTY_BYTES_DATA_HEX,
-  TAX_STRATEGY_IDS,
-} from '@iqprotocol/solidity-contracts-nft/src/constants';
 import { BytesLike } from 'ethers';
 import { defaultAbiCoder } from 'ethers/lib/utils';
+import { EMPTY_BYTES4_DATA_HEX, EMPTY_BYTES_DATA_HEX, TAX_STRATEGY_IDS } from '../../src';
 import { ITaxTermsRegistry } from '../../src/contracts/contracts/tax/tax-terms-registry/ITaxTermsRegistry';
 import { convertPercentage } from '../../src/utils';
 

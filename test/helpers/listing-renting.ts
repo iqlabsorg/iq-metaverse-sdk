@@ -1,12 +1,7 @@
-import {
-  BASE_TOKEN_DECIMALS,
-  EMPTY_BYTES4_DATA_HEX,
-  EMPTY_BYTES_DATA_HEX,
-  LISTING_STRATEGY_IDS,
-} from '@iqprotocol/solidity-contracts-nft/src/constants';
 import { BigNumberish, BytesLike } from 'ethers';
 import { defaultAbiCoder } from 'ethers/lib/utils';
 import { ethers } from 'hardhat';
+import { BASE_TOKEN_DECIMALS, EMPTY_BYTES4_DATA_HEX, EMPTY_BYTES_DATA_HEX, LISTING_STRATEGY_IDS } from '../../src';
 import { IListingTermsRegistry } from 'src/contracts/contracts/listing/listing-strategies/ListingController';
 import { Listings } from '../../src/contracts/contracts/listing/listing-manager/ListingManager';
 import { convertToWei } from '../../src/utils';

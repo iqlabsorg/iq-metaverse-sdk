@@ -1,8 +1,14 @@
-import { TAX_STRATEGIES, WARPER_PRESET_ERC721_IDS } from '@iqprotocol/solidity-contracts-nft/src/constants';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { BigNumber, BytesLike, ContractTransaction } from 'ethers';
 import { deployments, ethers } from 'hardhat';
-import { IQSpace, TaxTermsParams, UniverseParams, UniverseWizardAdapterV1 } from '../src';
+import {
+  IQSpace,
+  TaxTermsParams,
+  TAX_STRATEGIES,
+  UniverseParams,
+  UniverseWizardAdapterV1,
+  WARPER_PRESET_ERC721_IDS,
+} from '../src';
 import {
   ERC20Mock,
   ERC20Mock__factory,

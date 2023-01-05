@@ -1,7 +1,13 @@
-import { LISTING_STRATEGIES } from '@iqprotocol/solidity-contracts-nft/src/constants';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { deployments, ethers } from 'hardhat';
-import { AssetListingParams, IQSpace, ListingParams, ListingTermsParams, ListingWizardAdapterV1 } from '../src';
+import {
+  AssetListingParams,
+  IQSpace,
+  ListingParams,
+  ListingTermsParams,
+  ListingWizardAdapterV1,
+  LISTING_STRATEGIES,
+} from '../src';
 import {
   ERC721Mock,
   ERC721Mock__factory,

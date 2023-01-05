@@ -45,3 +45,7 @@ export {
   ListingTermsRegistryAdapter,
 } from './adapters';
 export { calculatePricePerSecondInEthers } from './utils';
+
+/** export constants from contracts */
+export * from '@iqprotocol/solidity-contracts-nft/src/constants';
+export * from '@iqprotocol/solidity-contracts-nft/src/contracts-infra';
