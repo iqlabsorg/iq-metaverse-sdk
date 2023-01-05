@@ -179,3 +179,10 @@ export type UniverseInfo = {
   name: string;
   paymentTokens: AccountId[];
 };
+
+export type WarperPresetIds = 'ERC721ConfigurablePreset';
+
+export type WarperPresetInitData = {
+  metahub: AccountId;
+  original: AssetType;
+};

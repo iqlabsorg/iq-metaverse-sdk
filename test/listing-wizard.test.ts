@@ -1,5 +1,6 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { deployments, ethers } from 'hardhat';
+import { calculateBaseRate } from '../src/utils';
 import { AssetListingParams, ListingParams, ListingTerms, ListingWizardAdapterV1, IQSpace } from '../src';
 import {
   ERC721Mock,
@@ -12,7 +13,7 @@ import {
 import { makeERC721AssetForSDK } from './helpers/asset';
 import { makeListingTermsFixedRate } from './helpers/listing-renting';
 import { COLLECTION, LISTING_WIZARD, setupForListing } from './helpers/setup';
-import { calculateBaseRate, COMMON_ID, SECONDS_IN_DAY, toAccountId } from './helpers/utils';
+import { COMMON_ID, SECONDS_IN_DAY, toAccountId } from './helpers/utils';
 
 /**
  * @group integration

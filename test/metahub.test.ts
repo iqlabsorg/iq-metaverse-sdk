@@ -2,6 +2,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AccountId, AssetType } from 'caip';
 import { BigNumber } from 'ethers';
 import { deployments, ethers } from 'hardhat';
+import { convertToWei } from '../src/utils';
 import { BaseToken, MetahubAdapter, IQSpace, RentingEstimationParams, RentingManagerAdapter } from '../src';
 import {
   ERC20Mock,
@@ -15,7 +16,7 @@ import {
 import { createAssetReference } from './helpers/asset';
 import { getSelectedConfiguratorListingTerms, getTokenQuoteData } from './helpers/listing-renting';
 import { BASE_TOKEN, COLLECTION, setupForRenting, setupUniverseAndRegisteredWarper } from './helpers/setup';
-import { COMMON_ID, convertToWei, getChainId, SECONDS_IN_HOUR, toAccountId, waitBlockchainTime } from './helpers/utils';
+import { COMMON_ID, getChainId, SECONDS_IN_HOUR, toAccountId, waitBlockchainTime } from './helpers/utils';
 
 /**
  * @group integration

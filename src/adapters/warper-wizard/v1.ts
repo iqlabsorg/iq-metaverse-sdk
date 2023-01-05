@@ -1,10 +1,10 @@
 import { AccountId, AssetType } from 'caip';
-import { BytesLike, ContractTransaction } from 'ethers';
+import { ContractTransaction } from 'ethers';
 import { Adapter } from '../../adapter';
 import { AddressTranslator } from '../../address-translator';
 import { ContractResolver } from '../../contract-resolver';
 import { WarperWizardV1 } from '../../contracts';
-import { TaxTermsParams, WarperRegistrationParams } from '../../types';
+import { TaxTermsParams, WarperPresetIds, WarperPresetInitData, WarperRegistrationParams } from '../../types';
 
 export class WarperWizardAdapterV1 extends Adapter {
   private readonly contract: WarperWizardV1;
@@ -27,15 +27,15 @@ export class WarperWizardAdapterV1 extends Adapter {
     warper: AssetType,
     taxTerms: TaxTermsParams,
     registrationParams: WarperRegistrationParams,
-    presetId: BytesLike,
-    initData: BytesLike,
+    presetId: WarperPresetIds,
+    initData: WarperPresetInitData,
   ): Promise<ContractTransaction> {
     return this.contract.registerWarper(
       this.assetTypeToAddress(warper),
       this.encodeTaxTermsParams(taxTerms),
       registrationParams,
-      presetId,
-      initData,
+      this.encodeWarperPresetId(presetId),
+      this.encodeWarperPresetInitData(presetId, initData),
     );
   }
 

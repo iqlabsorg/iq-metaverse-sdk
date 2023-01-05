@@ -28,6 +28,8 @@ export type {
   TaxTermsParams,
   FixedRateTaxTermsParams,
   FixedRateWithRewardTaxTermsParams,
+  WarperPresetIds,
+  WarperPresetInitData,
 } from './types';
 export { assetClasses, listingStrategies } from './constants';
 export { IQSpace } from './iqspace';

@@ -1,9 +1,8 @@
-import { TAX_STRATEGIES, WARPER_PRESET_ERC721_IDS } from '@iqprotocol/solidity-contracts-nft/src/constants';
+import { TAX_STRATEGIES, WARPER_PRESETS_ERC721 } from '@iqprotocol/solidity-contracts-nft/src/constants';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AssetType } from 'caip';
-import { BytesLike } from 'ethers';
 import { deployments, ethers } from 'hardhat';
-import { IQSpace, TaxTermsParams, WarperWizardAdapterV1 } from '../src';
+import { IQSpace, TaxTermsParams, WarperPresetInitData, WarperRegistrationParams, WarperWizardAdapterV1 } from '../src';
 import {
   ERC721Mock,
   ERC721Mock__factory,
@@ -12,9 +11,9 @@ import {
   IWarperWizardV1,
   WarperWizardV1__factory,
 } from '../src/contracts';
+import { createAssetReference } from './helpers/asset';
 import { COLLECTION, setupUniverseAndWarper, WARPER_WIZARD } from './helpers/setup';
 import { COMMON_ID, toAccountId } from './helpers/utils';
-import { getERC721ConfigurablePresetInitData } from './helpers/warper';
 
 /**
  * @group integration
@@ -35,16 +34,16 @@ describe('WarperWizardAdapterV1', () => {
 
   /** Data Structs */
   let warperReference: AssetType;
-  let warperParams: IWarperManager.WarperRegistrationParamsStruct;
+  let warperParams: WarperRegistrationParams;
   let warperTaxTerms: TaxTermsParams;
-  let warperInitData: BytesLike;
+  let warperInitData: WarperPresetInitData;
 
   const registerWarper = async (): Promise<void> => {
     await warperWizardAdapter.registerWarper(
       warperReference,
       warperTaxTerms,
       warperParams,
-      WARPER_PRESET_ERC721_IDS.ERC721_CONFIGURABLE_PRESET,
+      WARPER_PRESETS_ERC721.ERC721_CONFIGURABLE_PRESET,
       warperInitData,
     );
   };
@@ -70,7 +69,10 @@ describe('WarperWizardAdapterV1', () => {
       paused: false,
     };
     warperTaxTerms = { name: TAX_STRATEGIES.FIXED_RATE_TAX, data: { rate: '1' } };
-    warperInitData = getERC721ConfigurablePresetInitData(metahub.address, collection.address);
+    warperInitData = {
+      metahub: toAccountId(metahub.address),
+      original: createAssetReference('erc721', collection.address),
+    };
   });
 
   describe('registerWarper', () => {
