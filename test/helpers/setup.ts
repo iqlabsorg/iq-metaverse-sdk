@@ -13,12 +13,13 @@ import {
   ListingWizardV1__factory,
   UniverseWizardV1__factory,
 } from '../../src/contracts';
+import { calculateBaseRate } from '../../src/utils';
 import { grantWizardRolesToDeployer } from './acl';
 import { createAssetReference, makeERC721Asset, mintAndApproveNFTs } from './asset';
 import { makeListingParams, makeListingTermsFixedRate } from './listing-renting';
 import { makeTaxTermsFixedRate } from './tax';
 import { makeUniverseParams } from './universe';
-import { calculateBaseRate, COMMON_ID, SECONDS_IN_DAY, toAccountId } from './utils';
+import { COMMON_ID, SECONDS_IN_DAY, toAccountId } from './utils';
 import { findWarperByDeploymentTransaction, getERC721ConfigurablePresetInitData } from './warper';
 
 /** Hard-coded contract addresses (temp solution) */

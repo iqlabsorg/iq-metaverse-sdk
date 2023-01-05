@@ -9,7 +9,7 @@ import { defaultAbiCoder } from 'ethers/lib/utils';
 import { ethers } from 'hardhat';
 import { IListingTermsRegistry } from 'src/contracts/contracts/listing/listing-strategies/ListingController';
 import { Listings } from '../../src/contracts/contracts/listing/listing-manager/ListingManager';
-import { convertToWei } from './utils';
+import { convertToWei } from '../../src/utils';
 
 export const makeListingParams = (
   listerAddress: string,

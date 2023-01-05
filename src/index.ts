@@ -5,12 +5,14 @@ export { AccountId, ChainId, AssetType, AssetId } from 'caip';
 export type {
   Address,
   AssetListingParams,
-  FixedPriceListingStrategyParams,
+  FixedPriceListingTermsParams,
+  FixedPriceWithRewardListingTermsParams,
   Listing,
   Asset,
   ListingParams,
   ListingTerms,
   ListingTermsInfo,
+  ListingTermsParams,
   RegisteredWarper,
   RentingEstimationParams,
   RentingParams,
@@ -23,7 +25,9 @@ export type {
   WarperRegistrationParams,
   UniverseParams,
   UniverseInfo,
-  TaxTerms,
+  TaxTermsParams,
+  FixedRateTaxTermsParams,
+  FixedRateWithRewardTaxTermsParams,
 } from './types';
 export { assetClasses, listingStrategies } from './constants';
 export { IQSpace } from './iqspace';

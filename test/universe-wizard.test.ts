@@ -1,8 +1,8 @@
-import { WARPER_PRESET_ERC721_IDS } from '@iqprotocol/solidity-contracts-nft/src/constants';
+import { TAX_STRATEGIES, WARPER_PRESET_ERC721_IDS } from '@iqprotocol/solidity-contracts-nft/src/constants';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { BigNumber, BytesLike, ContractTransaction } from 'ethers';
 import { deployments, ethers } from 'hardhat';
-import { IQSpace, UniverseParams, UniverseWizardAdapterV1 } from '../src';
+import { IQSpace, TaxTermsParams, UniverseParams, UniverseWizardAdapterV1 } from '../src';
 import {
   ERC20Mock,
   ERC20Mock__factory,
@@ -14,10 +14,8 @@ import {
   IWarperManager,
   UniverseWizardV1__factory,
 } from '../src/contracts';
-import { ITaxTermsRegistry } from '../src/contracts/contracts/tax/tax-terms-registry/ITaxTermsRegistry';
 import { createAssetReference, mintAndApproveNFTs } from './helpers/asset';
 import { BASE_TOKEN, COLLECTION, UNIVERSE_WIZARD } from './helpers/setup';
-import { makeTaxTermsFixedRate } from './helpers/tax';
 import { COMMON_ID, toAccountId } from './helpers/utils';
 import { findWarperByDeploymentTransaction, getERC721ConfigurablePresetInitData } from './helpers/warper';
 
@@ -43,7 +41,7 @@ describe('UniverseWizardAdapterV1', () => {
   /** Data Structs */
   let universeParams: UniverseParams;
   let warperParams: IWarperManager.WarperRegistrationParamsStruct;
-  let warperTaxTerms: ITaxTermsRegistry.TaxTermsStruct;
+  let warperTaxTerms: TaxTermsParams;
   let warperInitData: BytesLike;
 
   /** Constants */
@@ -65,7 +63,7 @@ describe('UniverseWizardAdapterV1', () => {
     universeWizardAdapter = iqspace.universeWizardV1(toAccountId(universeWizard.address));
 
     universeParams = { name: 'Test Universe', paymentTokens: [toAccountId(baseToken.address)] };
-    warperTaxTerms = makeTaxTermsFixedRate('1');
+    warperTaxTerms = { name: TAX_STRATEGIES.FIXED_RATE_TAX, data: { rate: '1' } }; //makeTaxTermsFixedRate('1');
     warperParams = {
       name: 'Warper',
       universeId: BigNumber.from(0),

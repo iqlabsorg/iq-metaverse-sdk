@@ -2,14 +2,14 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { defaultAbiCoder } from 'ethers/lib/utils';
 import { listingStrategies } from '../constants';
 import { IListingTermsRegistry } from '../contracts';
-import { ListingStrategyParams } from '../types';
+import { ListingTermsParams } from '../types';
 
-export class ListingStrategyCoder {
+export class ListingTermsCoder {
   /**
-   * Encodes listing strategy params structure.
+   * Encodes listing terms.
    * @param params
    */
-  static encode(params: ListingStrategyParams): IListingTermsRegistry.ListingTermsStruct {
+  static encode(params: ListingTermsParams): IListingTermsRegistry.ListingTermsStruct {
     const { FIXED_RATE, FIXED_RATE_WITH_REWARD } = listingStrategies;
 
     switch (params.name) {
@@ -30,10 +30,10 @@ export class ListingStrategyCoder {
   }
 
   /**
-   * Decodes listing strategy params structure.
+   * Decodes listing terms.
    * @param params
    */
-  static decode(params: IListingTermsRegistry.ListingTermsStruct): ListingStrategyParams {
+  static decode(params: IListingTermsRegistry.ListingTermsStruct): ListingTermsParams {
     const { FIXED_RATE, FIXED_RATE_WITH_REWARD } = listingStrategies;
 
     switch (params.strategyId) {

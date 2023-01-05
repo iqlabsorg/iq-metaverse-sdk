@@ -1,12 +1,10 @@
 import { AccountId, AssetId, AssetType, ChainId } from 'caip';
 import { AddressTranslator } from './address-translator';
-import { AgreementTermsCoder } from './coders/agreement-terms-coder';
-import { AssetCoder } from './coders/asset-coder';
-import { ListingStrategyCoder } from './coders/listing-strategy-coder';
+import { AgreementTermsCoder, AssetCoder, ListingTermsCoder, TaxTermsCoder } from './coders';
 import { ContractResolver } from './contract-resolver';
-import { IListingTermsRegistry } from './contracts';
+import { IListingTermsRegistry, ITaxTermsRegistry } from './contracts';
 import { Assets, Rentings } from './contracts/contracts/metahub/core/IMetahub';
-import { Address, AgreementTerms, Asset, ChainAware, ListingStrategyParams } from './types';
+import { Address, AgreementTerms, Asset, ChainAware, ListingTermsParams, TaxTermsParams } from './types';
 
 export abstract class Adapter implements ChainAware {
   protected constructor(
@@ -51,12 +49,20 @@ export abstract class Adapter implements ChainAware {
     return AssetCoder.decode(asset, this.addressTranslator.chainId);
   }
 
-  protected encodeListingParams(params: ListingStrategyParams): IListingTermsRegistry.ListingTermsStruct {
-    return ListingStrategyCoder.encode(params);
+  protected encodeListingTermsParams(params: ListingTermsParams): IListingTermsRegistry.ListingTermsStruct {
+    return ListingTermsCoder.encode(params);
   }
 
-  protected decodeListingParams(params: IListingTermsRegistry.ListingTermsStruct): ListingStrategyParams {
-    return ListingStrategyCoder.decode(params);
+  protected decodeListingTermsParams(params: IListingTermsRegistry.ListingTermsStruct): ListingTermsParams {
+    return ListingTermsCoder.decode(params);
+  }
+
+  protected encodeTaxTermsParams(params: TaxTermsParams): ITaxTermsRegistry.TaxTermsStruct {
+    return TaxTermsCoder.encode(params);
+  }
+
+  protected decodeTaxTermsParams(params: ITaxTermsRegistry.TaxTermsStruct): TaxTermsParams {
+    return TaxTermsCoder.decode(params);
   }
 
   protected decodeAgreementTerms(params: Rentings.AgreementTermsStruct): AgreementTerms {

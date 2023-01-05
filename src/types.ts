@@ -1,7 +1,7 @@
 import { BigNumberish } from '@ethersproject/bignumber';
 import { AccountId, AssetId, AssetType, ChainId } from 'caip';
 import { BigNumber, BytesLike, Overrides as BaseOverrides } from 'ethers';
-import { listingStrategies } from './constants';
+import { listingStrategies, taxStrategies } from './constants';
 import { Warpers } from './contracts/contracts/warper/IWarperController';
 import { Accounts, ITokenQuote, Listings, Rentings } from './contracts/contracts/metahub/core/IMetahub';
 
@@ -14,7 +14,7 @@ export interface ChainAware {
   getChainId(): Promise<ChainId>;
 }
 
-export type ListingStrategyParams = FixedPriceListingStrategyParams | FixedPriceWithRewardListingStrategyParams;
+export type ListingTermsParams = FixedPriceListingTermsParams | FixedPriceWithRewardListingTermsParams;
 
 export type ListingParams = {
   lister: AccountId;
@@ -32,20 +32,37 @@ export type ListingTermsInfo = {
   strategyData: BytesLike;
 };
 
-export type FixedPriceListingStrategyParams = {
+export type FixedPriceListingTermsParams = {
   name: typeof listingStrategies.FIXED_RATE.name;
   data: {
     price: BigNumberish;
   };
 };
 
-export type FixedPriceWithRewardListingStrategyParams = {
+export type FixedPriceWithRewardListingTermsParams = {
   name: typeof listingStrategies.FIXED_RATE_WITH_REWARD.name;
   data: {
     price: BigNumberish;
     rewardPercent: BigNumberish;
   };
 };
+
+export type FixedRateTaxTermsParams = {
+  name: typeof taxStrategies.FIXED_RATE_TAX.name;
+  data: {
+    rate: BigNumberish;
+  };
+};
+
+export type FixedRateWithRewardTaxTermsParams = {
+  name: typeof taxStrategies.FIXED_RATE_TAX_WITH_REWARD.name;
+  data: {
+    rate: BigNumberish;
+    rewardRate: BigNumberish;
+  };
+};
+
+export type TaxTermsParams = FixedRateTaxTermsParams | FixedRateWithRewardTaxTermsParams;
 
 export type AssetListingParams = {
   assets: Asset[];
@@ -161,9 +178,4 @@ export type UniverseInfo = {
   id: BigNumber;
   name: string;
   paymentTokens: AccountId[];
-};
-
-export type TaxTerms = {
-  strategyId: BytesLike;
-  strategyData: BytesLike;
 };

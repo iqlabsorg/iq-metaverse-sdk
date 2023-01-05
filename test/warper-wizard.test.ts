@@ -1,9 +1,9 @@
-import { WARPER_PRESET_ERC721_IDS } from '@iqprotocol/solidity-contracts-nft/src/constants';
+import { TAX_STRATEGIES, WARPER_PRESET_ERC721_IDS } from '@iqprotocol/solidity-contracts-nft/src/constants';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AssetType } from 'caip';
 import { BytesLike } from 'ethers';
 import { deployments, ethers } from 'hardhat';
-import { IQSpace, WarperWizardAdapterV1 } from '../src';
+import { IQSpace, TaxTermsParams, WarperWizardAdapterV1 } from '../src';
 import {
   ERC721Mock,
   ERC721Mock__factory,
@@ -12,9 +12,7 @@ import {
   IWarperWizardV1,
   WarperWizardV1__factory,
 } from '../src/contracts';
-import { ITaxTermsRegistry } from '../src/contracts/contracts/tax/tax-terms-registry/ITaxTermsRegistry';
 import { COLLECTION, setupUniverseAndWarper, WARPER_WIZARD } from './helpers/setup';
-import { makeTaxTermsFixedRate } from './helpers/tax';
 import { COMMON_ID, toAccountId } from './helpers/utils';
 import { getERC721ConfigurablePresetInitData } from './helpers/warper';
 
@@ -38,7 +36,7 @@ describe('WarperWizardAdapterV1', () => {
   /** Data Structs */
   let warperReference: AssetType;
   let warperParams: IWarperManager.WarperRegistrationParamsStruct;
-  let warperTaxTerms: ITaxTermsRegistry.TaxTermsStruct;
+  let warperTaxTerms: TaxTermsParams;
   let warperInitData: BytesLike;
 
   const registerWarper = async (): Promise<void> => {
@@ -71,7 +69,7 @@ describe('WarperWizardAdapterV1', () => {
       universeId: COMMON_ID,
       paused: false,
     };
-    warperTaxTerms = makeTaxTermsFixedRate('1');
+    warperTaxTerms = { name: TAX_STRATEGIES.FIXED_RATE_TAX, data: { rate: '1' } };
     warperInitData = getERC721ConfigurablePresetInitData(metahub.address, collection.address);
   });
 
