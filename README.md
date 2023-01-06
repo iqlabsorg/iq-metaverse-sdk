@@ -88,7 +88,7 @@ const paymentTokenB = new AccountId({ chainId, address: '0x...' });
 // Create a new universe
 const tx = await universeWizard.setupUniverse({
   name: 'My IQVerse',
-  payemntTokens: [paymentTokenA, paymentTokenB],
+  paymentTokens: [paymentTokenA, paymentTokenB],
 });
 
 // Retrieve the event that has encoded the universe ID

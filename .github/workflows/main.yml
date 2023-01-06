@@ -39,7 +39,7 @@ jobs:
 
   publish_docs:
     name: Publish Docs
-    if: ${{ false && github.ref == 'refs/heads/main' }} # disable for now
+    if: ${{ github.ref == 'refs/heads/main' }}
     needs: build
     runs-on: ubuntu-latest
 
