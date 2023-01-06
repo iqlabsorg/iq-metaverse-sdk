@@ -29,6 +29,7 @@ export type {
   FixedRateWithRewardTaxTermsParams,
   WarperPresetIds,
   WarperPresetInitData,
+  TokenQuoteDataEncoded,
 } from './types';
 export { assetClasses, listingStrategies } from './constants';
 export { IQSpace } from './iqspace';

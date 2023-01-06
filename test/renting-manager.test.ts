@@ -5,7 +5,6 @@ import { Asset, IQSpace, RentingEstimationParams, RentingManagerAdapter } from '
 import { ERC20Mock, ERC20Mock__factory, IMetahub, IRentingManager } from '../src/contracts';
 import { convertToWei } from '../src/utils';
 import { createAssetReference, makeERC721AssetForSDK } from './helpers/asset';
-import { getTokenQuoteData } from './helpers/listing-renting';
 import { BASE_TOKEN, setupForRenting } from './helpers/setup';
 import { COMMON_ID, SECONDS_IN_HOUR, toAccountId } from './helpers/utils';
 
@@ -49,7 +48,6 @@ describe('RentingManagerAdapter', () => {
       warper: warperReference,
       maxPaymentAmount: estimate.total,
       listingTermsId: COMMON_ID,
-      ...getTokenQuoteData(),
     });
   };
 

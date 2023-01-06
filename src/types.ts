@@ -94,10 +94,11 @@ export type RentingEstimationParams = Pick<Rentings.ParamsStruct, 'listingId' | 
   selectedConfiguratorListingTerms?: ListingTermsParams;
 };
 
+export type TokenQuoteDataEncoded = { tokenQuote: BytesLike; tokenQuoteSignature: BytesLike };
+
 export type RentingParams = RentingEstimationParams & {
   maxPaymentAmount: BigNumberish;
-  tokenQuote: BytesLike;
-  tokenQuoteSignature: BytesLike;
+  tokenQuoteDataEncoded?: TokenQuoteDataEncoded;
 };
 
 export type RentalFees = Pick<

@@ -63,3 +63,7 @@ export const convertPercentage = (
 export const createEmptyListingTerms = (): { strategyId: BytesLike; strategyData: BytesLike } => {
   return { strategyId: EMPTY_BYTES4_DATA_HEX, strategyData: EMPTY_BYTES_DATA_HEX };
 };
+
+export const createEmptyTokenQuoteData = (): { tokenQuote: BytesLike; tokenQuoteSignature: BytesLike } => {
+  return { tokenQuote: EMPTY_BYTES_DATA_HEX, tokenQuoteSignature: EMPTY_BYTES_DATA_HEX };
+};

@@ -7,7 +7,7 @@ import { ContractResolver } from '../contract-resolver';
 import { RentingManager } from '../contracts';
 import { Rentings } from '../contracts/contracts/metahub/core/IMetahub';
 import { Asset, RentalAgreement, RentalFees, RentalStatus, RentingEstimationParams, RentingParams } from '../types';
-import { createEmptyListingTerms, pick } from '../utils';
+import { createEmptyListingTerms, createEmptyTokenQuoteData, pick } from '../utils';
 
 export class RentingManagerAdapter extends Adapter {
   private readonly contract: RentingManager;
@@ -54,12 +54,12 @@ export class RentingManagerAdapter extends Adapter {
       maxPaymentAmount,
       selectedConfiguratorListingTerms,
       listingTermsId,
-      tokenQuote,
-      tokenQuoteSignature,
+      tokenQuoteDataEncoded,
     } = params;
     const configuratorListingTerms = selectedConfiguratorListingTerms
       ? this.encodeListingTermsParams(selectedConfiguratorListingTerms)
       : createEmptyListingTerms();
+    const tokenQuoteData = tokenQuoteDataEncoded ?? createEmptyTokenQuoteData();
     return this.contract.rent(
       {
         listingId,
@@ -70,8 +70,8 @@ export class RentingManagerAdapter extends Adapter {
         listingTermsId,
         selectedConfiguratorListingTerms: configuratorListingTerms,
       },
-      tokenQuote,
-      tokenQuoteSignature,
+      tokenQuoteData.tokenQuote,
+      tokenQuoteData.tokenQuoteSignature,
       maxPaymentAmount,
     );
   }

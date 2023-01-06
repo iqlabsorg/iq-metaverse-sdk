@@ -179,15 +179,24 @@ Please refer to the code snippet below for more details for how to exactly regis
 The code snippet assumes that the custom Warper has already been deployed.
 
 ```ts
-import { WARPER_PRESET_ERC721_IDS } from '@iqprotocol/solidity-contracts-nft/src/constants'; // @todo: expose through SDK
+import { TAX_STRATEGIES } from '@iqprotocol/iq-space-sdk-js';
 
 const warperAddress = '0x...';
 const warperAssetType = new AssetType({
   chainId,
   assetName: { namespace: 'erc721', reference: warperAddress },
 });
-const warperTaxTerms = '...'; // @todo: create and expose helper for this
-const warperInitData = '...'; // @todo: create and expose helper for this
+const warperTaxTerms = { name: TAX_STRATEGIES.FIXED_RATE_TAX, data: { ratePercent: '0.5' } };
+const warperInitData = {
+  metahub: new AccountId({
+    chainId,
+    address: '0x...',
+  }),
+  original: new AssetType({
+    chainId,
+    assetName: { namespace: 'erc721', reference: '<your original asset address>' },
+});
+    };
 const warperParams = {
   name: 'My Warper',
   universeId: '<your universe ID>',
@@ -309,6 +318,7 @@ To list an asset for rent, there must be at least one IQVerse with a registered 
 
 ```ts
 import { BigNumber } from 'ethers';
+import { calculatePricePerSecondInEthers, LISTING_STRATEGIES } from '@iqprotocol/iq-space-sdk-js'
 
 const universeId = '<your universe ID>';
 const originalAssetAddress = '0x0...';
@@ -344,7 +354,10 @@ const assetListingParams = {
   // will let the funds accumulate on the protocol before withdrawing them.
   immediatePayout: true,
 };
-const listingTerms = {} // @todo: expose helper
+
+// calculate price per second (we are setting 100 ethers per day as a base rate)
+const pricePerSecondInEthers = calculatePricePerSecondInEthers('100', SECONDS_IN_DAY);
+const listingTerms = { name: LISTING_STRATEGIES.FIXED_RATE, data: { pricePerSecondInEthers } };
 const tx = await listingWizard.createListingWithTerms({
   universeId,
   assetListingParams,
@@ -442,12 +455,11 @@ const rentalParams = {
   listingId,
   rentalPeriod: 3600 * 3, // 3 hours
   listingTermsId,
-  selectedConfiguratorListingTerms: {}, // @todo: ?
 };
 const estimation = await rentingManager.estimateRent(rentalParams);
 
 // Perform the actual rental
-tx = await rentingManager.rent({ ...rentalParams, maxPaymentAmount: estimation.total }); // @todo: token quote?
+tx = await rentingManager.rent({ ...rentalParams, maxPaymentAmount: estimation.total });
 
 // Wait for the rental transaction to succeed
 await tx.wait();
