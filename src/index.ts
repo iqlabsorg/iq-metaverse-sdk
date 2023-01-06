@@ -31,7 +31,7 @@ export type {
   WarperPresetInitData,
   TokenQuoteDataEncoded,
 } from './types';
-export { assetClasses, listingStrategies } from './constants';
+export { assetClasses, listingStrategies, taxStrategies } from './constants';
 export { IQSpace } from './iqspace';
 export {
   MetahubAdapter,
