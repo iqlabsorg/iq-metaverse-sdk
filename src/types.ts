@@ -1,7 +1,7 @@
 import { BigNumberish } from '@ethersproject/bignumber';
 import { AccountId, AssetId, AssetType, ChainId } from 'caip';
 import { BigNumber, BytesLike, Overrides as BaseOverrides } from 'ethers';
-import { listingStrategies } from './constants';
+import { listingStrategies, taxStrategies } from './constants';
 import { Warpers } from './contracts/contracts/warper/IWarperController';
 import { Accounts, ITokenQuote, Listings, Rentings } from './contracts/contracts/metahub/core/IMetahub';
 
@@ -14,16 +14,11 @@ export interface ChainAware {
   getChainId(): Promise<ChainId>;
 }
 
-export type ListingStrategyParams = FixedPriceListingStrategyParams | FixedPriceWithRewardListingStrategyParams;
+export type ListingTermsParams = FixedPriceListingTermsParams | FixedPriceWithRewardListingTermsParams;
 
 export type ListingParams = {
   lister: AccountId;
   configurator: AccountId;
-};
-
-export type ListingTerms = {
-  strategyId: BytesLike;
-  strategyData: BytesLike;
 };
 
 export type ListingTermsInfo = {
@@ -32,20 +27,37 @@ export type ListingTermsInfo = {
   strategyData: BytesLike;
 };
 
-export type FixedPriceListingStrategyParams = {
+export type FixedPriceListingTermsParams = {
   name: typeof listingStrategies.FIXED_RATE.name;
   data: {
-    price: BigNumberish;
+    pricePerSecondInEthers: string;
   };
 };
 
-export type FixedPriceWithRewardListingStrategyParams = {
+export type FixedPriceWithRewardListingTermsParams = {
   name: typeof listingStrategies.FIXED_RATE_WITH_REWARD.name;
   data: {
-    price: BigNumberish;
-    rewardPercent: BigNumberish;
+    pricePerSecondInEthers: string;
+    rewardRatePercent: string;
   };
 };
+
+export type FixedRateTaxTermsParams = {
+  name: typeof taxStrategies.FIXED_RATE_TAX.name;
+  data: {
+    ratePercent: string;
+  };
+};
+
+export type FixedRateWithRewardTaxTermsParams = {
+  name: typeof taxStrategies.FIXED_RATE_TAX_WITH_REWARD.name;
+  data: {
+    ratePercent: string;
+    rewardRatePercent: string;
+  };
+};
+
+export type TaxTermsParams = FixedRateTaxTermsParams | FixedRateWithRewardTaxTermsParams;
 
 export type AssetListingParams = {
   assets: Asset[];
@@ -75,19 +87,18 @@ export type RegisteredWarper = Pick<Warpers.WarperStructOutput, 'name' | 'univer
   original: AssetType;
 };
 
-export type RentingEstimationParams = Pick<
-  Rentings.ParamsStruct,
-  'listingId' | 'rentalPeriod' | 'listingTermsId' | 'selectedConfiguratorListingTerms'
-> & {
+export type RentingEstimationParams = Pick<Rentings.ParamsStruct, 'listingId' | 'rentalPeriod' | 'listingTermsId'> & {
   warper: AssetType;
   renter: AccountId;
   paymentToken: AssetType;
+  selectedConfiguratorListingTerms?: ListingTermsParams;
 };
+
+export type TokenQuoteDataEncoded = { tokenQuote: BytesLike; tokenQuoteSignature: BytesLike };
 
 export type RentingParams = RentingEstimationParams & {
   maxPaymentAmount: BigNumberish;
-  tokenQuote: BytesLike;
-  tokenQuoteSignature: BytesLike;
+  tokenQuoteDataEncoded?: TokenQuoteDataEncoded;
 };
 
 export type RentalFees = Pick<
@@ -163,7 +174,9 @@ export type UniverseInfo = {
   paymentTokens: AccountId[];
 };
 
-export type TaxTerms = {
-  strategyId: BytesLike;
-  strategyData: BytesLike;
+export type WarperPresetIds = 'ERC721ConfigurablePreset';
+
+export type WarperPresetInitData = {
+  metahub: AccountId;
+  original: AssetType;
 };

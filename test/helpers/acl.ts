@@ -1,6 +1,6 @@
-import { ROLES_LIBRARY_IDS } from '@iqprotocol/solidity-contracts-nft/src/constants';
 import { IACL } from '../../src/contracts';
 import { ethers } from 'hardhat';
+import { ROLES_LIBRARY_IDS } from '../../src';
 
 export const grantWizardRolesToDeployer = async (): Promise<void> => {
   const deployer = await ethers.getNamedSigner('deployer');

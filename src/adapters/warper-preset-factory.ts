@@ -1,11 +1,10 @@
 import { AccountId, AssetType } from 'caip';
-import { BytesLike, ContractTransaction } from 'ethers';
-import { defaultAbiCoder } from 'ethers/lib/utils';
-import { warperPresetMap } from '../constants';
+import { ContractTransaction } from 'ethers';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
-import { ERC721ConfigurablePreset__factory, WarperPresetFactory } from '../contracts';
+import { WarperPresetFactory } from '../contracts';
+import { WarperPresetIds, WarperPresetInitData } from '../types';
 import { assetClassToNamespace } from '../utils';
 
 export class WarperPresetFactoryAdapter extends Adapter {
@@ -21,16 +20,11 @@ export class WarperPresetFactoryAdapter extends Adapter {
    * @param presetId
    * @param data Preset specific configuration.
    */
-  async deployPreset(
-    presetId: 'ERC721ConfigurablePreset',
-    data: { metahub: AccountId; original: AssetType },
-  ): Promise<ContractTransaction> {
-    const encodedPresetId = warperPresetMap.get(presetId);
-    if (!encodedPresetId) {
-      throw new Error('Invalid warper preset ID');
-    }
-
-    return this.contract.deployPreset(encodedPresetId, this.encodePresetInitData(presetId, data));
+  async deployPreset(presetId: WarperPresetIds, data: WarperPresetInitData): Promise<ContractTransaction> {
+    return this.contract.deployPreset(
+      this.encodeWarperPresetId(presetId),
+      this.encodeWarperPresetInitData(presetId, data),
+    );
   }
 
   /**
@@ -56,24 +50,5 @@ export class WarperPresetFactoryAdapter extends Adapter {
     const assetClass = await warper.__assetClass();
 
     return this.addressToAssetType(event.args.warper, assetClassToNamespace(assetClass));
-  }
-
-  private encodePresetInitData(presetId: string, data: { metahub: AccountId; original: AssetType }): BytesLike {
-    if (presetId !== 'ERC721ConfigurablePreset') {
-      throw new Error(`Unknown preset ID: "${presetId}"`);
-    }
-
-    const { reference } = data.original.assetName;
-    AddressTranslator.assertTypeERC721(data.original);
-
-    return ERC721ConfigurablePreset__factory.createInterface().encodeFunctionData('__initialize', [
-      defaultAbiCoder.encode(
-        ['address', 'address'],
-        [
-          this.accountIdToAddress(new AccountId({ chainId: data.original.chainId, address: reference })),
-          this.accountIdToAddress(data.metahub),
-        ],
-      ),
-    ]);
   }
 }

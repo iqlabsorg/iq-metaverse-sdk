@@ -1,10 +1,10 @@
 import { AccountId, AssetType } from 'caip';
-import { BytesLike, ContractTransaction } from 'ethers';
-import { WarperWizardV1 } from '../../contracts';
+import { ContractTransaction } from 'ethers';
 import { Adapter } from '../../adapter';
 import { AddressTranslator } from '../../address-translator';
 import { ContractResolver } from '../../contract-resolver';
-import { TaxTerms, WarperRegistrationParams } from '../../types';
+import { WarperWizardV1 } from '../../contracts';
+import { TaxTermsParams, WarperPresetIds, WarperPresetInitData, WarperRegistrationParams } from '../../types';
 
 export class WarperWizardAdapterV1 extends Adapter {
   private readonly contract: WarperWizardV1;
@@ -25,17 +25,17 @@ export class WarperWizardAdapterV1 extends Adapter {
    */
   async registerWarper(
     warper: AssetType,
-    taxTerms: TaxTerms,
+    taxTerms: TaxTermsParams,
     registrationParams: WarperRegistrationParams,
-    presetId: BytesLike,
-    initData: BytesLike,
+    presetId: WarperPresetIds,
+    initData: WarperPresetInitData,
   ): Promise<ContractTransaction> {
     return this.contract.registerWarper(
       this.assetTypeToAddress(warper),
-      taxTerms,
+      this.encodeTaxTermsParams(taxTerms),
       registrationParams,
-      presetId,
-      initData,
+      this.encodeWarperPresetId(presetId),
+      this.encodeWarperPresetInitData(presetId, initData),
     );
   }
 
@@ -51,9 +51,12 @@ export class WarperWizardAdapterV1 extends Adapter {
   /**
    * Change warper tax terms.
    * @param warper Warper reference.
-   * @param newTaxTerms New warper tax terms.
+   * @param newTaxTermsParams New warper tax terms params.
    */
-  async alterWarperTaxTerms(warper: AssetType, newTaxTerms: TaxTerms): Promise<ContractTransaction> {
-    return this.contract.alterWarperTaxTerms(this.assetTypeToAddress(warper), newTaxTerms);
+  async alterWarperTaxTerms(warper: AssetType, newTaxTermsParams: TaxTermsParams): Promise<ContractTransaction> {
+    return this.contract.alterWarperTaxTerms(
+      this.assetTypeToAddress(warper),
+      this.encodeTaxTermsParams(newTaxTermsParams),
+    );
   }
 }

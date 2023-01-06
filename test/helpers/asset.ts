@@ -1,10 +1,9 @@
-import { ASSET_CLASS } from '@iqprotocol/solidity-contracts-nft/src/constants';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AssetType } from 'caip';
 import { BigNumber, BigNumberish } from 'ethers';
 import { BytesLike, defaultAbiCoder } from 'ethers/lib/utils';
 import { ethers } from 'hardhat';
-import { Asset } from 'src';
+import { Asset, ASSET_CLASS } from '../../src';
 import { ERC721Mock } from '../../src/contracts';
 import { Assets } from '../../src/contracts/contracts/listing/listing-manager/ListingManager';
 import { getChainId, toAssetId } from './utils';

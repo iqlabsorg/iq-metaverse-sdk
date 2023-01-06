@@ -1,7 +1,7 @@
-import { WARPER_PRESET_ERC721_IDS } from '@iqprotocol/solidity-contracts-nft/src/constants';
 import { AccountId, AssetType } from 'caip';
 import { BigNumber } from 'ethers';
 import { ethers } from 'hardhat';
+import { WARPER_PRESET_ERC721_IDS } from '../../src';
 import {
   ERC20Mock__factory,
   ERC721Mock__factory,
@@ -13,12 +13,13 @@ import {
   ListingWizardV1__factory,
   UniverseWizardV1__factory,
 } from '../../src/contracts';
+import { calculatePricePerSecondInEthers } from '../../src/utils';
 import { grantWizardRolesToDeployer } from './acl';
 import { createAssetReference, makeERC721Asset, mintAndApproveNFTs } from './asset';
 import { makeListingParams, makeListingTermsFixedRate } from './listing-renting';
 import { makeTaxTermsFixedRate } from './tax';
 import { makeUniverseParams } from './universe';
-import { calculateBaseRate, COMMON_ID, SECONDS_IN_DAY, toAccountId } from './utils';
+import { COMMON_ID, SECONDS_IN_DAY, toAccountId } from './utils';
 import { findWarperByDeploymentTransaction, getERC721ConfigurablePresetInitData } from './warper';
 
 /** Hard-coded contract addresses (temp solution) */
@@ -133,7 +134,7 @@ const createListing = async (): Promise<{ txHash: string; listingTerms: IListing
   const listingWizard = new ListingWizardV1__factory().attach(LISTING_WIZARD).connect(lister);
 
   const listingAssets = [makeERC721Asset(collection.address, 1)];
-  const baseRate = calculateBaseRate('100', SECONDS_IN_DAY);
+  const baseRate = calculatePricePerSecondInEthers('100', SECONDS_IN_DAY);
   const listingTerms = makeListingTermsFixedRate(baseRate);
   const listingParams = makeListingParams(lister.address);
   const tx = await listingWizard.createListingWithTerms(

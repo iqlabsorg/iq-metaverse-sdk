@@ -3,10 +3,10 @@ import { AccountId, AssetType } from 'caip';
 import { deployments, ethers } from 'hardhat';
 import { Asset, IQSpace, RentingEstimationParams, RentingManagerAdapter } from '../src';
 import { ERC20Mock, ERC20Mock__factory, IMetahub, IRentingManager } from '../src/contracts';
+import { convertToWei } from '../src/utils';
 import { createAssetReference, makeERC721AssetForSDK } from './helpers/asset';
-import { getSelectedConfiguratorListingTerms, getTokenQuoteData } from './helpers/listing-renting';
 import { BASE_TOKEN, setupForRenting } from './helpers/setup';
-import { COMMON_ID, convertToWei, SECONDS_IN_HOUR, toAccountId } from './helpers/utils';
+import { COMMON_ID, SECONDS_IN_HOUR, toAccountId } from './helpers/utils';
 
 /**
  * @group integration
@@ -47,9 +47,7 @@ describe('RentingManagerAdapter', () => {
       renter: renterAccountId,
       warper: warperReference,
       maxPaymentAmount: estimate.total,
-      selectedConfiguratorListingTerms: getSelectedConfiguratorListingTerms(),
       listingTermsId: COMMON_ID,
-      ...getTokenQuoteData(),
     });
   };
 
@@ -79,7 +77,6 @@ describe('RentingManagerAdapter', () => {
       listingId: COMMON_ID,
       rentalPeriod,
       listingTermsId: COMMON_ID,
-      selectedConfiguratorListingTerms: getSelectedConfiguratorListingTerms(),
     };
 
     warpedAsset = makeERC721AssetForSDK(warperReference.assetName.reference, 1);
