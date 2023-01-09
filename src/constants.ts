@@ -4,9 +4,9 @@ import {
   LISTING_STRATEGY_IDS,
   TAX_STRATEGIES,
   TAX_STRATEGY_IDS,
-} from '@iqprotocol/solidity-contracts-nft/src/constants';
+} from '@iqprotocol/solidity-contracts-nft';
 import { RentalStatus, RentalStatusEnum, WarperPresetIds } from './types';
-import { WARPER_PRESET_ERC721_IDS } from '@iqprotocol/solidity-contracts-nft/src/constants';
+import { WARPER_PRESET_ERC721_IDS } from '@iqprotocol/solidity-contracts-nft';
 
 // The `namespace` value must be a correct CAIP-19 asset type namespace.
 export const assetClasses = {

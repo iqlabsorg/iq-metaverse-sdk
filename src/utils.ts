@@ -4,7 +4,7 @@ import {
   EMPTY_BYTES_DATA_HEX,
   HUNDRED_PERCENT,
   HUNDRED_PERCENT_PRECISION_4,
-} from '@iqprotocol/solidity-contracts-nft/src/constants';
+} from '@iqprotocol/solidity-contracts-nft';
 import { BigNumberish, BytesLike, ethers, FixedNumber } from 'ethers';
 import { assetClasses } from './constants';
 

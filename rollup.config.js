@@ -25,7 +25,7 @@ export const buildPluginsSection = () => [
     }),
 ];
 
-export const buildConfig = ({ pkg, plugins }) => {
+export const buildConfig = ({ pkg }) => {
   return {
     input: 'src/index.ts',
     output: [
@@ -40,7 +40,7 @@ export const buildConfig = ({ pkg, plugins }) => {
         sourcemap: isProduction,
       },
     ],
-    plugins: plugins ?? buildPluginsSection(pkg),
+    plugins: buildPluginsSection(),
   };
 };
 
