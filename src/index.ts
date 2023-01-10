@@ -46,7 +46,13 @@ export {
   WarperWizardAdapterV1,
   ListingTermsRegistryAdapter,
 } from './adapters';
-export { calculatePricePerSecondInEthers, convertToWei, convertPercentageToWei } from './utils';
+export {
+  calculatePricePerSecondInEthers,
+  calculatePricePerSecondInWei,
+  convertToWei,
+  convertPercentageToWei,
+  calculateTaxFeeForFixedRateInWei,
+} from './utils';
 export { AddressTranslator } from './address-translator';
 export { createAsset } from './asset';
 
