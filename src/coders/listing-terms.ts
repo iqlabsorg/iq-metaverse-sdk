@@ -2,7 +2,7 @@ import { defaultAbiCoder } from 'ethers/lib/utils';
 import { listingStrategies } from '../constants';
 import { IListingTermsRegistry } from '../contracts';
 import { ListingTermsParams } from '../types';
-import { convertPercentage, convertToWei } from '../utils';
+import { convertPercentageToWei, convertToWei } from '../utils';
 
 export class ListingTermsCoder {
   /**
@@ -23,7 +23,7 @@ export class ListingTermsCoder {
           strategyId: FIXED_RATE_WITH_REWARD.id,
           strategyData: defaultAbiCoder.encode(
             ['uint256', 'uint16'],
-            [convertToWei(params.data.pricePerSecondInEthers), convertPercentage(params.data.rewardRatePercent)],
+            [convertToWei(params.data.pricePerSecondInEthers), convertPercentageToWei(params.data.rewardRatePercent)],
           ),
         };
       default: {

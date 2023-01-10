@@ -2,7 +2,7 @@ import { BytesLike } from 'ethers';
 import { defaultAbiCoder } from 'ethers/lib/utils';
 import { EMPTY_BYTES4_DATA_HEX, EMPTY_BYTES_DATA_HEX, TAX_STRATEGY_IDS } from '../../src';
 import { ITaxTermsRegistry } from '../../src/contracts/contracts/tax/tax-terms-registry/ITaxTermsRegistry';
-import { convertPercentage } from '../../src/utils';
+import { convertPercentageToWei } from '../../src/utils';
 
 export const makeTaxTerms = (
   strategyId: BytesLike = EMPTY_BYTES4_DATA_HEX,
@@ -16,4 +16,4 @@ export const makeTaxTermsFixedRate = (baseTaxRate: string): ITaxTermsRegistry.Ta
   makeTaxTerms(TAX_STRATEGY_IDS.FIXED_RATE_TAX, encodeFixedRateTaxTerms(baseTaxRate));
 
 export const encodeFixedRateTaxTerms = (baseTaxRate: string): BytesLike =>
-  defaultAbiCoder.encode(['uint16'], [convertPercentage(baseTaxRate)]);
+  defaultAbiCoder.encode(['uint16'], [convertPercentageToWei(baseTaxRate)]);

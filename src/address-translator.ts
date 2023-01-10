@@ -1,6 +1,6 @@
 import { AccountId, AssetId, AssetType, ChainId } from 'caip';
 import { assetClasses } from './constants';
-import { Address } from './types';
+import { Address, AssetNamespace } from './types';
 
 export class AddressTranslator {
   constructor(public readonly chainId: ChainId) {}
@@ -33,6 +33,27 @@ export class AddressTranslator {
       throw new Error(`Invalid asset type: "${namespace}"! Expected: "erc20"`);
     }
   };
+
+  static createAssetType(accountId: AccountId, namespace: AssetNamespace): AssetType {
+    return new AssetType({
+      chainId: accountId.chainId,
+      assetName: {
+        namespace,
+        reference: accountId.address,
+      },
+    });
+  }
+
+  static createAssetId(accountId: AccountId, namespace: AssetNamespace, tokenId: string) {
+    return new AssetId({
+      chainId: accountId.chainId,
+      assetName: {
+        namespace,
+        reference: accountId.address,
+      },
+      tokenId,
+    });
+  }
 
   assertSameChainId(chainId: ChainId): void {
     AddressTranslator.assertSameChainId(chainId, this.chainId);

@@ -318,24 +318,13 @@ To list an asset for rent, there must be at least one IQVerse with a registered 
 
 ```ts
 import { BigNumber } from 'ethers';
-import { calculatePricePerSecondInEthers, LISTING_STRATEGIES } from '@iqprotocol/iq-space-sdk-js'
+import { calculatePricePerSecondInEthers, LISTING_STRATEGIES, createAsset } from '@iqprotocol/iq-space-sdk-js'
 
 const universeId = '<your universe ID>';
-const originalAssetAddress = '0x0...';
+const originalAsset = new AccountId({ chainId, address: '0x0...' });
 
-// Encode the asset
-const asset = {
-  id: new AssetId({
-    chainId,
-    assetName: {
-      namespace: 'erc721',
-      reference: originalAssetAddress,
-    },
-    tokenId: '42',
-  }),
-  // The amount of tokens. For ERC721 this is always 1. For other token standards - it may differ.
-  value: 1,
-};
+// Encode ERC721 asset
+const asset = createAsset('erc721', originalAsset, '42')
 
 // Allow Metahub to take custody of the asset
 const approvalTx = await metahub.approveForListing(asset);

@@ -30,6 +30,7 @@ export type {
   WarperPresetIds,
   WarperPresetInitData,
   TokenQuoteDataEncoded,
+  AssetNamespace,
 } from './types';
 export { assetClasses, listingStrategies, taxStrategies } from './constants';
 export { IQSpace } from './iqspace';
@@ -45,7 +46,9 @@ export {
   WarperWizardAdapterV1,
   ListingTermsRegistryAdapter,
 } from './adapters';
-export { calculatePricePerSecondInEthers } from './utils';
+export { calculatePricePerSecondInEthers, convertToWei, convertPercentageToWei } from './utils';
+export { AddressTranslator } from './address-translator';
+export { createAsset } from './asset';
 
 /** export constants from contracts */
 export * from '@iqprotocol/solidity-contracts-nft';

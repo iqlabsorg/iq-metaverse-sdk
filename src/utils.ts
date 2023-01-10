@@ -25,7 +25,12 @@ export const assetClassToNamespace = (assetClass: string): string => {
   return Object.values(assetClasses).find(({ id }) => assetClass === id)?.namespace ?? 'unknown';
 };
 
-/** Converts value to Wei in specified precision (default = 18) */
+/**
+ * Converts value to Wei in specified precision
+ * @param toConvert Value to convert
+ * @param decimals Decimal precision (default = 18)
+ * @returns Value in Wei
+ */
 export const convertToWei = (toConvert: string, decimals: number = BASE_TOKEN_DECIMALS): BigNumberish => {
   return ethers.utils.parseUnits(toConvert, decimals);
 };
@@ -45,8 +50,28 @@ export const calculatePricePerSecondInEthers = (
   return FixedNumber.from(ethersPerPeriod).divUnsafe(FixedNumber.from(periodInSeconds)).round(decimals).toString();
 };
 
-/** Converts a percentage value to Wei */
-export const convertPercentage = (
+/**
+ * Calculate price per second in Wei
+ * @param ethersPerPeriod Price in ethers per period
+ * @param periodInSeconds Period length in seconds
+ * @param decimals Precision (default = 18)
+ * @returns Price per second in Wei
+ */
+export const calculatePricePerSecondInWei = (
+  ethersPerPeriod: string,
+  periodInSeconds: number,
+  decimals = BASE_TOKEN_DECIMALS,
+): BigNumberish => {
+  return convertToWei(calculatePricePerSecondInEthers(ethersPerPeriod, periodInSeconds, decimals), decimals);
+};
+
+/**
+ * Converts a percentage value to Wei
+ * @param percent Percentage value
+ * @param hundredPercentWithPrecision Precision
+ * @returns Value in Wei
+ */
+export const convertPercentageToWei = (
   percent: BigNumberish,
   hundredPercentWithPrecision: number = HUNDRED_PERCENT_PRECISION_4,
 ): BigNumberish => {
@@ -57,6 +82,27 @@ export const convertPercentage = (
       .floor()
       .toString(),
     0,
+  );
+};
+
+/**
+ * Calculcates fixed tax rate in Wei
+ * @param ethersPerSecond Price per second in ethers
+ * @param taxPercentage Tax rate percentage
+ * @param decimals Precision (default = 18)
+ * @returns Tax rate in Wei
+ */
+export const calculateTaxFeeForFixedRateInWei = (
+  ethersPerSecond: string,
+  taxPercentage: string,
+  decimals = BASE_TOKEN_DECIMALS,
+): BigNumberish => {
+  return convertToWei(
+    FixedNumber.from(ethersPerSecond)
+      .mulUnsafe(FixedNumber.from(taxPercentage).divUnsafe(FixedNumber.from(HUNDRED_PERCENT)))
+      .round(decimals)
+      .toString(),
+    decimals,
   );
 };
 

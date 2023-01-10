@@ -77,6 +77,8 @@ export type Listing = Pick<
   lister: AccountId;
 };
 
+export type AssetNamespace = 'erc721' | 'erc1155';
+
 export type Asset = {
   id: AssetId;
   value: BigNumberish;
