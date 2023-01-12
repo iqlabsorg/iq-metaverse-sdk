@@ -1,6 +1,6 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { deployments, ethers } from 'hardhat';
-import { ListingTermsRegistryAdapter, IQSpace } from '../src';
+import { ListingTermsRegistryAdapter, IQSpace, AssetType } from '../src';
 import { IListingTermsRegistry } from '../src/contracts';
 import { setupForRenting } from './helpers/setup';
 import { COMMON_ID, toAccountId } from './helpers/utils';
@@ -23,6 +23,7 @@ describe('ListingTermsRegistryAdapter', () => {
   /** Data Structs */
   let listingCreationTxHash: string;
   let listingTerms: IListingTermsRegistry.ListingTermsStruct;
+  let warperReference: AssetType;
 
   beforeEach(async () => {
     await deployments.fixture();
@@ -35,7 +36,7 @@ describe('ListingTermsRegistryAdapter', () => {
     iqspace = await IQSpace.init({ signer: lister });
     listingTermsRegistryAdapter = iqspace.listingTermsRegistry(toAccountId(listingTermsRegistry.address));
 
-    ({ listingCreationTxHash, listingTerms } = await setupForRenting());
+    ({ listingCreationTxHash, listingTerms, warperReference } = await setupForRenting());
   });
 
   describe('listingTerms', () => {
@@ -44,6 +45,19 @@ describe('ListingTermsRegistryAdapter', () => {
       expect(terms).toBeDefined();
       expect(terms.id).toMatchObject(COMMON_ID);
       expect(terms).toMatchObject(listingTerms);
+    });
+  });
+
+  describe('allListingTerms', () => {
+    it('should return all terms for a given listing', async () => {
+      const infos = await listingTermsRegistryAdapter.allListingTerms(
+        { listingId: COMMON_ID, universeId: COMMON_ID, warper: warperReference },
+        0,
+        5,
+      );
+      expect(infos.length).toBeGreaterThan(0);
+      expect(infos[0].id).toMatchObject(COMMON_ID);
+      expect(infos[0]).toMatchObject(listingTerms);
     });
   });
 

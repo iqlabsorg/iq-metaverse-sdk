@@ -42,7 +42,7 @@ export class UniverseWizardAdapterV1 extends Adapter {
    * @param warperPresetId Warper preset ID.
    * @param warperInitData Warper init data.
    */
-  async setupUniverseAndWarper(
+  async setupUniverseAndCreateWarperFromPresetAndRegister(
     universeParams: UniverseParams,
     warperTaxTerms: TaxTermsParams,
     warperRegistrationParams: WarperRegistrationParams,

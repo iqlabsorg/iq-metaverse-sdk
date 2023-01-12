@@ -31,6 +31,7 @@ export type {
   WarperPresetInitData,
   TokenQuoteDataEncoded,
   AssetNamespace,
+  ListingTermsQueryParams,
 } from './types';
 export { assetClasses, listingStrategies, taxStrategies } from './constants';
 export { IQSpace } from './iqspace';

@@ -93,12 +93,12 @@ describe('UniverseWizardAdapterV1', () => {
     });
   });
 
-  describe('setupUniverseAndWarper', () => {
+  describe('setupUniverseAndCreateWarperFromPresetAndRegister', () => {
     let tx: ContractTransaction;
 
     beforeEach(async () => {
       await mintAndApproveNFTs(collection, deployer);
-      tx = await universeWizardAdapter.setupUniverseAndWarper(
+      tx = await universeWizardAdapter.setupUniverseAndCreateWarperFromPresetAndRegister(
         universeParams,
         warperTaxTerms,
         warperParams,

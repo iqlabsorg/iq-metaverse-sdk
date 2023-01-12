@@ -27,6 +27,12 @@ export type ListingTermsInfo = {
   strategyData: BytesLike;
 };
 
+export type ListingTermsQueryParams = {
+  listingId: BigNumberish;
+  universeId: BigNumberish;
+  warper: AssetType;
+};
+
 export type FixedPriceListingTermsParams = {
   name: typeof listingStrategies.FIXED_RATE.name;
   data: {
