@@ -32,6 +32,8 @@ export type {
   TokenQuoteDataEncoded,
   AssetNamespace,
   ListingTermsQueryParams,
+  TaxTermsStrategyIdName,
+  TaxTermsQueryParams,
 } from './types';
 export { assetClasses, listingStrategies, taxStrategies } from './constants';
 export { IQSpace } from './iqspace';
@@ -46,6 +48,7 @@ export {
   UniverseWizardAdapterV1,
   WarperWizardAdapterV1,
   ListingTermsRegistryAdapter,
+  TaxTermsRegistryAdapter,
 } from './adapters';
 export {
   calculatePricePerSecondInEthers,

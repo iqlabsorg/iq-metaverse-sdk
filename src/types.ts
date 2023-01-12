@@ -65,6 +65,16 @@ export type FixedRateWithRewardTaxTermsParams = {
 
 export type TaxTermsParams = FixedRateTaxTermsParams | FixedRateWithRewardTaxTermsParams;
 
+export type TaxTermsStrategyIdName =
+  | typeof taxStrategies.FIXED_RATE_TAX.name
+  | typeof taxStrategies.FIXED_RATE_TAX_WITH_REWARD.name;
+
+export type TaxTermsQueryParams = {
+  taxStrategyIdName: TaxTermsStrategyIdName;
+  universeId: BigNumberish;
+  warper: AssetType;
+};
+
 export type AssetListingParams = {
   assets: Asset[];
   params: ListingParams;

@@ -14,6 +14,7 @@ import {
   WarperPresetIds,
   TaxTermsParams,
   WarperPresetInitData,
+  TaxTermsStrategyIdName,
 } from './types';
 
 export abstract class Adapter implements ChainAware {
@@ -65,6 +66,14 @@ export abstract class Adapter implements ChainAware {
 
   protected encodeTaxTermsParams(params: TaxTermsParams): ITaxTermsRegistry.TaxTermsStruct {
     return TaxTermsCoder.encode(params);
+  }
+
+  protected decodeTaxTermsParams(params: ITaxTermsRegistry.TaxTermsStruct): TaxTermsParams {
+    return TaxTermsCoder.decode(params);
+  }
+
+  protected encodeTaxStrategyId(taxStrategyIdName: TaxTermsStrategyIdName): BytesLike {
+    return TaxTermsCoder.encodeTaxStrategyId(taxStrategyIdName);
   }
 
   protected decodeAgreementTerms(params: Rentings.AgreementTermsStruct): AgreementTerms {

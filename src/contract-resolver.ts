@@ -41,6 +41,8 @@ import {
   RentingManager__factory,
   ListingTermsRegistry,
   ListingTermsRegistry__factory,
+  TaxTermsRegistry,
+  TaxTermsRegistry__factory,
 } from './contracts';
 import { ChainId } from 'caip';
 
@@ -84,12 +86,16 @@ export class ContractResolver implements ChainAware {
     return WarperPresetFactory__factory.connect(address, this.signer);
   }
 
-  resolveListingManager(address: string): ListingManager {
+  resolveListingManager(address: Address): ListingManager {
     return ListingManager__factory.connect(address, this.signer);
   }
 
-  resolveListingTermsRegistry(address: string): ListingTermsRegistry {
+  resolveListingTermsRegistry(address: Address): ListingTermsRegistry {
     return ListingTermsRegistry__factory.connect(address, this.signer);
+  }
+
+  resolveTaxTermsRegistry(address: Address): TaxTermsRegistry {
+    return TaxTermsRegistry__factory.connect(address, this.signer);
   }
 
   resolveRentingManager(address: Address): RentingManager {

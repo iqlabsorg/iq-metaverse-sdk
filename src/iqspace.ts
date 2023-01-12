@@ -11,6 +11,7 @@ import {
   WarperPresetFactoryAdapter,
   WarperWizardAdapterV1,
   ListingTermsRegistryAdapter,
+  TaxTermsRegistryAdapter,
 } from './adapters';
 import { ERC721WarperAdapter } from './adapters/erc721-warper';
 import { AddressTranslator } from './address-translator';
@@ -110,6 +111,15 @@ export class IQSpace implements ChainAware {
   listingTermsRegistry(accountId: AccountId): ListingTermsRegistryAdapter {
     this.addressTranslator.assertSameChainId(accountId.chainId);
     return new ListingTermsRegistryAdapter(accountId, this.contractResolver, this.addressTranslator);
+  }
+
+  /**
+   * Resolves the tax terms registry adapter.
+   * @param accountId Tax terms registry account ID.
+   */
+  taxTermsRegistry(accountId: AccountId): TaxTermsRegistryAdapter {
+    this.addressTranslator.assertSameChainId(accountId.chainId);
+    return new TaxTermsRegistryAdapter(accountId, this.contractResolver, this.addressTranslator);
   }
 
   /**
