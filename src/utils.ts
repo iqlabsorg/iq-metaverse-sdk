@@ -66,15 +66,21 @@ export const calculatePricePerSecondInWei = (
 };
 
 /**
- * Converts a percentage value to Wei
+ * Converts a percentage
  * @param percent Percentage value
  * @param hundredPercentWithPrecision Precision
- * @returns Value in Wei
+ * @returns
  */
-export const convertPercentageToWei = (
+export const convertPercentage = (
   percent: BigNumberish,
   hundredPercentWithPrecision: number = HUNDRED_PERCENT_PRECISION_4,
 ): BigNumberish => {
+  const fixedPercentage = FixedNumber.from(percent);
+
+  if (fixedPercentage.isNegative()) {
+    throw new Error('Invalid percentage');
+  }
+
   return convertToWei(
     FixedNumber.from(percent)
       .mulUnsafe(FixedNumber.from(hundredPercentWithPrecision))

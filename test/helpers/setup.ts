@@ -94,7 +94,7 @@ const createUniverseAndWarperWithWizards = async (): Promise<{ warperReference: 
   return { warperReference: createAssetReference('erc721', warperAddress) };
 };
 
-const createWarper = async (): Promise<WarperCreated> => {
+export const createWarper = async (): Promise<WarperCreated> => {
   const warperPresetFactory = (await ethers.getContract('WarperPresetFactory')) as IWarperPresetFactory;
   const metahub = (await ethers.getContract('Metahub')) as IMetahub;
 

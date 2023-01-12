@@ -14,10 +14,10 @@ import { Asset, AssetNamespace } from './types';
 export const createAsset = (
   namespace: AssetNamespace,
   assetAccountId: AccountId,
-  tokenId: string,
+  tokenId: BigNumberish,
   value: BigNumberish = 1,
 ): Asset => {
-  const id = AddressTranslator.createAssetId(assetAccountId, namespace, tokenId);
+  const id = AddressTranslator.createAssetId(assetAccountId, namespace, tokenId.toString());
   return {
     id,
     value,

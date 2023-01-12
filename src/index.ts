@@ -50,7 +50,7 @@ export {
   calculatePricePerSecondInEthers,
   calculatePricePerSecondInWei,
   convertToWei,
-  convertPercentageToWei,
+  convertPercentage,
   calculateTaxFeeForFixedRateInWei,
 } from './utils';
 export { AddressTranslator } from './address-translator';

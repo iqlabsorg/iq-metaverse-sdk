@@ -1,5 +1,5 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { BigNumber, BytesLike, ContractTransaction } from 'ethers';
+import { BigNumber, ContractTransaction } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import {
   IQSpace,
@@ -7,7 +7,8 @@ import {
   TAX_STRATEGIES,
   UniverseParams,
   UniverseWizardAdapterV1,
-  WARPER_PRESET_ERC721_IDS,
+  WarperPresetInitData,
+  WARPER_PRESETS_ERC721,
 } from '../src';
 import {
   ERC20Mock,
@@ -21,9 +22,9 @@ import {
   UniverseWizardV1__factory,
 } from '../src/contracts';
 import { createAssetReference, mintAndApproveNFTs } from './helpers/asset';
-import { BASE_TOKEN, COLLECTION, UNIVERSE_WIZARD } from './helpers/setup';
+import { BASE_TOKEN, COLLECTION, createWarper, UNIVERSE_WIZARD } from './helpers/setup';
 import { COMMON_ID, toAccountId } from './helpers/utils';
-import { findWarperByDeploymentTransaction, getERC721ConfigurablePresetInitData } from './helpers/warper';
+import { findWarperByDeploymentTransaction } from './helpers/warper';
 
 /**
  * @group integration
@@ -48,10 +49,7 @@ describe('UniverseWizardAdapterV1', () => {
   let universeParams: UniverseParams;
   let warperParams: IWarperManager.WarperRegistrationParamsStruct;
   let warperTaxTerms: TaxTermsParams;
-  let warperInitData: BytesLike;
-
-  /** Constants */
-  const zeroAddressReference = createAssetReference('erc721', ethers.constants.AddressZero);
+  let warperInitData: WarperPresetInitData;
 
   beforeEach(async () => {
     await deployments.fixture();
@@ -75,7 +73,10 @@ describe('UniverseWizardAdapterV1', () => {
       universeId: BigNumber.from(0),
       paused: false,
     };
-    warperInitData = getERC721ConfigurablePresetInitData(metahub.address, collection.address);
+    warperInitData = {
+      metahub: toAccountId(metahub.address),
+      original: createAssetReference('erc721', collection.address),
+    };
   });
 
   describe('setupUniverse', () => {
@@ -99,10 +100,9 @@ describe('UniverseWizardAdapterV1', () => {
       await mintAndApproveNFTs(collection, deployer);
       tx = await universeWizardAdapter.setupUniverseAndWarper(
         universeParams,
-        zeroAddressReference,
         warperTaxTerms,
         warperParams,
-        WARPER_PRESET_ERC721_IDS.ERC721_CONFIGURABLE_PRESET,
+        WARPER_PRESETS_ERC721.ERC721_CONFIGURABLE_PRESET,
         warperInitData,
       );
     });
@@ -116,6 +116,31 @@ describe('UniverseWizardAdapterV1', () => {
         paymentTokens: universeParams.paymentTokens.map(x => x.address),
       });
       expect(warperInfo).toMatchObject({ ...warperParams, universeId: COMMON_ID });
+    });
+  });
+
+  describe('setupUniverseAndRegisterExistingWarper', () => {
+    let warperAddress: string;
+
+    beforeEach(async () => {
+      const { warperReference } = await createWarper();
+      warperAddress = warperReference.assetName.reference;
+      await universeWizardAdapter.setupUniverseAndRegisterExistingWarper(
+        universeParams,
+        warperReference,
+        warperTaxTerms,
+        warperParams,
+      );
+    });
+
+    it('should create a universe and register the existing warper to it', async () => {
+      const universeInfo = await universeRegistry.universe(COMMON_ID);
+      const warperInfo = await warperManager.warperInfo(warperAddress!);
+      expect(universeInfo).toMatchObject({
+        name: universeParams.name,
+        paymentTokens: universeParams.paymentTokens.map(x => x.address),
+      });
+      expect(warperInfo).toMatchObject({ universeId: COMMON_ID });
     });
   });
 });

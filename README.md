@@ -187,29 +187,13 @@ const warperAssetType = new AssetType({
   assetName: { namespace: 'erc721', reference: warperAddress },
 });
 const warperTaxTerms = { name: TAX_STRATEGIES.FIXED_RATE_TAX, data: { ratePercent: '0.5' } };
-const warperInitData = {
-  metahub: new AccountId({
-    chainId,
-    address: '0x...',
-  }),
-  original: new AssetType({
-    chainId,
-    assetName: { namespace: 'erc721', reference: '<your original asset address>' },
-});
-    };
 const warperParams = {
   name: 'My Warper',
   universeId: '<your universe ID>',
   paused: false,
 };
 
-await warperWizard.registerWarper(
-  warperAssetType,
-  warperTaxTerms,
-  warperParams,
-  WARPER_PRESET_ERC721_IDS.ERC721_CONFIGURABLE_PRESET,
-  warperInitData,
-);
+await warperWizard.registerExistingWarper(warperAssetType, warperTaxTerms, warperParams);
 ```
 
 #### Pause Warper

@@ -1,6 +1,6 @@
 {
   "name": "@iqprotocol/iq-space-sdk-js",
-  "version": "0.1.0-alpha.13",
+  "version": "0.1.0-alpha.14",
   "bugs": "https://github.com/iqlabsorg/iq-space-sdk-js/issues",
   "repository": {
     "type": "git",
@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "caip": "^1.1.0",
-    "@iqprotocol/solidity-contracts-nft": "2.1.7-alpha.15"
+    "@iqprotocol/solidity-contracts-nft": "2.1.7-alpha.16"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "npm:hardhat-deploy-ethers@latest",

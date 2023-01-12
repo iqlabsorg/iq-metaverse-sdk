@@ -1,5 +1,6 @@
+import { EMPTY_BYTES32_DATA_HEX, EMPTY_BYTES_DATA_HEX } from '@iqprotocol/solidity-contracts-nft';
 import { AccountId, AssetType } from 'caip';
-import { ContractTransaction } from 'ethers';
+import { ContractTransaction, constants } from 'ethers';
 import { Adapter } from '../../adapter';
 import { AddressTranslator } from '../../address-translator';
 import { ContractResolver } from '../../contract-resolver';
@@ -20,18 +21,36 @@ export class WarperWizardAdapterV1 extends Adapter {
    * @param warper Warper reference.
    * @param taxTerms Warper tax terms.
    * @param registrationParams Warper registration params.
+   */
+  async registerExistingWarper(
+    warper: AssetType,
+    taxTerms: TaxTermsParams,
+    registrationParams: WarperRegistrationParams,
+  ): Promise<ContractTransaction> {
+    return this.contract.registerWarper(
+      this.assetTypeToAddress(warper),
+      this.encodeTaxTermsParams(taxTerms),
+      registrationParams,
+      EMPTY_BYTES32_DATA_HEX,
+      EMPTY_BYTES_DATA_HEX,
+    );
+  }
+
+  /**
+   * Creates and registers a new warper from a preset.
+   * @param taxTerms Warper tax terms.
+   * @param registrationParams Warper registration params.
    * @param presetId Warper preset ID.
    * @param initData Warper init data.
    */
-  async registerWarper(
-    warper: AssetType,
+  async createWarperFromPresetAndRegister(
     taxTerms: TaxTermsParams,
     registrationParams: WarperRegistrationParams,
     presetId: WarperPresetIds,
     initData: WarperPresetInitData,
   ): Promise<ContractTransaction> {
     return this.contract.registerWarper(
-      this.assetTypeToAddress(warper),
+      constants.AddressZero,
       this.encodeTaxTermsParams(taxTerms),
       registrationParams,
       this.encodeWarperPresetId(presetId),

@@ -30,30 +30,30 @@ export type ListingTermsInfo = {
 export type FixedPriceListingTermsParams = {
   name: typeof listingStrategies.FIXED_RATE.name;
   data: {
-    pricePerSecondInEthers: string;
+    pricePerSecondInEthers: BigNumberish;
   };
 };
 
 export type FixedPriceWithRewardListingTermsParams = {
   name: typeof listingStrategies.FIXED_RATE_WITH_REWARD.name;
   data: {
-    pricePerSecondInEthers: string;
-    rewardRatePercent: string;
+    pricePerSecondInEthers: BigNumberish;
+    rewardRatePercent: BigNumberish;
   };
 };
 
 export type FixedRateTaxTermsParams = {
   name: typeof taxStrategies.FIXED_RATE_TAX.name;
   data: {
-    ratePercent: string;
+    ratePercent: BigNumberish;
   };
 };
 
 export type FixedRateWithRewardTaxTermsParams = {
   name: typeof taxStrategies.FIXED_RATE_TAX_WITH_REWARD.name;
   data: {
-    ratePercent: string;
-    rewardRatePercent: string;
+    ratePercent: BigNumberish;
+    rewardRatePercent: BigNumberish;
   };
 };
 
@@ -77,7 +77,7 @@ export type Listing = Pick<
   lister: AccountId;
 };
 
-export type AssetNamespace = 'erc721' | 'erc1155';
+export type AssetNamespace = 'erc20' | 'erc721' | 'erc1155';
 
 export type Asset = {
   id: AssetId;
