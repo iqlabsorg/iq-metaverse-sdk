@@ -2,10 +2,10 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AccountId, AssetType } from 'caip';
 import { deployments, ethers } from 'hardhat';
 import { Asset, IQSpace, RentingEstimationParams, RentingManagerAdapter } from '../src';
-import { ERC20Mock, ERC20Mock__factory, IMetahub, IRentingManager } from '../src/contracts';
+import { ERC20Mock, IMetahub, IRentingManager } from '../src/contracts';
 import { convertToWei } from '../src/utils';
 import { createAssetReference, makeERC721AssetForSDK } from './helpers/asset';
-import { BASE_TOKEN, setupForRenting } from './helpers/setup';
+import { setupForRenting } from './helpers/setup';
 import { COMMON_ID, SECONDS_IN_HOUR, toAccountId } from './helpers/utils';
 
 /**
@@ -59,7 +59,7 @@ describe('RentingManagerAdapter', () => {
 
     metahub = await ethers.getContract('Metahub');
     rentingManager = await ethers.getContract('RentingManager');
-    baseToken = new ERC20Mock__factory().attach(BASE_TOKEN);
+    baseToken = await ethers.getContract('ERC20Mock');
 
     iqspace = await IQSpace.init({ signer: renter });
     rentingManagerAdapter = iqspace.rentingManager(toAccountId(rentingManager.address));

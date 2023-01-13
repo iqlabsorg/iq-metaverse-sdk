@@ -12,17 +12,14 @@ import {
 } from '../src';
 import {
   ERC20Mock,
-  ERC20Mock__factory,
   ERC721Mock,
-  ERC721Mock__factory,
   IMetahub,
   IUniverseRegistry,
   IUniverseWizardV1,
   IWarperManager,
-  UniverseWizardV1__factory,
 } from '../src/contracts';
 import { createAssetReference, mintAndApproveNFTs } from './helpers/asset';
-import { BASE_TOKEN, COLLECTION, createWarper, UNIVERSE_WIZARD } from './helpers/setup';
+import { createWarper } from './helpers/setup';
 import { COMMON_ID, COMMON_TAX_RATE, toAccountId } from './helpers/utils';
 import { findWarperByDeploymentTransaction } from './helpers/warper';
 
@@ -58,10 +55,10 @@ describe('UniverseWizardAdapterV1', () => {
 
     warperManager = await ethers.getContract('WarperManager');
     universeRegistry = await ethers.getContract('UniverseRegistry');
-    universeWizard = new UniverseWizardV1__factory().attach(UNIVERSE_WIZARD).connect(deployer);
+    universeWizard = await ethers.getContract('UniverseWizardV1');
     metahub = await ethers.getContract('Metahub');
-    baseToken = new ERC20Mock__factory().attach(BASE_TOKEN);
-    collection = new ERC721Mock__factory().attach(COLLECTION);
+    baseToken = await ethers.getContract('ERC20Mock');
+    collection = await ethers.getContract('ERC721Mock');
 
     iqspace = await IQSpace.init({ signer: deployer });
     universeWizardAdapter = iqspace.universeWizardV1(toAccountId(universeWizard.address));

@@ -20,7 +20,7 @@ import {
   WarperWizardV1__factory,
 } from '../src/contracts';
 import { createAssetReference } from './helpers/asset';
-import { COLLECTION, setupUniverse, setupUniverseAndWarper, WARPER_WIZARD } from './helpers/setup';
+import { setupUniverse, setupUniverseAndWarper } from './helpers/setup';
 import { COMMON_ID, COMMON_TAX_RATE, toAccountId } from './helpers/utils';
 import { findWarperByDeploymentTransaction } from './helpers/warper';
 
@@ -66,9 +66,9 @@ describe('WarperWizardAdapterV1', () => {
     deployer = await ethers.getNamedSigner('deployer');
 
     warperManager = await ethers.getContract('WarperManager');
-    warperWizard = new WarperWizardV1__factory().attach(WARPER_WIZARD).connect(deployer);
+    warperWizard = await ethers.getContract('WarperWizardV1');
     metahub = await ethers.getContract('Metahub');
-    collection = new ERC721Mock__factory().attach(COLLECTION);
+    collection = await ethers.getContract('ERC721Mock');
 
     iqspace = await IQSpace.init({ signer: deployer });
     warperWizardAdapter = iqspace.warperWizardV1(toAccountId(warperWizard.address));

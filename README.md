@@ -186,7 +186,7 @@ const warperAssetType = new AssetType({
   chainId,
   assetName: { namespace: 'erc721', reference: warperAddress },
 });
-const warperTaxTerms = { name: TAX_STRATEGIES.FIXED_RATE_TAX, data: { ratePercent: '0.5' } };
+const warperTaxTerms = { name: TAX_STRATEGIES.FIXED_RATE_TAX, data: { ratePercent: '0.5' } }; // 0.5% tax rate
 const warperParams = {
   name: 'My Warper',
   universeId: '<your universe ID>',
