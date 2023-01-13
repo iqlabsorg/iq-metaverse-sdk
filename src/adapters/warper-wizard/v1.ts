@@ -5,7 +5,7 @@ import { Adapter } from '../../adapter';
 import { AddressTranslator } from '../../address-translator';
 import { ContractResolver } from '../../contract-resolver';
 import { WarperWizardV1 } from '../../contracts';
-import { TaxTermsParams, WarperPresetIds, WarperPresetInitData, WarperRegistrationParams } from '../../types';
+import { TaxTerms, WarperPresetIds, WarperPresetInitData, WarperRegistrationParams } from '../../types';
 
 export class WarperWizardAdapterV1 extends Adapter {
   private readonly contract: WarperWizardV1;
@@ -24,12 +24,12 @@ export class WarperWizardAdapterV1 extends Adapter {
    */
   async registerExistingWarper(
     warper: AssetType,
-    taxTerms: TaxTermsParams,
+    taxTerms: TaxTerms,
     registrationParams: WarperRegistrationParams,
   ): Promise<ContractTransaction> {
     return this.contract.registerWarper(
       this.assetTypeToAddress(warper),
-      this.encodeTaxTermsParams(taxTerms),
+      this.encodeTaxTerms(taxTerms),
       registrationParams,
       EMPTY_BYTES32_DATA_HEX,
       EMPTY_BYTES_DATA_HEX,
@@ -44,14 +44,14 @@ export class WarperWizardAdapterV1 extends Adapter {
    * @param initData Warper init data.
    */
   async createWarperFromPresetAndRegister(
-    taxTerms: TaxTermsParams,
+    taxTerms: TaxTerms,
     registrationParams: WarperRegistrationParams,
     presetId: WarperPresetIds,
     initData: WarperPresetInitData,
   ): Promise<ContractTransaction> {
     return this.contract.registerWarper(
       constants.AddressZero,
-      this.encodeTaxTermsParams(taxTerms),
+      this.encodeTaxTerms(taxTerms),
       registrationParams,
       this.encodeWarperPresetId(presetId),
       this.encodeWarperPresetInitData(presetId, initData),
@@ -72,10 +72,7 @@ export class WarperWizardAdapterV1 extends Adapter {
    * @param warper Warper reference.
    * @param newTaxTermsParams New warper tax terms params.
    */
-  async alterWarperTaxTerms(warper: AssetType, newTaxTermsParams: TaxTermsParams): Promise<ContractTransaction> {
-    return this.contract.alterWarperTaxTerms(
-      this.assetTypeToAddress(warper),
-      this.encodeTaxTermsParams(newTaxTermsParams),
-    );
+  async alterWarperTaxTerms(warper: AssetType, newTaxTermsParams: TaxTerms): Promise<ContractTransaction> {
+    return this.contract.alterWarperTaxTerms(this.assetTypeToAddress(warper), this.encodeTaxTerms(newTaxTermsParams));
   }
 }

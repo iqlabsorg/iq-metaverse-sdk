@@ -4,21 +4,14 @@ import {
   AssetListingParams,
   IQSpace,
   ListingParams,
-  ListingTermsParams,
+  ListingTerms,
   ListingWizardAdapterV1,
   LISTING_STRATEGIES,
 } from '../src';
-import {
-  ERC721Mock,
-  ERC721Mock__factory,
-  IListingManager,
-  IListingWizardV1,
-  IMetahub,
-  ListingWizardV1__factory,
-} from '../src/contracts';
+import { ERC721Mock, IListingManager, IListingWizardV1, IMetahub } from '../src/contracts';
 import { calculatePricePerSecondInEthers } from '../src/utils';
 import { makeERC721AssetForSDK } from './helpers/asset';
-import { COLLECTION, LISTING_WIZARD, setupForListing } from './helpers/setup';
+import { setupForListing } from './helpers/setup';
 import { COMMON_ID, SECONDS_IN_DAY, toAccountId } from './helpers/utils';
 
 /**
@@ -41,7 +34,7 @@ describe('ListingWizardAdapterV1', () => {
 
   /** Data Structs */
   let pricePerSecondInEthers: string;
-  let listingTerms: ListingTermsParams;
+  let listingTerms: ListingTerms;
   let listingParams: ListingParams;
   let assetListingParams: AssetListingParams;
 
@@ -51,10 +44,10 @@ describe('ListingWizardAdapterV1', () => {
     deployer = await ethers.getNamedSigner('deployer');
     lister = await ethers.getNamedSigner('assetOwner');
 
-    listingWizard = new ListingWizardV1__factory().attach(LISTING_WIZARD).connect(lister);
+    listingWizard = await ethers.getContract('ListingWizardV1');
     listingManager = await ethers.getContract('ListingManager');
     metahub = await ethers.getContract('Metahub');
-    collection = new ERC721Mock__factory().attach(COLLECTION);
+    collection = await ethers.getContract('ERC721Mock');
 
     iqspace = await IQSpace.init({ signer: lister });
     listingWizardAdapter = iqspace.listingWizardV1(toAccountId(listingWizard.address));

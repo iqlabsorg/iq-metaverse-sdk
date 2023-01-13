@@ -5,7 +5,7 @@ import {
   HUNDRED_PERCENT,
   HUNDRED_PERCENT_PRECISION_4,
 } from '@iqprotocol/solidity-contracts-nft';
-import { BigNumberish, BytesLike, ethers, FixedNumber } from 'ethers';
+import { BigNumber, BigNumberish, BytesLike, ethers, FixedNumber } from 'ethers';
 import { assetClasses } from './constants';
 
 export const pick = <T extends object, K extends keyof T>(obj: T, names: readonly K[]): Pick<T, K> => {
@@ -67,12 +67,12 @@ export const calculatePricePerSecondInWei = (
 
 /**
  * Converts a percentage
- * @param percent Percentage value
+ * @param percent Percentage value (as a decimal string)
  * @param hundredPercentWithPrecision Precision
  * @returns
  */
 export const convertPercentage = (
-  percent: BigNumberish,
+  percent: string,
   hundredPercentWithPrecision: number = HUNDRED_PERCENT_PRECISION_4,
 ): BigNumberish => {
   const fixedPercentage = FixedNumber.from(percent);
@@ -82,13 +82,20 @@ export const convertPercentage = (
   }
 
   return convertToWei(
-    FixedNumber.from(percent)
+    fixedPercentage
       .mulUnsafe(FixedNumber.from(hundredPercentWithPrecision))
       .divUnsafe(FixedNumber.from(HUNDRED_PERCENT))
       .floor()
       .toString(),
     0,
   );
+};
+
+/**
+ * Converts on-chain integer percentage value to a decimal string percentage
+ */
+export const convertToPercentage = (onChainPercentage: BigNumber): string => {
+  return FixedNumber.from(onChainPercentage).divUnsafe(FixedNumber.from(HUNDRED_PERCENT)).toString();
 };
 
 /**

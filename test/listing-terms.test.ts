@@ -1,6 +1,6 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { deployments, ethers } from 'hardhat';
-import { ListingTermsRegistryAdapter, IQSpace } from '../src';
+import { AssetType, IQSpace, ListingTermsRegistryAdapter, LISTING_STRATEGIES } from '../src';
 import { IListingTermsRegistry } from '../src/contracts';
 import { setupForRenting } from './helpers/setup';
 import { COMMON_ID, toAccountId } from './helpers/utils';
@@ -22,7 +22,7 @@ describe('ListingTermsRegistryAdapter', () => {
 
   /** Data Structs */
   let listingCreationTxHash: string;
-  let listingTerms: IListingTermsRegistry.ListingTermsStruct;
+  let warperReference: AssetType;
 
   beforeEach(async () => {
     await deployments.fixture();
@@ -35,7 +35,7 @@ describe('ListingTermsRegistryAdapter', () => {
     iqspace = await IQSpace.init({ signer: lister });
     listingTermsRegistryAdapter = iqspace.listingTermsRegistry(toAccountId(listingTermsRegistry.address));
 
-    ({ listingCreationTxHash, listingTerms } = await setupForRenting());
+    ({ listingCreationTxHash, warperReference } = await setupForRenting());
   });
 
   describe('listingTerms', () => {
@@ -43,7 +43,22 @@ describe('ListingTermsRegistryAdapter', () => {
       const terms = await listingTermsRegistryAdapter.listingTerms(COMMON_ID);
       expect(terms).toBeDefined();
       expect(terms.id).toMatchObject(COMMON_ID);
-      expect(terms).toMatchObject(listingTerms);
+      expect(terms.name).toBe(LISTING_STRATEGIES.FIXED_RATE);
+      expect(terms.data.pricePerSecondInEthers).toBeDefined();
+    });
+  });
+
+  describe('allListingTerms', () => {
+    it('should return all terms for a given listing', async () => {
+      const infos = await listingTermsRegistryAdapter.allListingTerms(
+        { listingId: COMMON_ID, universeId: COMMON_ID, warper: warperReference },
+        0,
+        5,
+      );
+      expect(infos.length).toBeGreaterThan(0);
+      expect(infos[0].id).toMatchObject(COMMON_ID);
+      expect(infos[0].name).toBe(LISTING_STRATEGIES.FIXED_RATE);
+      expect(infos[0].data.pricePerSecondInEthers).toBeDefined();
     });
   });
 
@@ -60,7 +75,8 @@ describe('ListingTermsRegistryAdapter', () => {
       const terms = await listingTermsRegistryAdapter.findListingTermsByCreationTransaction(listingCreationTxHash);
       expect(terms).toBeDefined();
       expect(terms?.id).toMatchObject(COMMON_ID);
-      expect(terms).toMatchObject(listingTerms);
+      expect(terms?.name).toBe(LISTING_STRATEGIES.FIXED_RATE);
+      expect(terms?.data.pricePerSecondInEthers).toBeDefined();
     });
   });
 });

@@ -5,13 +5,13 @@ export { AccountId, ChainId, AssetType, AssetId } from 'caip';
 export type {
   Address,
   AssetListingParams,
-  FixedPriceListingTermsParams,
-  FixedPriceWithRewardListingTermsParams,
+  FixedPriceListingTerms,
+  FixedPriceWithRewardListingTerms,
   Listing,
   Asset,
   ListingParams,
   ListingTermsInfo,
-  ListingTermsParams,
+  ListingTerms,
   RegisteredWarper,
   RentingEstimationParams,
   RentingParams,
@@ -24,13 +24,16 @@ export type {
   WarperRegistrationParams,
   UniverseParams,
   UniverseInfo,
-  TaxTermsParams,
-  FixedRateTaxTermsParams,
-  FixedRateWithRewardTaxTermsParams,
+  TaxTerms,
+  FixedRateTaxTerms,
+  FixedRateWithRewardTaxTerms,
   WarperPresetIds,
   WarperPresetInitData,
   TokenQuoteDataEncoded,
   AssetNamespace,
+  ListingTermsQueryParams,
+  TaxTermsStrategyIdName,
+  TaxTermsQueryParams,
 } from './types';
 export { assetClasses, listingStrategies, taxStrategies } from './constants';
 export { IQSpace } from './iqspace';
@@ -45,6 +48,7 @@ export {
   UniverseWizardAdapterV1,
   WarperWizardAdapterV1,
   ListingTermsRegistryAdapter,
+  TaxTermsRegistryAdapter,
 } from './adapters';
 export {
   calculatePricePerSecondInEthers,

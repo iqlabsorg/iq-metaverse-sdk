@@ -3,9 +3,9 @@ import { AssetType } from 'caip';
 import { ContractTransaction } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import { IQSpace, WarperPresetFactoryAdapter } from '../src';
-import { IMetahub, IWarperPresetFactory } from '../src/contracts';
+import { ERC721Mock, IMetahub, IWarperPresetFactory } from '../src/contracts';
 import { createAssetReference } from './helpers/asset';
-import { COLLECTION, setupUniverse } from './helpers/setup';
+import { setupUniverse } from './helpers/setup';
 import { toAccountId } from './helpers/utils';
 import { findWarperByDeploymentTransaction } from './helpers/warper';
 
@@ -19,6 +19,7 @@ describe('WarperPresetFactoryAdapter', () => {
   /** Contracts */
   let metahub: IMetahub;
   let warperPresetFactory: IWarperPresetFactory;
+  let collection: ERC721Mock;
 
   /** SDK */
   let iqspace: IQSpace;
@@ -31,6 +32,7 @@ describe('WarperPresetFactoryAdapter', () => {
 
     metahub = await ethers.getContract('Metahub');
     warperPresetFactory = await ethers.getContract('WarperPresetFactory');
+    collection = await ethers.getContract('ERC721Mock');
 
     iqspace = await IQSpace.init({ signer: deployer });
     warperPresetFactoryAdapter = iqspace.warperPresetFactory(toAccountId(warperPresetFactory.address));
@@ -44,7 +46,7 @@ describe('WarperPresetFactoryAdapter', () => {
     beforeEach(async () => {
       tx = await warperPresetFactoryAdapter.deployPreset('ERC721ConfigurablePreset', {
         metahub: toAccountId(metahub.address),
-        original: createAssetReference('erc721', COLLECTION),
+        original: createAssetReference('erc721', collection.address),
       });
     });
 

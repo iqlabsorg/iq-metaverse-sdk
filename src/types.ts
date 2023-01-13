@@ -14,50 +14,64 @@ export interface ChainAware {
   getChainId(): Promise<ChainId>;
 }
 
-export type ListingTermsParams = FixedPriceListingTermsParams | FixedPriceWithRewardListingTermsParams;
+export type ListingTerms = FixedPriceListingTerms | FixedPriceWithRewardListingTerms;
 
 export type ListingParams = {
   lister: AccountId;
   configurator: AccountId;
 };
 
-export type ListingTermsInfo = {
+export type ListingTermsInfo = ListingTerms & {
   id: BigNumber;
-  strategyId: BytesLike;
-  strategyData: BytesLike;
 };
 
-export type FixedPriceListingTermsParams = {
+export type ListingTermsQueryParams = {
+  listingId: BigNumberish;
+  universeId: BigNumberish;
+  warper: AssetType;
+};
+
+export type FixedPriceListingTerms = {
   name: typeof listingStrategies.FIXED_RATE.name;
   data: {
     pricePerSecondInEthers: BigNumberish;
   };
 };
 
-export type FixedPriceWithRewardListingTermsParams = {
+export type FixedPriceWithRewardListingTerms = {
   name: typeof listingStrategies.FIXED_RATE_WITH_REWARD.name;
   data: {
     pricePerSecondInEthers: BigNumberish;
-    rewardRatePercent: BigNumberish;
+    rewardRatePercent: string;
   };
 };
 
-export type FixedRateTaxTermsParams = {
+export type FixedRateTaxTerms = {
   name: typeof taxStrategies.FIXED_RATE_TAX.name;
   data: {
-    ratePercent: BigNumberish;
+    ratePercent: string;
   };
 };
 
-export type FixedRateWithRewardTaxTermsParams = {
+export type FixedRateWithRewardTaxTerms = {
   name: typeof taxStrategies.FIXED_RATE_TAX_WITH_REWARD.name;
   data: {
-    ratePercent: BigNumberish;
-    rewardRatePercent: BigNumberish;
+    ratePercent: string;
+    rewardRatePercent: string;
   };
 };
 
-export type TaxTermsParams = FixedRateTaxTermsParams | FixedRateWithRewardTaxTermsParams;
+export type TaxTerms = FixedRateTaxTerms | FixedRateWithRewardTaxTerms;
+
+export type TaxTermsStrategyIdName =
+  | typeof taxStrategies.FIXED_RATE_TAX.name
+  | typeof taxStrategies.FIXED_RATE_TAX_WITH_REWARD.name;
+
+export type TaxTermsQueryParams = {
+  taxStrategyIdName: TaxTermsStrategyIdName;
+  universeId: BigNumberish;
+  warper: AssetType;
+};
 
 export type AssetListingParams = {
   assets: Asset[];
@@ -93,7 +107,7 @@ export type RentingEstimationParams = Pick<Rentings.ParamsStruct, 'listingId' | 
   warper: AssetType;
   renter: AccountId;
   paymentToken: AssetType;
-  selectedConfiguratorListingTerms?: ListingTermsParams;
+  selectedConfiguratorListingTerms?: ListingTerms;
 };
 
 export type TokenQuoteDataEncoded = { tokenQuote: BytesLike; tokenQuoteSignature: BytesLike };

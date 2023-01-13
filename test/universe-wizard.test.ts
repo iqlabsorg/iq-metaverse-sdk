@@ -3,7 +3,7 @@ import { BigNumber, ContractTransaction } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import {
   IQSpace,
-  TaxTermsParams,
+  TaxTerms,
   TAX_STRATEGIES,
   UniverseParams,
   UniverseWizardAdapterV1,
@@ -12,18 +12,15 @@ import {
 } from '../src';
 import {
   ERC20Mock,
-  ERC20Mock__factory,
   ERC721Mock,
-  ERC721Mock__factory,
   IMetahub,
   IUniverseRegistry,
   IUniverseWizardV1,
   IWarperManager,
-  UniverseWizardV1__factory,
 } from '../src/contracts';
 import { createAssetReference, mintAndApproveNFTs } from './helpers/asset';
-import { BASE_TOKEN, COLLECTION, createWarper, UNIVERSE_WIZARD } from './helpers/setup';
-import { COMMON_ID, toAccountId } from './helpers/utils';
+import { createWarper } from './helpers/setup';
+import { COMMON_ID, COMMON_TAX_RATE, toAccountId } from './helpers/utils';
 import { findWarperByDeploymentTransaction } from './helpers/warper';
 
 /**
@@ -48,7 +45,7 @@ describe('UniverseWizardAdapterV1', () => {
   /** Data Structs */
   let universeParams: UniverseParams;
   let warperParams: IWarperManager.WarperRegistrationParamsStruct;
-  let warperTaxTerms: TaxTermsParams;
+  let warperTaxTerms: TaxTerms;
   let warperInitData: WarperPresetInitData;
 
   beforeEach(async () => {
@@ -58,16 +55,16 @@ describe('UniverseWizardAdapterV1', () => {
 
     warperManager = await ethers.getContract('WarperManager');
     universeRegistry = await ethers.getContract('UniverseRegistry');
-    universeWizard = new UniverseWizardV1__factory().attach(UNIVERSE_WIZARD).connect(deployer);
+    universeWizard = await ethers.getContract('UniverseWizardV1');
     metahub = await ethers.getContract('Metahub');
-    baseToken = new ERC20Mock__factory().attach(BASE_TOKEN);
-    collection = new ERC721Mock__factory().attach(COLLECTION);
+    baseToken = await ethers.getContract('ERC20Mock');
+    collection = await ethers.getContract('ERC721Mock');
 
     iqspace = await IQSpace.init({ signer: deployer });
     universeWizardAdapter = iqspace.universeWizardV1(toAccountId(universeWizard.address));
 
     universeParams = { name: 'Test Universe', paymentTokens: [toAccountId(baseToken.address)] };
-    warperTaxTerms = { name: TAX_STRATEGIES.FIXED_RATE_TAX, data: { ratePercent: '1' } };
+    warperTaxTerms = { name: TAX_STRATEGIES.FIXED_RATE_TAX, data: { ratePercent: COMMON_TAX_RATE } };
     warperParams = {
       name: 'Warper',
       universeId: BigNumber.from(0),
@@ -93,12 +90,12 @@ describe('UniverseWizardAdapterV1', () => {
     });
   });
 
-  describe('setupUniverseAndWarper', () => {
+  describe('setupUniverseAndCreateWarperFromPresetAndRegister', () => {
     let tx: ContractTransaction;
 
     beforeEach(async () => {
       await mintAndApproveNFTs(collection, deployer);
-      tx = await universeWizardAdapter.setupUniverseAndWarper(
+      tx = await universeWizardAdapter.setupUniverseAndCreateWarperFromPresetAndRegister(
         universeParams,
         warperTaxTerms,
         warperParams,

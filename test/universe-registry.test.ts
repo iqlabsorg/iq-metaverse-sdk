@@ -2,8 +2,8 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AccountId } from 'caip';
 import { deployments, ethers } from 'hardhat';
 import { IQSpace, UniverseRegistryAdapter } from '../src';
-import { IUniverseRegistry } from '../src/contracts';
-import { setupUniverse, UNIVERSE_WIZARD } from './helpers/setup';
+import { IUniverseRegistry, IUniverseWizardV1 } from '../src/contracts';
+import { setupUniverse } from './helpers/setup';
 import { COMMON_ID, toAccountId } from './helpers/utils';
 
 /**
@@ -16,6 +16,7 @@ describe('UniverseRegistryAdapter', () => {
 
   /** Contracts */
   let universeRegistry: IUniverseRegistry;
+  let universeWizard: IUniverseWizardV1;
 
   /** SDK */
   let iqspace: IQSpace;
@@ -33,6 +34,7 @@ describe('UniverseRegistryAdapter', () => {
     [random] = await ethers.getUnnamedSigners();
 
     universeRegistry = await ethers.getContract('UniverseRegistry');
+    universeWizard = await ethers.getContract('UniverseWizardV1');
 
     iqspace = await IQSpace.init({ signer: deployer });
     universeRegistryAdapter = iqspace.universeRegistry(toAccountId(universeRegistry.address));
@@ -151,7 +153,7 @@ describe('UniverseRegistryAdapter', () => {
 
     describe('if account is universe wizard', () => {
       it('should return true', async () => {
-        const isWizard = await universeRegistryAdapter.isUniverseWizard(toAccountId(UNIVERSE_WIZARD));
+        const isWizard = await universeRegistryAdapter.isUniverseWizard(toAccountId(universeWizard.address));
         expect(isWizard).toBe(true);
       });
     });

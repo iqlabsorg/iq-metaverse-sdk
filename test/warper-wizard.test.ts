@@ -4,7 +4,7 @@ import { ContractTransaction } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import {
   IQSpace,
-  TaxTermsParams,
+  TaxTerms,
   TAX_STRATEGIES,
   WarperPresetInitData,
   WarperRegistrationParams,
@@ -20,8 +20,8 @@ import {
   WarperWizardV1__factory,
 } from '../src/contracts';
 import { createAssetReference } from './helpers/asset';
-import { COLLECTION, setupUniverse, setupUniverseAndWarper, WARPER_WIZARD } from './helpers/setup';
-import { COMMON_ID, toAccountId } from './helpers/utils';
+import { setupUniverse, setupUniverseAndWarper } from './helpers/setup';
+import { COMMON_ID, COMMON_TAX_RATE, toAccountId } from './helpers/utils';
 import { findWarperByDeploymentTransaction } from './helpers/warper';
 
 /**
@@ -44,7 +44,7 @@ describe('WarperWizardAdapterV1', () => {
   /** Data Structs */
   let warperReference: AssetType;
   let warperParams: WarperRegistrationParams;
-  let warperTaxTerms: TaxTermsParams;
+  let warperTaxTerms: TaxTerms;
   let warperInitData: WarperPresetInitData;
 
   const registerExistingWarper = async (): Promise<void> => {
@@ -66,9 +66,9 @@ describe('WarperWizardAdapterV1', () => {
     deployer = await ethers.getNamedSigner('deployer');
 
     warperManager = await ethers.getContract('WarperManager');
-    warperWizard = new WarperWizardV1__factory().attach(WARPER_WIZARD).connect(deployer);
+    warperWizard = await ethers.getContract('WarperWizardV1');
     metahub = await ethers.getContract('Metahub');
-    collection = new ERC721Mock__factory().attach(COLLECTION);
+    collection = await ethers.getContract('ERC721Mock');
 
     iqspace = await IQSpace.init({ signer: deployer });
     warperWizardAdapter = iqspace.warperWizardV1(toAccountId(warperWizard.address));
@@ -78,7 +78,7 @@ describe('WarperWizardAdapterV1', () => {
       universeId: COMMON_ID,
       paused: false,
     };
-    warperTaxTerms = { name: TAX_STRATEGIES.FIXED_RATE_TAX, data: { ratePercent: '1' } };
+    warperTaxTerms = { name: TAX_STRATEGIES.FIXED_RATE_TAX, data: { ratePercent: COMMON_TAX_RATE } };
     warperInitData = {
       metahub: toAccountId(metahub.address),
       original: createAssetReference('erc721', collection.address),

@@ -10,10 +10,11 @@ import {
   AgreementTerms,
   Asset,
   ChainAware,
-  ListingTermsParams,
+  ListingTerms,
   WarperPresetIds,
-  TaxTermsParams,
+  TaxTerms,
   WarperPresetInitData,
+  TaxTermsStrategyIdName,
 } from './types';
 
 export abstract class Adapter implements ChainAware {
@@ -59,12 +60,24 @@ export abstract class Adapter implements ChainAware {
     return AssetCoder.decode(asset, this.addressTranslator.chainId);
   }
 
-  protected encodeListingTermsParams(params: ListingTermsParams): IListingTermsRegistry.ListingTermsStruct {
+  protected encodeListingTerms(params: ListingTerms): IListingTermsRegistry.ListingTermsStruct {
     return ListingTermsCoder.encode(params);
   }
 
-  protected encodeTaxTermsParams(params: TaxTermsParams): ITaxTermsRegistry.TaxTermsStruct {
+  protected decodeListingTerms(params: IListingTermsRegistry.ListingTermsStruct): ListingTerms {
+    return ListingTermsCoder.decode(params);
+  }
+
+  protected encodeTaxTerms(params: TaxTerms): ITaxTermsRegistry.TaxTermsStruct {
     return TaxTermsCoder.encode(params);
+  }
+
+  protected decodeTaxTerms(params: ITaxTermsRegistry.TaxTermsStruct): TaxTerms {
+    return TaxTermsCoder.decode(params);
+  }
+
+  protected encodeTaxStrategyId(taxStrategyIdName: TaxTermsStrategyIdName): BytesLike {
+    return TaxTermsCoder.encodeTaxStrategyId(taxStrategyIdName);
   }
 
   protected decodeAgreementTerms(params: Rentings.AgreementTermsStruct): AgreementTerms {

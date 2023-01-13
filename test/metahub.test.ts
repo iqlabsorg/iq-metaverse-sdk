@@ -2,20 +2,12 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AccountId, AssetType } from 'caip';
 import { BigNumber } from 'ethers';
 import { deployments, ethers } from 'hardhat';
+import { BaseToken, IQSpace, MetahubAdapter, RentingEstimationParams, RentingManagerAdapter } from '../src';
+import { ERC20Mock, ERC721Mock, IMetahub, IRentingManager, IWarperPresetFactory } from '../src/contracts';
 import { convertToWei } from '../src/utils';
-import { BaseToken, MetahubAdapter, IQSpace, RentingEstimationParams, RentingManagerAdapter } from '../src';
-import {
-  ERC20Mock,
-  ERC20Mock__factory,
-  ERC721Mock,
-  ERC721Mock__factory,
-  IMetahub,
-  IRentingManager,
-  IWarperPresetFactory,
-} from '../src/contracts';
 import { createAssetReference } from './helpers/asset';
 import { getTokenQuoteData } from './helpers/listing-renting';
-import { BASE_TOKEN, COLLECTION, setupForRenting, setupUniverseAndRegisteredWarper } from './helpers/setup';
+import { setupForRenting, setupUniverseAndRegisteredWarper } from './helpers/setup';
 import { COMMON_ID, getChainId, SECONDS_IN_HOUR, toAccountId, waitBlockchainTime } from './helpers/utils';
 
 /**
@@ -92,8 +84,8 @@ describe('MetahubAdapter', () => {
     metahub = await ethers.getContract('Metahub');
     warperPresetFactory = await ethers.getContract('WarperPresetFactory');
     rentingManager = await ethers.getContract('RentingManager');
-    baseToken = new ERC20Mock__factory().attach(BASE_TOKEN);
-    collection = new ERC721Mock__factory().attach(COLLECTION);
+    baseToken = await ethers.getContract('ERC20Mock');
+    collection = await ethers.getContract('ERC721Mock');
 
     const iqspace = await IQSpace.init({ signer: deployer });
     metahubAdapter = iqspace.metahub(toAccountId(metahub.address));

@@ -2,9 +2,9 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AssetType } from 'caip';
 import { deployments, ethers } from 'hardhat';
 import { IQSpace, WarperManagerAdapter } from '../src';
-import { IWarperManager, IWarperPresetFactory } from '../src/contracts';
+import { ERC721Mock, IWarperManager, IWarperPresetFactory } from '../src/contracts';
 import { createAssetReference } from './helpers/asset';
-import { COLLECTION, setupUniverseAndRegisteredWarper } from './helpers/setup';
+import { setupUniverseAndRegisteredWarper } from './helpers/setup';
 import { COMMON_ID, toAccountId } from './helpers/utils';
 
 /**
@@ -18,6 +18,7 @@ describe('WarperManagerAdapter', () => {
   /** Contracts */
   let warperManager: IWarperManager;
   let warperPresetFactory: IWarperPresetFactory;
+  let collection: ERC721Mock;
 
   /** SDK */
   let iqspace: IQSpace;
@@ -35,6 +36,7 @@ describe('WarperManagerAdapter', () => {
 
     warperManager = await ethers.getContract('WarperManager');
     warperPresetFactory = await ethers.getContract('WarperPresetFactory');
+    collection = await ethers.getContract('ERC721Mock');
 
     iqspace = await IQSpace.init({ signer: deployer });
     warperManagerAdapter = iqspace.warperManager(toAccountId(warperManager.address));
@@ -94,7 +96,7 @@ describe('WarperManagerAdapter', () => {
       it('should return warper count', async () => {
         const count = await warperManagerAdapter.universeAssetWarperCount(
           COMMON_ID,
-          createAssetReference('erc721', COLLECTION),
+          createAssetReference('erc721', collection.address),
         );
         expect(count.toBigInt()).toBe(1n);
       });
@@ -105,7 +107,7 @@ describe('WarperManagerAdapter', () => {
     it('should return asset warpers', async () => {
       const warpers = await warperManagerAdapter.universeAssetWarpers(
         COMMON_ID,
-        createAssetReference('erc721', COLLECTION),
+        createAssetReference('erc721', collection.address),
         0,
         1,
       );

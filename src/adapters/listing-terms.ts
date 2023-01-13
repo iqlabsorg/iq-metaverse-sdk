@@ -4,7 +4,7 @@ import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
 import { ListingTermsRegistry } from '../contracts';
-import { ListingTermsInfo } from '../types';
+import { ListingTermsInfo, ListingTermsQueryParams } from '../types';
 
 export class ListingTermsRegistryAdapter extends Adapter {
   private readonly contract: ListingTermsRegistry;
@@ -21,7 +21,39 @@ export class ListingTermsRegistryAdapter extends Adapter {
    */
   async listingTerms(listingTermsId: BigNumberish): Promise<ListingTermsInfo> {
     const terms = await this.contract.listingTerms(listingTermsId);
-    return { ...terms, id: BigNumber.from(listingTermsId) };
+    return { ...this.decodeListingTerms(terms), id: BigNumber.from(listingTermsId) };
+  }
+
+  /**
+   * Returns all listing terms for a given listing.
+   * @param queryParams Query parameters.
+   * @param offset Starting index.
+   * @param limit Max number of items.
+   * @returns List of listing terms.
+   */
+  async allListingTerms(
+    queryParams: ListingTermsQueryParams,
+    offset: BigNumberish,
+    limit: BigNumberish,
+  ): Promise<ListingTermsInfo[]> {
+    const infos: ListingTermsInfo[] = [];
+
+    const { listingTermsIds, listingTermsList } = await this.contract.allListingTerms(
+      {
+        listingId: queryParams.listingId,
+        universeId: queryParams.universeId,
+        warperAddress: this.assetTypeToAddress(queryParams.warper),
+      },
+      offset,
+      limit,
+    );
+
+    listingTermsIds.forEach((id, index) => {
+      const terms = listingTermsList[index];
+      infos.push({ ...this.decodeListingTerms(terms), id });
+    });
+
+    return infos;
   }
 
   /**
