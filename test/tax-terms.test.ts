@@ -4,7 +4,7 @@ import { AssetType, IQSpace, TaxTermsRegistryAdapter, TAX_STRATEGIES } from '../
 import { ITaxTermsRegistry } from '../src/contracts';
 import { setupForListing, setupUniverseAndWarper } from './helpers/setup';
 import { makeTaxTermsFixedRate } from './helpers/tax';
-import { COMMON_ID, toAccountId } from './helpers/utils';
+import { COMMON_ID, COMMON_TAX_RATE, toAccountId } from './helpers/utils';
 
 /**
  * @group integration
@@ -22,9 +22,6 @@ describe('TaxTermsRegistryAdapter', () => {
 
   /** Data Structs */
   let warperReference: AssetType;
-
-  /** Constants */
-  const taxRate = '10';
 
   beforeEach(async () => {
     await deployments.fixture();
@@ -61,7 +58,7 @@ describe('TaxTermsRegistryAdapter', () => {
           .registerUniverseWarperTaxTerms(
             COMMON_ID,
             warperReference.assetName.reference,
-            makeTaxTermsFixedRate(taxRate),
+            makeTaxTermsFixedRate(COMMON_TAX_RATE),
           );
       });
 
@@ -87,8 +84,10 @@ describe('TaxTermsRegistryAdapter', () => {
         universeId: COMMON_ID,
         warper: warperReference,
       });
+
       expect(terms).toBeDefined();
       expect(terms.name).toBe(TAX_STRATEGIES.FIXED_RATE_TAX);
+      expect(terms.data.ratePercent).toBe(COMMON_TAX_RATE);
     });
   });
 
@@ -103,8 +102,10 @@ describe('TaxTermsRegistryAdapter', () => {
         universeId: COMMON_ID,
         warper: warperReference,
       });
+
       expect(terms).toBeDefined();
       expect(terms.name).toBe(TAX_STRATEGIES.FIXED_RATE_TAX);
+      expect(terms.data.ratePercent).toBe(COMMON_TAX_RATE);
     });
   });
 });

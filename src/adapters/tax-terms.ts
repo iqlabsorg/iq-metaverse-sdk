@@ -1,16 +1,10 @@
 import { AccountId, AssetType } from 'caip';
-import { BigNumber, BigNumberish, BytesLike } from 'ethers';
+import { BigNumberish } from 'ethers';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
-import { ITaxTermsRegistry, ListingTermsRegistry, TaxTermsRegistry } from '../contracts';
-import {
-  ListingTermsInfo,
-  ListingTermsQueryParams,
-  TaxTermsParams,
-  TaxTermsQueryParams,
-  TaxTermsStrategyIdName,
-} from '../types';
+import { ITaxTermsRegistry, TaxTermsRegistry } from '../contracts';
+import { TaxTermsParams, TaxTermsQueryParams, TaxTermsStrategyIdName } from '../types';
 
 export class TaxTermsRegistryAdapter extends Adapter {
   private readonly contract: TaxTermsRegistry;

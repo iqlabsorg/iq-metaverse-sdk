@@ -19,7 +19,7 @@ import { createAssetReference, makeERC721Asset, mintAndApproveNFTs } from './ass
 import { makeListingParams, makeListingTermsFixedRate } from './listing-renting';
 import { makeTaxTermsFixedRate } from './tax';
 import { makeUniverseParams } from './universe';
-import { COMMON_ID, SECONDS_IN_DAY, toAccountId } from './utils';
+import { COMMON_ID, COMMON_TAX_RATE, SECONDS_IN_DAY, toAccountId } from './utils';
 import { findWarperByDeploymentTransaction, getERC721ConfigurablePresetInitData } from './warper';
 
 /** Hard-coded contract addresses (temp solution) */
@@ -70,7 +70,7 @@ const createUniverseAndWarperWithWizards = async (): Promise<{ warperReference: 
   const collection = new ERC721Mock__factory().attach(COLLECTION);
 
   const universeParams = makeUniverseParams('Test Universe', [baseToken.address]);
-  const universeWarperTaxTerms = makeTaxTermsFixedRate('1');
+  const universeWarperTaxTerms = makeTaxTermsFixedRate(COMMON_TAX_RATE);
   const warperParams = {
     name: 'Warper',
     universeId: BigNumber.from(0), // will be replaced on-chain with actual
@@ -191,7 +191,7 @@ export const setupForListing = async (): Promise<{
   await mintAndApproveNFTs(collection, lister);
 
   /** Set global tax terms */
-  const globalTaxTerms = makeTaxTermsFixedRate('1');
+  const globalTaxTerms = makeTaxTermsFixedRate(COMMON_TAX_RATE);
   await taxTermsRegistry.registerProtocolGlobalTaxTerms(globalTaxTerms);
 
   /** Create universe and warper */

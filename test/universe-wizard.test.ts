@@ -23,7 +23,7 @@ import {
 } from '../src/contracts';
 import { createAssetReference, mintAndApproveNFTs } from './helpers/asset';
 import { BASE_TOKEN, COLLECTION, createWarper, UNIVERSE_WIZARD } from './helpers/setup';
-import { COMMON_ID, toAccountId } from './helpers/utils';
+import { COMMON_ID, COMMON_TAX_RATE, toAccountId } from './helpers/utils';
 import { findWarperByDeploymentTransaction } from './helpers/warper';
 
 /**
@@ -67,7 +67,7 @@ describe('UniverseWizardAdapterV1', () => {
     universeWizardAdapter = iqspace.universeWizardV1(toAccountId(universeWizard.address));
 
     universeParams = { name: 'Test Universe', paymentTokens: [toAccountId(baseToken.address)] };
-    warperTaxTerms = { name: TAX_STRATEGIES.FIXED_RATE_TAX, data: { ratePercent: '1' } };
+    warperTaxTerms = { name: TAX_STRATEGIES.FIXED_RATE_TAX, data: { ratePercent: COMMON_TAX_RATE } };
     warperParams = {
       name: 'Warper',
       universeId: BigNumber.from(0),

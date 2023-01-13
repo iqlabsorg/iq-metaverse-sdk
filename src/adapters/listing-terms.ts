@@ -21,7 +21,7 @@ export class ListingTermsRegistryAdapter extends Adapter {
    */
   async listingTerms(listingTermsId: BigNumberish): Promise<ListingTermsInfo> {
     const terms = await this.contract.listingTerms(listingTermsId);
-    return { ...terms, id: BigNumber.from(listingTermsId) };
+    return { ...this.decodeListingTermsParams(terms), id: BigNumber.from(listingTermsId) };
   }
 
   /**
@@ -50,7 +50,7 @@ export class ListingTermsRegistryAdapter extends Adapter {
 
     listingTermsIds.forEach((id, index) => {
       const terms = listingTermsList[index];
-      infos.push({ ...terms, id });
+      infos.push({ ...this.decodeListingTermsParams(terms), id });
     });
 
     return infos;

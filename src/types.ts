@@ -21,10 +21,8 @@ export type ListingParams = {
   configurator: AccountId;
 };
 
-export type ListingTermsInfo = {
+export type ListingTermsInfo = ListingTermsParams & {
   id: BigNumber;
-  strategyId: BytesLike;
-  strategyData: BytesLike;
 };
 
 export type ListingTermsQueryParams = {
@@ -44,22 +42,22 @@ export type FixedPriceWithRewardListingTermsParams = {
   name: typeof listingStrategies.FIXED_RATE_WITH_REWARD.name;
   data: {
     pricePerSecondInEthers: BigNumberish;
-    rewardRatePercent: BigNumberish;
+    rewardRatePercent: string;
   };
 };
 
 export type FixedRateTaxTermsParams = {
   name: typeof taxStrategies.FIXED_RATE_TAX.name;
   data: {
-    ratePercent: BigNumberish;
+    ratePercent: string;
   };
 };
 
 export type FixedRateWithRewardTaxTermsParams = {
   name: typeof taxStrategies.FIXED_RATE_TAX_WITH_REWARD.name;
   data: {
-    ratePercent: BigNumberish;
-    rewardRatePercent: BigNumberish;
+    ratePercent: string;
+    rewardRatePercent: string;
   };
 };
 

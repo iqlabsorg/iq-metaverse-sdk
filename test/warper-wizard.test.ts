@@ -21,7 +21,7 @@ import {
 } from '../src/contracts';
 import { createAssetReference } from './helpers/asset';
 import { COLLECTION, setupUniverse, setupUniverseAndWarper, WARPER_WIZARD } from './helpers/setup';
-import { COMMON_ID, toAccountId } from './helpers/utils';
+import { COMMON_ID, COMMON_TAX_RATE, toAccountId } from './helpers/utils';
 import { findWarperByDeploymentTransaction } from './helpers/warper';
 
 /**
@@ -78,7 +78,7 @@ describe('WarperWizardAdapterV1', () => {
       universeId: COMMON_ID,
       paused: false,
     };
-    warperTaxTerms = { name: TAX_STRATEGIES.FIXED_RATE_TAX, data: { ratePercent: '1' } };
+    warperTaxTerms = { name: TAX_STRATEGIES.FIXED_RATE_TAX, data: { ratePercent: COMMON_TAX_RATE } };
     warperInitData = {
       metahub: toAccountId(metahub.address),
       original: createAssetReference('erc721', collection.address),

@@ -31,3 +31,4 @@ export const SECONDS_IN_DAY = 86400;
 export const SECONDS_IN_HOUR = 3600;
 
 export const COMMON_ID = BigNumber.from(1);
+export const COMMON_TAX_RATE = '10.25';

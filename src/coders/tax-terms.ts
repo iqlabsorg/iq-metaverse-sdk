@@ -3,7 +3,7 @@ import { BytesLike, defaultAbiCoder } from 'ethers/lib/utils';
 import { taxStrategies } from '../constants';
 import { ITaxTermsRegistry } from '../contracts';
 import { TaxTermsParams, TaxTermsStrategyIdName } from '../types';
-import { convertPercentage } from '../utils';
+import { convertPercentage, convertToPercentage } from '../utils';
 
 export class TaxTermsCoder {
   /**
@@ -62,20 +62,20 @@ export class TaxTermsCoder {
         return {
           name: FIXED_RATE_TAX.name,
           data: {
-            ratePercent,
+            ratePercent: convertToPercentage(ratePercent),
           },
         };
       }
       case FIXED_RATE_TAX_WITH_REWARD.id: {
-        const [ratePercent, rewardRatePercent] = defaultAbiCoder.decode(['uint16'], params.strategyData) as [
+        const [ratePercent, rewardRatePercent] = defaultAbiCoder.decode(['uint16', 'uint16'], params.strategyData) as [
           BigNumber,
           BigNumber,
         ];
         return {
           name: FIXED_RATE_TAX_WITH_REWARD.name,
           data: {
-            ratePercent,
-            rewardRatePercent,
+            ratePercent: convertToPercentage(ratePercent),
+            rewardRatePercent: convertToPercentage(rewardRatePercent),
           },
         };
       }
