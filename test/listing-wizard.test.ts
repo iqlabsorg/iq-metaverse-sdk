@@ -4,7 +4,7 @@ import {
   AssetListingParams,
   IQSpace,
   ListingParams,
-  ListingTermsParams,
+  ListingTerms,
   ListingWizardAdapterV1,
   LISTING_STRATEGIES,
 } from '../src';
@@ -41,7 +41,7 @@ describe('ListingWizardAdapterV1', () => {
 
   /** Data Structs */
   let pricePerSecondInEthers: string;
-  let listingTerms: ListingTermsParams;
+  let listingTerms: ListingTerms;
   let listingParams: ListingParams;
   let assetListingParams: AssetListingParams;
 

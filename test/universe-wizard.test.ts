@@ -3,7 +3,7 @@ import { BigNumber, ContractTransaction } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import {
   IQSpace,
-  TaxTermsParams,
+  TaxTerms,
   TAX_STRATEGIES,
   UniverseParams,
   UniverseWizardAdapterV1,
@@ -48,7 +48,7 @@ describe('UniverseWizardAdapterV1', () => {
   /** Data Structs */
   let universeParams: UniverseParams;
   let warperParams: IWarperManager.WarperRegistrationParamsStruct;
-  let warperTaxTerms: TaxTermsParams;
+  let warperTaxTerms: TaxTerms;
   let warperInitData: WarperPresetInitData;
 
   beforeEach(async () => {

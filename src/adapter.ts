@@ -10,9 +10,9 @@ import {
   AgreementTerms,
   Asset,
   ChainAware,
-  ListingTermsParams,
+  ListingTerms,
   WarperPresetIds,
-  TaxTermsParams,
+  TaxTerms,
   WarperPresetInitData,
   TaxTermsStrategyIdName,
 } from './types';
@@ -60,19 +60,19 @@ export abstract class Adapter implements ChainAware {
     return AssetCoder.decode(asset, this.addressTranslator.chainId);
   }
 
-  protected encodeListingTermsParams(params: ListingTermsParams): IListingTermsRegistry.ListingTermsStruct {
+  protected encodeListingTerms(params: ListingTerms): IListingTermsRegistry.ListingTermsStruct {
     return ListingTermsCoder.encode(params);
   }
 
-  protected decodeListingTermsParams(params: IListingTermsRegistry.ListingTermsStruct): ListingTermsParams {
+  protected decodeListingTerms(params: IListingTermsRegistry.ListingTermsStruct): ListingTerms {
     return ListingTermsCoder.decode(params);
   }
 
-  protected encodeTaxTermsParams(params: TaxTermsParams): ITaxTermsRegistry.TaxTermsStruct {
+  protected encodeTaxTerms(params: TaxTerms): ITaxTermsRegistry.TaxTermsStruct {
     return TaxTermsCoder.encode(params);
   }
 
-  protected decodeTaxTermsParams(params: ITaxTermsRegistry.TaxTermsStruct): TaxTermsParams {
+  protected decodeTaxTerms(params: ITaxTermsRegistry.TaxTermsStruct): TaxTerms {
     return TaxTermsCoder.decode(params);
   }
 

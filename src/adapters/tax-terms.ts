@@ -4,7 +4,7 @@ import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
 import { ITaxTermsRegistry, TaxTermsRegistry } from '../contracts';
-import { TaxTermsParams, TaxTermsQueryParams, TaxTermsStrategyIdName } from '../types';
+import { TaxTerms, TaxTermsQueryParams, TaxTermsStrategyIdName } from '../types';
 
 export class TaxTermsRegistryAdapter extends Adapter {
   private readonly contract: TaxTermsRegistry;
@@ -35,20 +35,20 @@ export class TaxTermsRegistryAdapter extends Adapter {
    * Returns universe's tax terms.
    * @param queryParams Query parameters.
    */
-  async universeTaxTerms(queryParams: TaxTermsQueryParams): Promise<TaxTermsParams> {
+  async universeTaxTerms(queryParams: TaxTermsQueryParams): Promise<TaxTerms> {
     const encodedParams = this.encodeTaxTermsQueryParams(queryParams);
     const terms = await this.contract.universeTaxTerms(encodedParams);
-    return this.decodeTaxTermsParams(terms);
+    return this.decodeTaxTerms(terms);
   }
 
   /**
    * Returns protocol's tax terms.
    * @param queryParams Query parameters.
    */
-  async protocolTaxTerms(queryParams: TaxTermsQueryParams): Promise<TaxTermsParams> {
+  async protocolTaxTerms(queryParams: TaxTermsQueryParams): Promise<TaxTerms> {
     const encodedParams = this.encodeTaxTermsQueryParams(queryParams);
     const terms = await this.contract.protocolTaxTerms(encodedParams);
-    return this.decodeTaxTermsParams(terms);
+    return this.decodeTaxTerms(terms);
   }
 
   private encodeTaxTermsQueryParams(queryParams: TaxTermsQueryParams): ITaxTermsRegistry.ParamsStruct {

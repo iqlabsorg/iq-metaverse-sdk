@@ -14,14 +14,14 @@ export interface ChainAware {
   getChainId(): Promise<ChainId>;
 }
 
-export type ListingTermsParams = FixedPriceListingTermsParams | FixedPriceWithRewardListingTermsParams;
+export type ListingTerms = FixedPriceListingTerms | FixedPriceWithRewardListingTerms;
 
 export type ListingParams = {
   lister: AccountId;
   configurator: AccountId;
 };
 
-export type ListingTermsInfo = ListingTermsParams & {
+export type ListingTermsInfo = ListingTerms & {
   id: BigNumber;
 };
 
@@ -31,14 +31,14 @@ export type ListingTermsQueryParams = {
   warper: AssetType;
 };
 
-export type FixedPriceListingTermsParams = {
+export type FixedPriceListingTerms = {
   name: typeof listingStrategies.FIXED_RATE.name;
   data: {
     pricePerSecondInEthers: BigNumberish;
   };
 };
 
-export type FixedPriceWithRewardListingTermsParams = {
+export type FixedPriceWithRewardListingTerms = {
   name: typeof listingStrategies.FIXED_RATE_WITH_REWARD.name;
   data: {
     pricePerSecondInEthers: BigNumberish;
@@ -46,14 +46,14 @@ export type FixedPriceWithRewardListingTermsParams = {
   };
 };
 
-export type FixedRateTaxTermsParams = {
+export type FixedRateTaxTerms = {
   name: typeof taxStrategies.FIXED_RATE_TAX.name;
   data: {
     ratePercent: string;
   };
 };
 
-export type FixedRateWithRewardTaxTermsParams = {
+export type FixedRateWithRewardTaxTerms = {
   name: typeof taxStrategies.FIXED_RATE_TAX_WITH_REWARD.name;
   data: {
     ratePercent: string;
@@ -61,7 +61,7 @@ export type FixedRateWithRewardTaxTermsParams = {
   };
 };
 
-export type TaxTermsParams = FixedRateTaxTermsParams | FixedRateWithRewardTaxTermsParams;
+export type TaxTerms = FixedRateTaxTerms | FixedRateWithRewardTaxTerms;
 
 export type TaxTermsStrategyIdName =
   | typeof taxStrategies.FIXED_RATE_TAX.name
@@ -107,7 +107,7 @@ export type RentingEstimationParams = Pick<Rentings.ParamsStruct, 'listingId' | 
   warper: AssetType;
   renter: AccountId;
   paymentToken: AssetType;
-  selectedConfiguratorListingTerms?: ListingTermsParams;
+  selectedConfiguratorListingTerms?: ListingTerms;
 };
 
 export type TokenQuoteDataEncoded = { tokenQuote: BytesLike; tokenQuoteSignature: BytesLike };

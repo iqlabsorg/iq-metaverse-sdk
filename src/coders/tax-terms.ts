@@ -2,14 +2,14 @@ import { BigNumber } from 'ethers';
 import { BytesLike, defaultAbiCoder } from 'ethers/lib/utils';
 import { taxStrategies } from '../constants';
 import { ITaxTermsRegistry } from '../contracts';
-import { TaxTermsParams, TaxTermsStrategyIdName } from '../types';
+import { TaxTerms, TaxTermsStrategyIdName } from '../types';
 import { convertPercentage, convertToPercentage } from '../utils';
 
 export class TaxTermsCoder {
   /**
    * Encodes tax terms.
    */
-  static encode(params: TaxTermsParams): ITaxTermsRegistry.TaxTermsStruct {
+  static encode(params: TaxTerms): ITaxTermsRegistry.TaxTermsStruct {
     const { FIXED_RATE_TAX, FIXED_RATE_TAX_WITH_REWARD } = taxStrategies;
 
     switch (params.name) {
@@ -53,7 +53,7 @@ export class TaxTermsCoder {
   /**
    * Decodes tax terms.
    */
-  static decode(params: ITaxTermsRegistry.TaxTermsStruct): TaxTermsParams {
+  static decode(params: ITaxTermsRegistry.TaxTermsStruct): TaxTerms {
     const { FIXED_RATE_TAX, FIXED_RATE_TAX_WITH_REWARD } = taxStrategies;
 
     switch (params.strategyId) {

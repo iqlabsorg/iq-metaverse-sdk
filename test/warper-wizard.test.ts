@@ -4,7 +4,7 @@ import { ContractTransaction } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import {
   IQSpace,
-  TaxTermsParams,
+  TaxTerms,
   TAX_STRATEGIES,
   WarperPresetInitData,
   WarperRegistrationParams,
@@ -44,7 +44,7 @@ describe('WarperWizardAdapterV1', () => {
   /** Data Structs */
   let warperReference: AssetType;
   let warperParams: WarperRegistrationParams;
-  let warperTaxTerms: TaxTermsParams;
+  let warperTaxTerms: TaxTerms;
   let warperInitData: WarperPresetInitData;
 
   const registerExistingWarper = async (): Promise<void> => {

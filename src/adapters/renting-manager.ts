@@ -25,7 +25,7 @@ export class RentingManagerAdapter extends Adapter {
     const { listingId, paymentToken, rentalPeriod, renter, warper, selectedConfiguratorListingTerms, listingTermsId } =
       params;
     const configuratorListingTerms = selectedConfiguratorListingTerms
-      ? this.encodeListingTermsParams(selectedConfiguratorListingTerms)
+      ? this.encodeListingTerms(selectedConfiguratorListingTerms)
       : createEmptyListingTerms();
     const fees = await this.contract.estimateRent({
       listingId,
@@ -57,7 +57,7 @@ export class RentingManagerAdapter extends Adapter {
       tokenQuoteDataEncoded,
     } = params;
     const configuratorListingTerms = selectedConfiguratorListingTerms
-      ? this.encodeListingTermsParams(selectedConfiguratorListingTerms)
+      ? this.encodeListingTerms(selectedConfiguratorListingTerms)
       : createEmptyListingTerms();
     const tokenQuoteData = tokenQuoteDataEncoded ?? createEmptyTokenQuoteData();
     return this.contract.rent(
