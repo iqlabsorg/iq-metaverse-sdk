@@ -1,10 +1,16 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AccountId, AssetType } from 'caip';
 import { deployments, ethers } from 'hardhat';
-import { Asset, IQSpace, RentingEstimationParams, RentingManagerAdapter } from '../src';
+import {
+  AddressTranslator,
+  Asset,
+  createAsset,
+  IQSpace,
+  RentingEstimationParams,
+  RentingManagerAdapter,
+  convertToWei,
+} from '../src';
 import { ERC20Mock, IMetahub, IRentingManager } from '../src/contracts';
-import { convertToWei } from '../src/utils';
-import { createAssetReference, makeERC721AssetForSDK } from './helpers/asset';
 import { setupForRenting } from './helpers/setup';
 import { COMMON_ID, SECONDS_IN_HOUR, toAccountId } from './helpers/utils';
 
@@ -65,7 +71,7 @@ describe('RentingManagerAdapter', () => {
     rentingManagerAdapter = iqspace.rentingManager(toAccountId(rentingManager.address));
 
     ({ warperReference } = await setupForRenting());
-    baseTokenReference = createAssetReference('erc20', baseToken.address);
+    baseTokenReference = AddressTranslator.createAssetType(toAccountId(baseToken.address), 'erc20');
     renterAccountId = toAccountId(renter.address);
 
     await baseToken.connect(deployer).mint(renter.address, convertToWei('1000'));
@@ -79,7 +85,7 @@ describe('RentingManagerAdapter', () => {
       listingTermsId: COMMON_ID,
     };
 
-    warpedAsset = makeERC721AssetForSDK(warperReference.assetName.reference, 1);
+    warpedAsset = createAsset('erc721', toAccountId(warperReference.assetName.reference), 1);
   });
 
   describe('estimateRent', () => {

@@ -2,6 +2,8 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { deployments, ethers } from 'hardhat';
 import {
   AssetListingParams,
+  calculatePricePerSecondInEthers,
+  createAsset,
   IQSpace,
   ListingParams,
   ListingTerms,
@@ -9,8 +11,6 @@ import {
   LISTING_STRATEGIES,
 } from '../src';
 import { ERC721Mock, IListingManager, IListingWizardV1, IMetahub } from '../src/contracts';
-import { calculatePricePerSecondInEthers } from '../src/utils';
-import { makeERC721AssetForSDK } from './helpers/asset';
 import { setupForListing } from './helpers/setup';
 import { COMMON_ID, SECONDS_IN_DAY, toAccountId } from './helpers/utils';
 
@@ -58,7 +58,7 @@ describe('ListingWizardAdapterV1', () => {
     listingTerms = { name: LISTING_STRATEGIES.FIXED_RATE, data: { pricePerSecondInEthers } };
     listingParams = { lister: toAccountId(lister.address), configurator: toAccountId(ethers.constants.AddressZero) };
     assetListingParams = {
-      assets: [makeERC721AssetForSDK(collection.address, 1)],
+      assets: [createAsset('erc721', toAccountId(collection.address), 1)],
       params: listingParams,
       maxLockPeriod: SECONDS_IN_DAY * 7,
       immediatePayout: true,
@@ -67,7 +67,7 @@ describe('ListingWizardAdapterV1', () => {
 
   describe('createListingWithTerms', () => {
     beforeEach(async () => {
-      await listingWizardAdapter.createListingWithTerms(COMMON_ID, assetListingParams, listingTerms);
+      await listingWizardAdapter.createListingWithTerms(1, assetListingParams, listingTerms);
     });
 
     it('should create listing with terms', async () => {

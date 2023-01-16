@@ -1,9 +1,8 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AssetType } from 'caip';
 import { deployments, ethers } from 'hardhat';
-import { IQSpace, WarperManagerAdapter } from '../src';
+import { AddressTranslator, IQSpace, WarperManagerAdapter } from '../src';
 import { ERC721Mock, IWarperManager, IWarperPresetFactory } from '../src/contracts';
-import { createAssetReference } from './helpers/asset';
 import { setupUniverseAndRegisteredWarper } from './helpers/setup';
 import { COMMON_ID, toAccountId } from './helpers/utils';
 
@@ -86,7 +85,7 @@ describe('WarperManagerAdapter', () => {
       it('should return 0', async () => {
         const count = await warperManagerAdapter.universeAssetWarperCount(
           COMMON_ID,
-          createAssetReference('erc721', random.address),
+          AddressTranslator.createAssetType(toAccountId(random.address), 'erc721'),
         );
         expect(count.toBigInt()).toBe(0n);
       });
@@ -96,7 +95,7 @@ describe('WarperManagerAdapter', () => {
       it('should return warper count', async () => {
         const count = await warperManagerAdapter.universeAssetWarperCount(
           COMMON_ID,
-          createAssetReference('erc721', collection.address),
+          AddressTranslator.createAssetType(toAccountId(collection.address), 'erc721'),
         );
         expect(count.toBigInt()).toBe(1n);
       });
@@ -107,7 +106,7 @@ describe('WarperManagerAdapter', () => {
     it('should return asset warpers', async () => {
       const warpers = await warperManagerAdapter.universeAssetWarpers(
         COMMON_ID,
-        createAssetReference('erc721', collection.address),
+        AddressTranslator.createAssetType(toAccountId(collection.address), 'erc721'),
         0,
         1,
       );

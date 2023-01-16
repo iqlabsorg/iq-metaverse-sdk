@@ -2,6 +2,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { BigNumber, ContractTransaction } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import {
+  AddressTranslator,
   IQSpace,
   TaxTerms,
   TAX_STRATEGIES,
@@ -18,7 +19,7 @@ import {
   IUniverseWizardV1,
   IWarperManager,
 } from '../src/contracts';
-import { createAssetReference, mintAndApproveNFTs } from './helpers/asset';
+import { mintAndApproveNFTs } from './helpers/asset';
 import { createWarper } from './helpers/setup';
 import { COMMON_ID, COMMON_TAX_RATE, toAccountId } from './helpers/utils';
 import { findWarperByDeploymentTransaction } from './helpers/warper';
@@ -72,7 +73,7 @@ describe('UniverseWizardAdapterV1', () => {
     };
     warperInitData = {
       metahub: toAccountId(metahub.address),
-      original: createAssetReference('erc721', collection.address),
+      original: AddressTranslator.createAssetType(toAccountId(collection.address), 'erc721'),
     };
   });
 

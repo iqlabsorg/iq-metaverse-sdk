@@ -3,6 +3,7 @@ import { AssetType } from 'caip';
 import { ContractTransaction } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import {
+  AddressTranslator,
   IQSpace,
   TaxTerms,
   TAX_STRATEGIES,
@@ -11,15 +12,7 @@ import {
   WarperWizardAdapterV1,
   WARPER_PRESETS_ERC721,
 } from '../src';
-import {
-  ERC721Mock,
-  ERC721Mock__factory,
-  IMetahub,
-  IWarperManager,
-  IWarperWizardV1,
-  WarperWizardV1__factory,
-} from '../src/contracts';
-import { createAssetReference } from './helpers/asset';
+import { ERC721Mock, IMetahub, IWarperManager, IWarperWizardV1 } from '../src/contracts';
 import { setupUniverse, setupUniverseAndWarper } from './helpers/setup';
 import { COMMON_ID, COMMON_TAX_RATE, toAccountId } from './helpers/utils';
 import { findWarperByDeploymentTransaction } from './helpers/warper';
@@ -81,7 +74,7 @@ describe('WarperWizardAdapterV1', () => {
     warperTaxTerms = { name: TAX_STRATEGIES.FIXED_RATE_TAX, data: { ratePercent: COMMON_TAX_RATE } };
     warperInitData = {
       metahub: toAccountId(metahub.address),
-      original: createAssetReference('erc721', collection.address),
+      original: AddressTranslator.createAssetType(toAccountId(collection.address), 'erc721'),
     };
   });
 

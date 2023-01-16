@@ -1,7 +1,7 @@
 import { AccountId, AssetType } from 'caip';
 import { BigNumber } from 'ethers';
 import { ethers } from 'hardhat';
-import { WARPER_PRESET_ERC721_IDS } from '../../src';
+import { AddressTranslator, WARPER_PRESET_ERC721_IDS } from '../../src';
 import {
   ERC721Mock,
   IListingTermsRegistry,
@@ -13,7 +13,7 @@ import {
 } from '../../src/contracts';
 import { calculatePricePerSecondInEthers } from '../../src/utils';
 import { grantWizardRolesToDeployer } from './acl';
-import { createAssetReference, makeERC721Asset, mintAndApproveNFTs } from './asset';
+import { makeERC721Asset, mintAndApproveNFTs } from './asset';
 import { makeListingParams, makeListingTermsFixedRate } from './listing-renting';
 import { makeTaxTermsFixedRate } from './tax';
 import { makeUniverseParams } from './universe';
@@ -78,7 +78,7 @@ const createUniverseAndWarperWithWizards = async (): Promise<{ warperReference: 
     throw new Error('Failed to deploy warper');
   }
 
-  return { warperReference: createAssetReference('erc721', warperAddress) };
+  return { warperReference: AddressTranslator.createAssetType(toAccountId(warperAddress), 'erc721') };
 };
 
 export const createWarper = async (): Promise<WarperCreated> => {
@@ -97,7 +97,7 @@ export const createWarper = async (): Promise<WarperCreated> => {
     throw new Error('Failed to deploy warper');
   }
 
-  return { warperReference: createAssetReference('erc721', warperAddress) };
+  return { warperReference: AddressTranslator.createAssetType(toAccountId(warperAddress), 'erc721') };
 };
 
 const createAndRegisterWarper = async (): Promise<WarperCreatedAndRegistered> => {
@@ -181,7 +181,7 @@ export const setupForListing = async (): Promise<{
   const { warperReference } = await createUniverseAndWarperWithWizards();
 
   return {
-    collectionReference: createAssetReference('erc721', collection.address),
+    collectionReference: AddressTranslator.createAssetType(toAccountId(collection.address), 'erc721'),
     warperReference,
   };
 };

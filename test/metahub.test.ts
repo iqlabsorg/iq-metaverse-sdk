@@ -2,11 +2,16 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AccountId, AssetType } from 'caip';
 import { BigNumber } from 'ethers';
 import { deployments, ethers } from 'hardhat';
-import { BaseToken, IQSpace, MetahubAdapter, RentingEstimationParams, RentingManagerAdapter } from '../src';
+import {
+  AddressTranslator,
+  BaseToken,
+  IQSpace,
+  MetahubAdapter,
+  RentingEstimationParams,
+  RentingManagerAdapter,
+  convertToWei,
+} from '../src';
 import { ERC20Mock, ERC721Mock, IMetahub, IRentingManager, IWarperPresetFactory } from '../src/contracts';
-import { convertToWei } from '../src/utils';
-import { createAssetReference } from './helpers/asset';
-import { getTokenQuoteData } from './helpers/listing-renting';
 import { setupForRenting, setupUniverseAndRegisteredWarper } from './helpers/setup';
 import { COMMON_ID, getChainId, SECONDS_IN_HOUR, toAccountId, waitBlockchainTime } from './helpers/utils';
 
@@ -65,7 +70,6 @@ describe('MetahubAdapter', () => {
       warper: warperReference,
       maxPaymentAmount: estimate.total,
       listingTermsId: COMMON_ID,
-      ...getTokenQuoteData(),
     });
   };
 
@@ -99,8 +103,8 @@ describe('MetahubAdapter', () => {
     listerAccountId = toAccountId(lister.address);
     renterAccountId = toAccountId(renter.address);
     strangerAccountId = toAccountId(stranger.address);
-    collectionReference = createAssetReference('erc721', collection.address);
-    baseTokenReference = createAssetReference('erc20', baseToken.address);
+    collectionReference = AddressTranslator.createAssetType(toAccountId(collection.address), 'erc721');
+    baseTokenReference = AddressTranslator.createAssetType(toAccountId(baseToken.address), 'erc20');
 
     await baseToken.connect(deployer).mint(renter.address, convertToWei('1000'));
   });
@@ -117,7 +121,7 @@ describe('MetahubAdapter', () => {
     beforeEach(async () => {
       const base = baseToken.connect(deployer);
       baseTokenInfoRaw = {
-        type: createAssetReference('erc20', baseToken.address),
+        type: baseTokenReference,
         name: await base.name(),
         symbol: await base.symbol(),
         decimals: await base.decimals(),
