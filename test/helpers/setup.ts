@@ -14,10 +14,10 @@ import {
 import { calculatePricePerSecondInEthers } from '../../src/utils';
 import { grantWizardRolesToDeployer } from './acl';
 import { makeERC721Asset, mintAndApproveNFTs } from './asset';
-import { makeListingParams, makeListingTermsFixedRate } from './listing-renting';
-import { makeTaxTermsFixedRate } from './tax';
+import { makeListingParams, makeListingTermsFixedRate, makeListingTermsFixedRateWithReward } from './listing-renting';
+import { makeTaxTermsFixedRate, makeTaxTermsFixedRateWithReward } from './tax';
 import { makeUniverseParams } from './universe';
-import { COMMON_ID, COMMON_TAX_RATE, SECONDS_IN_DAY, toAccountId } from './utils';
+import { COMMON_ID, COMMON_PRICE, COMMON_RATE, COMMON_REWARD, SECONDS_IN_DAY, toAccountId } from './utils';
 import { findWarperByDeploymentTransaction, getERC721ConfigurablePresetInitData } from './warper';
 
 export type UniverseCreated = {
@@ -50,14 +50,16 @@ const createUniverse = async (): Promise<UniverseCreated> => {
   };
 };
 
-const createUniverseAndWarperWithWizards = async (): Promise<{ warperReference: AssetType }> => {
+const createUniverseAndWarperWithWizards = async (withReward: boolean): Promise<{ warperReference: AssetType }> => {
   const universeWizard = (await ethers.getContract('UniverseWizardV1')) as IUniverseWizardV1;
   const baseToken = await ethers.getContract('ERC20Mock');
   const metahub = (await ethers.getContract('Metahub')) as IMetahub;
   const collection = await ethers.getContract('ERC721Mock');
 
   const universeParams = makeUniverseParams('Test Universe', [baseToken.address]);
-  const universeWarperTaxTerms = makeTaxTermsFixedRate(COMMON_TAX_RATE);
+  const universeWarperTaxTerms = withReward
+    ? makeTaxTermsFixedRateWithReward(COMMON_RATE, COMMON_REWARD)
+    : makeTaxTermsFixedRate(COMMON_RATE);
   const warperParams = {
     name: 'Warper',
     universeId: BigNumber.from(0), // will be replaced on-chain with actual
@@ -115,15 +117,19 @@ const createAndRegisterWarper = async (): Promise<WarperCreatedAndRegistered> =>
   return { warperName, warperReference };
 };
 
-const createListing = async (): Promise<{ txHash: string; listingTerms: IListingTermsRegistry.ListingTermsStruct }> => {
+const createListing = async (
+  withReward: boolean,
+): Promise<{ txHash: string; listingTerms: IListingTermsRegistry.ListingTermsStruct }> => {
   const lister = await ethers.getNamedSigner('assetOwner');
 
   const collection = await ethers.getContract('ERC721Mock');
   const listingWizard = await ethers.getContract('ListingWizardV1');
 
   const listingAssets = [makeERC721Asset(collection.address, 1)];
-  const baseRate = calculatePricePerSecondInEthers('100', SECONDS_IN_DAY);
-  const listingTerms = makeListingTermsFixedRate(baseRate);
+  const baseRate = calculatePricePerSecondInEthers(COMMON_PRICE, SECONDS_IN_DAY);
+  const listingTerms = withReward
+    ? makeListingTermsFixedRateWithReward(baseRate, COMMON_REWARD)
+    : makeListingTermsFixedRate(baseRate);
   const listingParams = makeListingParams(lister.address);
   const tx = await listingWizard
     .connect(lister)
@@ -161,7 +167,9 @@ export const setupUniverseAndRegisteredWarper = async (): Promise<{
 /**
  * Setup with single universe, warper, asset and tax terms
  */
-export const setupForListing = async (): Promise<{
+export const setupForListing = async (
+  withReward = false,
+): Promise<{
   warperReference: AssetType;
   collectionReference: AssetType;
 }> => {
@@ -174,11 +182,13 @@ export const setupForListing = async (): Promise<{
   await mintAndApproveNFTs(collection, lister);
 
   /** Set global tax terms */
-  const globalTaxTerms = makeTaxTermsFixedRate(COMMON_TAX_RATE);
+  const globalTaxTerms = withReward
+    ? makeTaxTermsFixedRateWithReward(COMMON_RATE, COMMON_REWARD)
+    : makeTaxTermsFixedRate(COMMON_RATE);
   await taxTermsRegistry.registerProtocolGlobalTaxTerms(globalTaxTerms);
 
   /** Create universe and warper */
-  const { warperReference } = await createUniverseAndWarperWithWizards();
+  const { warperReference } = await createUniverseAndWarperWithWizards(withReward);
 
   return {
     collectionReference: AddressTranslator.createAssetType(toAccountId(collection.address), 'erc721'),
@@ -189,16 +199,18 @@ export const setupForListing = async (): Promise<{
 /**
  * Setup with single universe, warper, asset, tax terms and listing
  */
-export const setupForRenting = async (): Promise<{
+export const setupForRenting = async (
+  withReward = false,
+): Promise<{
   warperReference: AssetType;
   collectionReference: AssetType;
   listingCreationTxHash: string;
   listingTerms: IListingTermsRegistry.ListingTermsStruct;
 }> => {
-  const { collectionReference, warperReference } = await setupForListing();
+  const { collectionReference, warperReference } = await setupForListing(withReward);
 
   /** Create listing */
-  const { txHash: listingCreationTxHash, listingTerms } = await createListing();
+  const { txHash: listingCreationTxHash, listingTerms } = await createListing(withReward);
 
   return {
     collectionReference,
