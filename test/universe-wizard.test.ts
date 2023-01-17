@@ -1,10 +1,13 @@
+import { ITaxTermsRegistry } from '@iqprotocol/solidity-contracts-nft/typechain';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { BigNumber, ContractTransaction } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import {
+  AddressTranslator,
   IQSpace,
   TaxTerms,
   TAX_STRATEGIES,
+  TAX_STRATEGY_IDS,
   UniverseParams,
   UniverseWizardAdapterV1,
   WarperPresetInitData,
@@ -18,9 +21,9 @@ import {
   IUniverseWizardV1,
   IWarperManager,
 } from '../src/contracts';
-import { createAssetReference, mintAndApproveNFTs } from './helpers/asset';
+import { mintAndApproveNFTs } from './helpers/asset';
 import { createWarper } from './helpers/setup';
-import { COMMON_ID, COMMON_TAX_RATE, toAccountId } from './helpers/utils';
+import { COMMON_ID, COMMON_RATE, COMMON_REWARD, toAccountId } from './helpers/utils';
 import { findWarperByDeploymentTransaction } from './helpers/warper';
 
 /**
@@ -34,6 +37,7 @@ describe('UniverseWizardAdapterV1', () => {
   let warperManager: IWarperManager;
   let universeRegistry: IUniverseRegistry;
   let universeWizard: IUniverseWizardV1;
+  let taxTermsRegistry: ITaxTermsRegistry;
   let metahub: IMetahub;
   let baseToken: ERC20Mock;
   let collection: ERC721Mock;
@@ -46,7 +50,31 @@ describe('UniverseWizardAdapterV1', () => {
   let universeParams: UniverseParams;
   let warperParams: IWarperManager.WarperRegistrationParamsStruct;
   let warperTaxTerms: TaxTerms;
+  let warperTaxTermsWithReward: TaxTerms;
   let warperInitData: WarperPresetInitData;
+
+  const setupUniverseAndCreateWarperFromPresetAndRegister = async (
+    taxTerms: TaxTerms,
+  ): Promise<ContractTransaction> => {
+    return universeWizardAdapter.setupUniverseAndCreateWarperFromPresetAndRegister(
+      universeParams,
+      taxTerms,
+      warperParams,
+      WARPER_PRESETS_ERC721.ERC721_CONFIGURABLE_PRESET,
+      warperInitData,
+    );
+  };
+
+  const setupUniverseAndRegisterExistingWarper = async (taxTerms: TaxTerms): Promise<string> => {
+    const { warperReference } = await createWarper();
+    await universeWizardAdapter.setupUniverseAndRegisterExistingWarper(
+      universeParams,
+      warperReference,
+      taxTerms,
+      warperParams,
+    );
+    return warperReference.assetName.reference;
+  };
 
   beforeEach(async () => {
     await deployments.fixture();
@@ -56,6 +84,7 @@ describe('UniverseWizardAdapterV1', () => {
     warperManager = await ethers.getContract('WarperManager');
     universeRegistry = await ethers.getContract('UniverseRegistry');
     universeWizard = await ethers.getContract('UniverseWizardV1');
+    taxTermsRegistry = await ethers.getContract('TaxTermsRegistry');
     metahub = await ethers.getContract('Metahub');
     baseToken = await ethers.getContract('ERC20Mock');
     collection = await ethers.getContract('ERC721Mock');
@@ -64,7 +93,11 @@ describe('UniverseWizardAdapterV1', () => {
     universeWizardAdapter = iqspace.universeWizardV1(toAccountId(universeWizard.address));
 
     universeParams = { name: 'Test Universe', paymentTokens: [toAccountId(baseToken.address)] };
-    warperTaxTerms = { name: TAX_STRATEGIES.FIXED_RATE_TAX, data: { ratePercent: COMMON_TAX_RATE } };
+    warperTaxTerms = { name: TAX_STRATEGIES.FIXED_RATE_TAX, data: { ratePercent: COMMON_RATE } };
+    warperTaxTermsWithReward = {
+      name: TAX_STRATEGIES.FIXED_RATE_TAX_WITH_REWARD,
+      data: { ratePercent: COMMON_RATE, rewardRatePercent: COMMON_REWARD },
+    };
     warperParams = {
       name: 'Warper',
       universeId: BigNumber.from(0),
@@ -72,7 +105,7 @@ describe('UniverseWizardAdapterV1', () => {
     };
     warperInitData = {
       metahub: toAccountId(metahub.address),
-      original: createAssetReference('erc721', collection.address),
+      original: AddressTranslator.createAssetType(toAccountId(collection.address), 'erc721'),
     };
   });
 
@@ -95,49 +128,105 @@ describe('UniverseWizardAdapterV1', () => {
 
     beforeEach(async () => {
       await mintAndApproveNFTs(collection, deployer);
-      tx = await universeWizardAdapter.setupUniverseAndCreateWarperFromPresetAndRegister(
-        universeParams,
-        warperTaxTerms,
-        warperParams,
-        WARPER_PRESETS_ERC721.ERC721_CONFIGURABLE_PRESET,
-        warperInitData,
-      );
     });
 
-    it('should create universe and warper', async () => {
-      const universeInfo = await universeRegistry.universe(COMMON_ID);
-      const warperAddress = await findWarperByDeploymentTransaction(tx.hash);
-      const warperInfo = await warperManager.warperInfo(warperAddress!);
-      expect(universeInfo).toMatchObject({
-        name: universeParams.name,
-        paymentTokens: universeParams.paymentTokens.map(x => x.address),
+    describe('with fixed rate tax', () => {
+      beforeEach(async () => {
+        tx = await setupUniverseAndCreateWarperFromPresetAndRegister(warperTaxTerms);
       });
-      expect(warperInfo).toMatchObject({ ...warperParams, universeId: COMMON_ID });
+
+      it('should create universe and warper with fixed rate tax', async () => {
+        const universeInfo = await universeRegistry.universe(COMMON_ID);
+        const warperAddress = await findWarperByDeploymentTransaction(tx.hash);
+        const warperInfo = await warperManager.warperInfo(warperAddress!);
+        const isFixedRateTax = await taxTermsRegistry.areRegisteredUniverseWarperTaxTerms(
+          COMMON_ID,
+          warperAddress!,
+          TAX_STRATEGY_IDS.FIXED_RATE_TAX,
+        );
+
+        expect(isFixedRateTax).toBe(true);
+        expect(universeInfo).toMatchObject({
+          name: universeParams.name,
+          paymentTokens: universeParams.paymentTokens.map(x => x.address),
+        });
+        expect(warperInfo).toMatchObject({ ...warperParams, universeId: COMMON_ID });
+      });
+    });
+
+    describe('with fixed rate and reward tax', () => {
+      beforeEach(async () => {
+        tx = await setupUniverseAndCreateWarperFromPresetAndRegister(warperTaxTermsWithReward);
+      });
+
+      it('should create universe and warper with fixed rate tax', async () => {
+        const universeInfo = await universeRegistry.universe(COMMON_ID);
+        const warperAddress = await findWarperByDeploymentTransaction(tx.hash);
+        const warperInfo = await warperManager.warperInfo(warperAddress!);
+        const isFixedRateWithRewardTax = await taxTermsRegistry.areRegisteredUniverseWarperTaxTerms(
+          COMMON_ID,
+          warperAddress!,
+          TAX_STRATEGY_IDS.FIXED_RATE_TAX_WITH_REWARD,
+        );
+
+        expect(isFixedRateWithRewardTax).toBe(true);
+        expect(universeInfo).toMatchObject({
+          name: universeParams.name,
+          paymentTokens: universeParams.paymentTokens.map(x => x.address),
+        });
+        expect(warperInfo).toMatchObject({ ...warperParams, universeId: COMMON_ID });
+      });
     });
   });
 
   describe('setupUniverseAndRegisterExistingWarper', () => {
     let warperAddress: string;
 
-    beforeEach(async () => {
-      const { warperReference } = await createWarper();
-      warperAddress = warperReference.assetName.reference;
-      await universeWizardAdapter.setupUniverseAndRegisterExistingWarper(
-        universeParams,
-        warperReference,
-        warperTaxTerms,
-        warperParams,
-      );
+    describe('with fixed rate tax', () => {
+      beforeEach(async () => {
+        warperAddress = await setupUniverseAndRegisterExistingWarper(warperTaxTerms);
+      });
+
+      it('should create a universe and register the existing warper to it with fixed rate tax', async () => {
+        const universeInfo = await universeRegistry.universe(COMMON_ID);
+        const warperInfo = await warperManager.warperInfo(warperAddress!);
+        const isFixedRateTax = await taxTermsRegistry.areRegisteredUniverseWarperTaxTerms(
+          COMMON_ID,
+          warperAddress!,
+          TAX_STRATEGY_IDS.FIXED_RATE_TAX,
+        );
+
+        expect(isFixedRateTax).toBe(true);
+
+        expect(universeInfo).toMatchObject({
+          name: universeParams.name,
+          paymentTokens: universeParams.paymentTokens.map(x => x.address),
+        });
+        expect(warperInfo).toMatchObject({ universeId: COMMON_ID });
+      });
     });
 
-    it('should create a universe and register the existing warper to it', async () => {
-      const universeInfo = await universeRegistry.universe(COMMON_ID);
-      const warperInfo = await warperManager.warperInfo(warperAddress!);
-      expect(universeInfo).toMatchObject({
-        name: universeParams.name,
-        paymentTokens: universeParams.paymentTokens.map(x => x.address),
+    describe('with fixed rate and reward tax', () => {
+      beforeEach(async () => {
+        warperAddress = await setupUniverseAndRegisterExistingWarper(warperTaxTermsWithReward);
       });
-      expect(warperInfo).toMatchObject({ universeId: COMMON_ID });
+
+      it('should create a universe and register the existing warper to it with fixed rate and reward tax', async () => {
+        const universeInfo = await universeRegistry.universe(COMMON_ID);
+        const warperInfo = await warperManager.warperInfo(warperAddress!);
+        const isFixedRateWithRewardTax = await taxTermsRegistry.areRegisteredUniverseWarperTaxTerms(
+          COMMON_ID,
+          warperAddress!,
+          TAX_STRATEGY_IDS.FIXED_RATE_TAX_WITH_REWARD,
+        );
+
+        expect(isFixedRateWithRewardTax).toBe(true);
+        expect(universeInfo).toMatchObject({
+          name: universeParams.name,
+          paymentTokens: universeParams.paymentTokens.map(x => x.address),
+        });
+        expect(warperInfo).toMatchObject({ universeId: COMMON_ID });
+      });
     });
   });
 });

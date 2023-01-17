@@ -2,9 +2,8 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AssetType } from 'caip';
 import { ContractTransaction } from 'ethers';
 import { deployments, ethers } from 'hardhat';
-import { IQSpace, WarperPresetFactoryAdapter } from '../src';
+import { AddressTranslator, IQSpace, WarperPresetFactoryAdapter } from '../src';
 import { ERC721Mock, IMetahub, IWarperPresetFactory } from '../src/contracts';
-import { createAssetReference } from './helpers/asset';
 import { setupUniverse } from './helpers/setup';
 import { toAccountId } from './helpers/utils';
 import { findWarperByDeploymentTransaction } from './helpers/warper';
@@ -46,7 +45,7 @@ describe('WarperPresetFactoryAdapter', () => {
     beforeEach(async () => {
       tx = await warperPresetFactoryAdapter.deployPreset('ERC721ConfigurablePreset', {
         metahub: toAccountId(metahub.address),
-        original: createAssetReference('erc721', collection.address),
+        original: AddressTranslator.createAssetType(toAccountId(collection.address), 'erc721'),
       });
     });
 
@@ -61,7 +60,7 @@ describe('WarperPresetFactoryAdapter', () => {
 
       beforeEach(async () => {
         const warper = await findWarperByDeploymentTransaction(tx.hash);
-        reference = createAssetReference('erc721', warper!);
+        reference = AddressTranslator.createAssetType(toAccountId(warper!), 'erc721');
       });
 
       it('should return warper reference from deployment transaction', async () => {

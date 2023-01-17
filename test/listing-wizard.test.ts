@@ -2,17 +2,19 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { deployments, ethers } from 'hardhat';
 import {
   AssetListingParams,
+  AssetType,
+  calculatePricePerSecondInEthers,
+  createAsset,
   IQSpace,
   ListingParams,
   ListingTerms,
   ListingWizardAdapterV1,
   LISTING_STRATEGIES,
+  LISTING_STRATEGY_IDS,
 } from '../src';
-import { ERC721Mock, IListingManager, IListingWizardV1, IMetahub } from '../src/contracts';
-import { calculatePricePerSecondInEthers } from '../src/utils';
-import { makeERC721AssetForSDK } from './helpers/asset';
+import { ERC721Mock, IListingManager, IListingTermsRegistry, IListingWizardV1, IMetahub } from '../src/contracts';
 import { setupForListing } from './helpers/setup';
-import { COMMON_ID, SECONDS_IN_DAY, toAccountId } from './helpers/utils';
+import { COMMON_ID, COMMON_PRICE, COMMON_REWARD, SECONDS_IN_DAY, toAccountId } from './helpers/utils';
 
 /**
  * @group integration
@@ -25,6 +27,7 @@ describe('ListingWizardAdapterV1', () => {
   /** Contracts */
   let listingWizard: IListingWizardV1;
   let listingManager: IListingManager;
+  let listingTermsRegistry: IListingTermsRegistry;
   let metahub: IMetahub;
   let collection: ERC721Mock;
 
@@ -35,8 +38,20 @@ describe('ListingWizardAdapterV1', () => {
   /** Data Structs */
   let pricePerSecondInEthers: string;
   let listingTerms: ListingTerms;
+  let listingTermsWithReward: ListingTerms;
   let listingParams: ListingParams;
   let assetListingParams: AssetListingParams;
+  let warperReference: AssetType;
+
+  const getTermsStrategyId = async (): Promise<string> => {
+    const [, termsList] = await listingTermsRegistry.allListingTerms(
+      { listingId: COMMON_ID, universeId: COMMON_ID, warperAddress: warperReference.assetName.reference },
+      0,
+      1,
+    );
+
+    return termsList[0].strategyId;
+  };
 
   beforeEach(async () => {
     await deployments.fixture();
@@ -46,19 +61,22 @@ describe('ListingWizardAdapterV1', () => {
 
     listingWizard = await ethers.getContract('ListingWizardV1');
     listingManager = await ethers.getContract('ListingManager');
+    listingTermsRegistry = await ethers.getContract('ListingTermsRegistry');
     metahub = await ethers.getContract('Metahub');
     collection = await ethers.getContract('ERC721Mock');
 
     iqspace = await IQSpace.init({ signer: lister });
     listingWizardAdapter = iqspace.listingWizardV1(toAccountId(listingWizard.address));
 
-    await setupForListing();
-
-    pricePerSecondInEthers = calculatePricePerSecondInEthers('100', SECONDS_IN_DAY);
+    pricePerSecondInEthers = calculatePricePerSecondInEthers(COMMON_PRICE, SECONDS_IN_DAY);
     listingTerms = { name: LISTING_STRATEGIES.FIXED_RATE, data: { pricePerSecondInEthers } };
+    listingTermsWithReward = {
+      name: LISTING_STRATEGIES.FIXED_RATE_WITH_REWARD,
+      data: { pricePerSecondInEthers, rewardRatePercent: COMMON_REWARD },
+    };
     listingParams = { lister: toAccountId(lister.address), configurator: toAccountId(ethers.constants.AddressZero) };
     assetListingParams = {
-      assets: [makeERC721AssetForSDK(collection.address, 1)],
+      assets: [createAsset('erc721', toAccountId(collection.address), 1)],
       params: listingParams,
       maxLockPeriod: SECONDS_IN_DAY * 7,
       immediatePayout: true,
@@ -66,16 +84,40 @@ describe('ListingWizardAdapterV1', () => {
   });
 
   describe('createListingWithTerms', () => {
-    beforeEach(async () => {
-      await listingWizardAdapter.createListingWithTerms(COMMON_ID, assetListingParams, listingTerms);
+    describe('with fixed rate', () => {
+      beforeEach(async () => {
+        ({ warperReference } = await setupForListing());
+        await listingWizardAdapter.createListingWithTerms(1, assetListingParams, listingTerms);
+      });
+
+      it('should create listing with fixed rate', async () => {
+        const listing = await listingManager.listingInfo(COMMON_ID);
+        const strategyId = await getTermsStrategyId();
+
+        expect(strategyId).toBe(LISTING_STRATEGY_IDS.FIXED_RATE);
+        expect(listing.lister).toBe(listingParams.lister.address);
+        expect(listing.configurator).toBe(listingParams.configurator.address);
+        expect(listing.maxLockPeriod).toBe(assetListingParams.maxLockPeriod);
+        expect(listing.immediatePayout).toBe(assetListingParams.immediatePayout);
+      });
     });
 
-    it('should create listing with terms', async () => {
-      const listing = await listingManager.listingInfo(COMMON_ID);
-      expect(listing.lister).toBe(listingParams.lister.address);
-      expect(listing.configurator).toBe(listingParams.configurator.address);
-      expect(listing.maxLockPeriod).toBe(assetListingParams.maxLockPeriod);
-      expect(listing.immediatePayout).toBe(assetListingParams.immediatePayout);
+    describe('with fixed rate and reward', () => {
+      beforeEach(async () => {
+        ({ warperReference } = await setupForListing(true));
+        await listingWizardAdapter.createListingWithTerms(1, assetListingParams, listingTermsWithReward);
+      });
+
+      it('should create listing with fixed rate and reward', async () => {
+        const listing = await listingManager.listingInfo(COMMON_ID);
+        const strategyId = await getTermsStrategyId();
+
+        expect(strategyId).toBe(LISTING_STRATEGY_IDS.FIXED_RATE_WITH_REWARD);
+        expect(listing.lister).toBe(listingParams.lister.address);
+        expect(listing.configurator).toBe(listingParams.configurator.address);
+        expect(listing.maxLockPeriod).toBe(assetListingParams.maxLockPeriod);
+        expect(listing.immediatePayout).toBe(assetListingParams.immediatePayout);
+      });
     });
   });
 });

@@ -2,11 +2,19 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AccountId, AssetType } from 'caip';
 import { BigNumber } from 'ethers';
 import { deployments, ethers } from 'hardhat';
-import { BaseToken, IQSpace, MetahubAdapter, RentingEstimationParams, RentingManagerAdapter } from '../src';
+import {
+  AddressTranslator,
+  BaseToken,
+  IQSpace,
+  MetahubAdapter,
+  RentingEstimationParams,
+  RentingManagerAdapter,
+  convertToWei,
+  createAsset,
+  Asset,
+} from '../src';
 import { ERC20Mock, ERC721Mock, IMetahub, IRentingManager, IWarperPresetFactory } from '../src/contracts';
-import { convertToWei } from '../src/utils';
-import { createAssetReference } from './helpers/asset';
-import { getTokenQuoteData } from './helpers/listing-renting';
+import { mintNFTs } from './helpers/asset';
 import { setupForRenting, setupUniverseAndRegisteredWarper } from './helpers/setup';
 import { COMMON_ID, getChainId, SECONDS_IN_HOUR, toAccountId, waitBlockchainTime } from './helpers/utils';
 
@@ -27,6 +35,7 @@ describe('MetahubAdapter', () => {
 
   /** SDK */
   let metahubAdapter: MetahubAdapter;
+  let renterMetahubAdapter: MetahubAdapter;
   let metahubAdapterLister: MetahubAdapter;
   let rentingManagerAdapter: RentingManagerAdapter;
 
@@ -45,6 +54,7 @@ describe('MetahubAdapter', () => {
   let renterAccountId: AccountId;
   let strangerAccountId: AccountId;
   let rentingEstimationParams: RentingEstimationParams;
+  let asset: Asset;
 
   const rentAsset = async (): Promise<void> => {
     rentingEstimationParams = {
@@ -65,7 +75,6 @@ describe('MetahubAdapter', () => {
       warper: warperReference,
       maxPaymentAmount: estimate.total,
       listingTermsId: COMMON_ID,
-      ...getTokenQuoteData(),
     });
   };
 
@@ -95,12 +104,14 @@ describe('MetahubAdapter', () => {
 
     const renteriqspace = await IQSpace.init({ signer: renter });
     rentingManagerAdapter = renteriqspace.rentingManager(toAccountId(rentingManager.address));
+    renterMetahubAdapter = renteriqspace.metahub(toAccountId(metahub.address));
 
     listerAccountId = toAccountId(lister.address);
     renterAccountId = toAccountId(renter.address);
     strangerAccountId = toAccountId(stranger.address);
-    collectionReference = createAssetReference('erc721', collection.address);
-    baseTokenReference = createAssetReference('erc20', baseToken.address);
+    collectionReference = AddressTranslator.createAssetType(toAccountId(collection.address), 'erc721');
+    baseTokenReference = AddressTranslator.createAssetType(toAccountId(baseToken.address), 'erc20');
+    asset = createAsset('erc721', toAccountId(collection.address), 1);
 
     await baseToken.connect(deployer).mint(renter.address, convertToWei('1000'));
   });
@@ -117,7 +128,7 @@ describe('MetahubAdapter', () => {
     beforeEach(async () => {
       const base = baseToken.connect(deployer);
       baseTokenInfoRaw = {
-        type: createAssetReference('erc20', baseToken.address),
+        type: baseTokenReference,
         name: await base.name(),
         symbol: await base.symbol(),
         decimals: await base.decimals(),
@@ -293,6 +304,73 @@ describe('MetahubAdapter', () => {
         await metahubAdapter.withdrawUniverseFunds(COMMON_ID, baseTokenReference, amount, strangerAccountId);
         const strangersBalance = await baseToken.connect(stranger).balanceOf(stranger.address);
         expect(strangersBalance.toBigInt()).toBe(amount.toBigInt());
+      });
+    });
+  });
+
+  describe('approveForRentalPayment', () => {
+    const amount = convertToWei('10');
+
+    it('should approve payment token to be spent by metahub', async () => {
+      await renterMetahubAdapter.approveForRentalPayment(baseTokenReference, amount);
+      const approvedAmount = await baseToken.allowance(renter.address, metahub.address);
+      expect(approvedAmount.toString()).toBe(amount.toString());
+    });
+  });
+
+  describe('paymentTokenAllowance', () => {
+    describe('when no allowance set', () => {
+      it('should return 0', async () => {
+        const allowance = await metahubAdapter.paymentTokenAllowance(baseTokenReference, toAccountId(metahub.address));
+        expect(allowance.toBigInt()).toBe(0n);
+      });
+    });
+
+    describe('when allowance has been set', () => {
+      const amount = convertToWei('10');
+
+      beforeEach(async () => {
+        await renterMetahubAdapter.approveForRentalPayment(baseTokenReference, amount);
+      });
+
+      it('should return the allowance amount', async () => {
+        const allowance = await metahubAdapter.paymentTokenAllowance(baseTokenReference, toAccountId(renter.address));
+        expect(allowance.toString()).toBe(amount.toString());
+      });
+    });
+  });
+
+  describe('approveForListing', () => {
+    beforeEach(async () => {
+      await mintNFTs(collection, lister);
+    });
+
+    it('should approve metahub to take asset from a lister', async () => {
+      await metahubAdapterLister.approveForListing(asset);
+      expect(await collection.getApproved(1)).toBe(metahub.address);
+    });
+  });
+
+  describe('isApprovedForListing', () => {
+    beforeEach(async () => {
+      await mintNFTs(collection, lister);
+    });
+
+    describe('if not approved', () => {
+      it('should return false', async () => {
+        const approved = await metahubAdapter.isApprovedForListing(asset);
+        expect(approved).toBe(false);
+      });
+    });
+
+    describe('if is approved', () => {
+      beforeEach(async () => {
+        await metahubAdapterLister.approveForListing(asset);
+      });
+
+      it('should return true', async () => {
+        const approved = await metahubAdapter.isApprovedForListing(asset);
+        expect(approved).toBe(true);
       });
     });
   });

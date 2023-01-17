@@ -34,49 +34,75 @@ describe('ListingTermsRegistryAdapter', () => {
 
     iqspace = await IQSpace.init({ signer: lister });
     listingTermsRegistryAdapter = iqspace.listingTermsRegistry(toAccountId(listingTermsRegistry.address));
-
-    ({ listingCreationTxHash, warperReference } = await setupForRenting());
   });
 
   describe('listingTerms', () => {
-    it('should return listing terms', async () => {
-      const terms = await listingTermsRegistryAdapter.listingTerms(COMMON_ID);
-      expect(terms).toBeDefined();
-      expect(terms.id).toMatchObject(COMMON_ID);
-      expect(terms.name).toBe(LISTING_STRATEGIES.FIXED_RATE);
-      expect(terms.data.pricePerSecondInEthers).toBeDefined();
+    describe('with fixed rate tax', () => {
+      beforeEach(async () => {
+        await setupForRenting();
+      });
+
+      it('should return listing terms with fixed rate tax', async () => {
+        const terms = await listingTermsRegistryAdapter.listingTerms(COMMON_ID);
+        expect(terms).toBeDefined();
+        expect(terms.id).toMatchObject(COMMON_ID);
+        expect(terms.name).toBe(LISTING_STRATEGIES.FIXED_RATE);
+        expect(terms.data.pricePerSecondInEthers).toBeDefined();
+      });
+    });
+
+    describe('with fixed rate and reward tax', () => {
+      beforeEach(async () => {
+        await setupForRenting(true);
+      });
+
+      it('should return listing terms with fixed rate ', async () => {
+        const terms = await listingTermsRegistryAdapter.listingTerms(COMMON_ID);
+        expect(terms).toBeDefined();
+        expect(terms.id).toMatchObject(COMMON_ID);
+        expect(terms.name).toBe(LISTING_STRATEGIES.FIXED_RATE_WITH_REWARD);
+        expect(terms.data.pricePerSecondInEthers).toBeDefined();
+      });
     });
   });
 
-  describe('allListingTerms', () => {
-    it('should return all terms for a given listing', async () => {
-      const infos = await listingTermsRegistryAdapter.allListingTerms(
-        { listingId: COMMON_ID, universeId: COMMON_ID, warper: warperReference },
-        0,
-        5,
-      );
-      expect(infos.length).toBeGreaterThan(0);
-      expect(infos[0].id).toMatchObject(COMMON_ID);
-      expect(infos[0].name).toBe(LISTING_STRATEGIES.FIXED_RATE);
-      expect(infos[0].data.pricePerSecondInEthers).toBeDefined();
+  describe('when universe, warper and listing is setup', () => {
+    beforeEach(async () => {
+      ({ listingCreationTxHash, warperReference } = await setupForRenting());
     });
-  });
 
-  describe('findListingTermsIdByCreationTransaction', () => {
-    it('should return created listing id from transaction hash', async () => {
-      const termsId = await listingTermsRegistryAdapter.findListingTermsIdByCreationTransaction(listingCreationTxHash);
-      expect(termsId).toBeDefined();
-      expect(termsId).toMatchObject(COMMON_ID);
+    describe('allListingTerms', () => {
+      it('should return all terms for a given listing', async () => {
+        const infos = await listingTermsRegistryAdapter.allListingTerms(
+          { listingId: COMMON_ID, universeId: COMMON_ID, warper: warperReference },
+          0,
+          5,
+        );
+        expect(infos.length).toBeGreaterThan(0);
+        expect(infos[0].id).toMatchObject(COMMON_ID);
+        expect(infos[0].name).toBe(LISTING_STRATEGIES.FIXED_RATE);
+        expect(infos[0].data.pricePerSecondInEthers).toBeDefined();
+      });
     });
-  });
 
-  describe('findListingTermsByCreationTransaction', () => {
-    it('should return created listing info from transaction hash', async () => {
-      const terms = await listingTermsRegistryAdapter.findListingTermsByCreationTransaction(listingCreationTxHash);
-      expect(terms).toBeDefined();
-      expect(terms?.id).toMatchObject(COMMON_ID);
-      expect(terms?.name).toBe(LISTING_STRATEGIES.FIXED_RATE);
-      expect(terms?.data.pricePerSecondInEthers).toBeDefined();
+    describe('findListingTermsIdByCreationTransaction', () => {
+      it('should return created listing id from transaction hash', async () => {
+        const termsId = await listingTermsRegistryAdapter.findListingTermsIdByCreationTransaction(
+          listingCreationTxHash,
+        );
+        expect(termsId).toBeDefined();
+        expect(termsId).toMatchObject(COMMON_ID);
+      });
+    });
+
+    describe('findListingTermsByCreationTransaction', () => {
+      it('should return created listing info from transaction hash', async () => {
+        const terms = await listingTermsRegistryAdapter.findListingTermsByCreationTransaction(listingCreationTxHash);
+        expect(terms).toBeDefined();
+        expect(terms?.id).toMatchObject(COMMON_ID);
+        expect(terms?.name).toBe(LISTING_STRATEGIES.FIXED_RATE);
+        expect(terms?.data.pricePerSecondInEthers).toBeDefined();
+      });
     });
   });
 });

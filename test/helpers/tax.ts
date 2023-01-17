@@ -17,3 +17,21 @@ export const makeTaxTermsFixedRate = (baseTaxRate: string): ITaxTermsRegistry.Ta
 
 export const encodeFixedRateTaxTerms = (baseTaxRate: string): BytesLike =>
   defaultAbiCoder.encode(['uint16'], [convertPercentage(baseTaxRate)]);
+
+export const makeTaxTermsFixedRateWithReward = (
+  baseTaxRatePercent: string,
+  rewardTaxRatePercent: string,
+): ITaxTermsRegistry.TaxTermsStruct =>
+  makeTaxTerms(
+    TAX_STRATEGY_IDS.FIXED_RATE_TAX_WITH_REWARD,
+    encodeFixedRateWithRewardTaxTerms(baseTaxRatePercent, rewardTaxRatePercent),
+  );
+
+export const encodeFixedRateWithRewardTaxTerms = (
+  baseTaxRatePercent: string,
+  rewardTaxRatePercent: string,
+): BytesLike =>
+  defaultAbiCoder.encode(
+    ['uint16', 'uint16'],
+    [convertPercentage(baseTaxRatePercent), convertPercentage(rewardTaxRatePercent)],
+  );

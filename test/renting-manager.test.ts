@@ -1,12 +1,18 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AccountId, AssetType } from 'caip';
 import { deployments, ethers } from 'hardhat';
-import { Asset, IQSpace, RentingEstimationParams, RentingManagerAdapter } from '../src';
+import {
+  AddressTranslator,
+  Asset,
+  createAsset,
+  IQSpace,
+  RentingEstimationParams,
+  RentingManagerAdapter,
+  convertToWei,
+} from '../src';
 import { ERC20Mock, IMetahub, IRentingManager } from '../src/contracts';
-import { convertToWei } from '../src/utils';
-import { createAssetReference, makeERC721AssetForSDK } from './helpers/asset';
 import { setupForRenting } from './helpers/setup';
-import { COMMON_ID, SECONDS_IN_HOUR, toAccountId } from './helpers/utils';
+import { COMMON_ID, SECONDS_IN_HOUR, toAccountId, waitBlockchainTime } from './helpers/utils';
 
 /**
  * @group integration
@@ -65,7 +71,7 @@ describe('RentingManagerAdapter', () => {
     rentingManagerAdapter = iqspace.rentingManager(toAccountId(rentingManager.address));
 
     ({ warperReference } = await setupForRenting());
-    baseTokenReference = createAssetReference('erc20', baseToken.address);
+    baseTokenReference = AddressTranslator.createAssetType(toAccountId(baseToken.address), 'erc20');
     renterAccountId = toAccountId(renter.address);
 
     await baseToken.connect(deployer).mint(renter.address, convertToWei('1000'));
@@ -79,7 +85,7 @@ describe('RentingManagerAdapter', () => {
       listingTermsId: COMMON_ID,
     };
 
-    warpedAsset = makeERC721AssetForSDK(warperReference.assetName.reference, 1);
+    warpedAsset = createAsset('erc721', toAccountId(warperReference.assetName.reference), 1);
   });
 
   describe('estimateRent', () => {
@@ -135,20 +141,31 @@ describe('RentingManagerAdapter', () => {
   });
 
   describe('assetRentalStatus', () => {
-    describe('when asset is not rented', () => {
-      it('should reflect that asset is available for renting', async () => {
+    describe('when asset has never been rented', () => {
+      it('should return rental status `none`', async () => {
         const status = await rentingManagerAdapter.assetRentalStatus(warpedAsset);
-        // expect(status).toBe('available');
-        expect(status).toBe('none'); // ???
+        expect(status).toBe('none');
       });
     });
 
-    describe('when asset is rented', () => {
+    describe('when asset has been rented in the past but is not being rented now', () => {
+      beforeEach(async () => {
+        await rentAsset();
+        await waitBlockchainTime(rentalPeriod + 1000);
+      });
+
+      it('should return rental status `available`', async () => {
+        const status = await rentingManagerAdapter.assetRentalStatus(warpedAsset);
+        expect(status).toBe('available');
+      });
+    });
+
+    describe('when asset is currenlty being rented', () => {
       beforeEach(async () => {
         await rentAsset();
       });
 
-      it('should reflect that asset is not available for renting', async () => {
+      it('should return rental status `rented`', async () => {
         const status = await rentingManagerAdapter.assetRentalStatus(warpedAsset);
         expect(status).toBe('rented');
       });
