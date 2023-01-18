@@ -40,7 +40,7 @@ export class WarperWizardAdapterV1 extends Adapter {
    * Creates and registers a new warper from a preset.
    * @param taxTerms Warper tax terms.
    * @param registrationParams Warper registration params.
-   * @param presetId Warper preset ID.
+   * @param presetId Name of the warper preset ID.
    * @param initData Warper init data.
    */
   async createWarperFromPresetAndRegister(

@@ -1,13 +1,17 @@
 import { BigNumberish } from '@ethersproject/bignumber';
 import { AccountId, AssetId, AssetType, ChainId } from 'caip';
-import { BigNumber, BytesLike, Overrides as BaseOverrides } from 'ethers';
+import { BigNumber, BytesLike, Overrides as BaseOverrides, Signer } from 'ethers';
 import { listingStrategies, taxStrategies } from './constants';
-import { Warpers } from './contracts/contracts/warper/IWarperController';
 import { Accounts, ITokenQuote, Listings, Rentings } from './contracts/contracts/metahub/core/IMetahub';
+import { Warpers } from './contracts/contracts/warper/IWarperController';
 
 export type Address = string;
 
 export type Overrides = BaseOverrides & { from?: string | Promise<string> };
+
+export type IQSpaceParams = {
+  signer: Signer;
+};
 
 export interface ChainAware {
   // https://github.com/ChainAgnostic/CAIPs/blob/master/CAIPs/caip-2.md

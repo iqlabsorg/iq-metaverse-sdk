@@ -1,26 +1,22 @@
 import { AccountId, AssetType, ChainId } from 'caip';
 import { Signer } from 'ethers';
 import {
+  ListingManagerAdapter,
+  ListingTermsRegistryAdapter,
   ListingWizardAdapterV1,
   MetahubAdapter,
+  RentingManagerAdapter,
+  TaxTermsRegistryAdapter,
   UniverseRegistryAdapter,
   UniverseWizardAdapterV1,
   WarperManagerAdapter,
-  ListingManagerAdapter,
-  RentingManagerAdapter,
   WarperPresetFactoryAdapter,
   WarperWizardAdapterV1,
-  ListingTermsRegistryAdapter,
-  TaxTermsRegistryAdapter,
 } from './adapters';
 import { ERC721WarperAdapter } from './adapters/erc721-warper';
 import { AddressTranslator } from './address-translator';
 import { ContractResolver } from './contract-resolver';
-import { ChainAware } from './types';
-
-type IQSpaceParams = {
-  signer: Signer;
-};
+import { ChainAware, IQSpaceParams } from './types';
 
 export class IQSpace implements ChainAware {
   private readonly contractResolver: ContractResolver;
@@ -32,8 +28,7 @@ export class IQSpace implements ChainAware {
   }
 
   /**
-   * iqspace connection initializer.
-   * @param params
+   * IQSpace connection initializer.
    */
   static async init(params: IQSpaceParams): Promise<IQSpace> {
     const { signer } = params;
@@ -41,11 +36,18 @@ export class IQSpace implements ChainAware {
     return new IQSpace(signer, new ChainId({ namespace: 'eip155', reference: chainId.toString() }));
   }
 
+  /**
+   * Resolves current chain ID.
+   */
   async getChainId(): Promise<ChainId> {
     return Promise.resolve(this.chainId);
   }
 
-  warper(assetType: AssetType): ERC721WarperAdapter {
+  /**
+   * Resolves ERC721 warper adapter
+   * @param assetType Warper asset type.
+   */
+  warperERC721(assetType: AssetType): ERC721WarperAdapter {
     AddressTranslator.assertTypeERC721(assetType);
     return new ERC721WarperAdapter(assetType, this.contractResolver, this.addressTranslator);
   }

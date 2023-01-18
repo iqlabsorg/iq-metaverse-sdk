@@ -6,6 +6,10 @@ import { ERC721ConfigurablePreset__factory } from '../contracts';
 import { WarperPresetIds, WarperPresetInitData } from '../types';
 
 export class WarperPresetCoder {
+  /**
+   * Encode warper preset ID.
+   * @param presetId Name of the warper preset ID.
+   */
   static encodePresetId(presetId: WarperPresetIds): BytesLike {
     const encodedPresetId = warperPresetMap.get(presetId);
     if (!encodedPresetId) {
@@ -15,6 +19,11 @@ export class WarperPresetCoder {
     return encodedPresetId;
   }
 
+  /**
+   * Encode warper preset init data.
+   * @param presetId Name of the warper preset ID.
+   * @param data Warper init data.
+   */
   static encodePresetInitData(presetId: WarperPresetIds, data: WarperPresetInitData): BytesLike {
     if (presetId !== 'ERC721ConfigurablePreset') {
       throw new Error(`Unknown preset ID: "${presetId}"`);

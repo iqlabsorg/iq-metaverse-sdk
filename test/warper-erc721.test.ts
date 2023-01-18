@@ -1,8 +1,7 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AssetType } from 'caip';
 import { deployments, ethers } from 'hardhat';
-import { ERC721WarperAdapter } from 'src/adapters';
-import { IQSpace } from '../src';
+import { IQSpace, ERC721WarperAdapter } from '../src';
 import { ERC721ConfigurablePreset__factory } from '../src/contracts';
 import { setupUniverseAndRegisteredWarper } from './helpers/setup';
 
@@ -50,7 +49,7 @@ describe('ERC721WarperAdapter', () => {
     warperReference = warperData.warperReference;
 
     iqspace = await IQSpace.init({ signer: deployer });
-    warperAdapter = iqspace.warper(warperReference);
+    warperAdapter = iqspace.warperERC721(warperReference);
   });
 
   describe('rentingConstraints', () => {

@@ -34,6 +34,7 @@ export type {
   ListingTermsQueryParams,
   TaxTermsStrategyIdName,
   TaxTermsQueryParams,
+  IQSpaceParams,
 } from './types';
 export { assetClasses, listingStrategies, taxStrategies } from './constants';
 export { IQSpace } from './iqspace';
@@ -49,6 +50,7 @@ export {
   WarperWizardAdapterV1,
   ListingTermsRegistryAdapter,
   TaxTermsRegistryAdapter,
+  ERC721WarperAdapter,
 } from './adapters';
 export {
   calculatePricePerSecondInEthers,
