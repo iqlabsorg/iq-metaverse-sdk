@@ -2,7 +2,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AssetType } from 'caip';
 import { deployments, ethers } from 'hardhat';
 import { AddressTranslator, IQSpace, WarperManagerAdapter } from '../src';
-import { ERC721Mock, IWarperManager, IWarperPresetFactory } from '../src/contracts';
+import { ERC721Mock, IMetahub, IWarperController, IWarperManager } from '../src/contracts';
 import { setupUniverseAndRegisteredWarper } from './helpers/setup';
 import { COMMON_ID, toAccountId } from './helpers/utils';
 
@@ -16,8 +16,9 @@ describe('WarperManagerAdapter', () => {
 
   /** Contracts */
   let warperManager: IWarperManager;
-  let warperPresetFactory: IWarperPresetFactory;
+  let warperController: IWarperController;
   let collection: ERC721Mock;
+  let metahub: IMetahub;
 
   /** SDK */
   let iqspace: IQSpace;
@@ -34,8 +35,9 @@ describe('WarperManagerAdapter', () => {
     [random] = await ethers.getUnnamedSigners();
 
     warperManager = await ethers.getContract('WarperManager');
-    warperPresetFactory = await ethers.getContract('WarperPresetFactory');
+    warperController = await ethers.getContract('ERC721WarperController');
     collection = await ethers.getContract('ERC721Mock');
+    metahub = await ethers.getContract('Metahub');
 
     iqspace = await IQSpace.init({ signer: deployer });
     warperManagerAdapter = iqspace.warperManager(toAccountId(warperManager.address));
@@ -133,6 +135,20 @@ describe('WarperManagerAdapter', () => {
       const warper = await warperManagerAdapter.warper(warperReference);
       expect(warper.name).toBe(warperName);
       expect(warper.self).toMatchObject(warperReference);
+    });
+  });
+
+  describe('metahub', () => {
+    it('should return metahub account id', async () => {
+      const metahubAccountId = await warperManagerAdapter.metahub();
+      expect(metahubAccountId.toString()).toBe(toAccountId(metahub.address).toString());
+    });
+  });
+
+  describe('warperController', () => {
+    it('should return warper controller account id', async () => {
+      const warprControllerAccountId = await warperManagerAdapter.warperController(warperReference);
+      expect(warprControllerAccountId.toString()).toBe(toAccountId(warperController.address).toString());
     });
   });
 });
