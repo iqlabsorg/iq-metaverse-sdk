@@ -3,14 +3,13 @@ import { deployments, ethers } from 'hardhat';
 import { AssetType, IQSpace, ListingTermsRegistryAdapter, LISTING_STRATEGIES } from '../src';
 import { IListingTermsRegistry } from '../src/contracts';
 import { setupForRenting } from './helpers/setup';
-import { COMMON_ID, toAccountId } from './helpers/utils';
+import { COMMON_BASE_RATE, COMMON_ID, COMMON_REWARD_RATE, toAccountId } from './helpers/utils';
 
 /**
  * @group integration
  */
 describe('ListingTermsRegistryAdapter', () => {
   /** Signers */
-  let deployer: SignerWithAddress;
   let lister: SignerWithAddress;
 
   /** Contracts */
@@ -27,7 +26,6 @@ describe('ListingTermsRegistryAdapter', () => {
   beforeEach(async () => {
     await deployments.fixture();
 
-    deployer = await ethers.getNamedSigner('deployer');
     lister = await ethers.getNamedSigner('assetOwner');
 
     listingTermsRegistry = await ethers.getContract('ListingTermsRegistry');
@@ -44,10 +42,14 @@ describe('ListingTermsRegistryAdapter', () => {
 
       it('should return listing terms with fixed rate tax', async () => {
         const terms = await listingTermsRegistryAdapter.listingTerms(COMMON_ID);
-        expect(terms).toBeDefined();
-        expect(terms.id).toMatchObject(COMMON_ID);
-        expect(terms.name).toBe(LISTING_STRATEGIES.FIXED_RATE);
-        expect(terms.data.pricePerSecondInEthers).toBeDefined();
+
+        expect(terms).toMatchObject({
+          id: COMMON_ID,
+          name: LISTING_STRATEGIES.FIXED_RATE,
+          data: {
+            pricePerSecondInEthers: COMMON_BASE_RATE,
+          },
+        });
       });
     });
 
@@ -56,12 +58,17 @@ describe('ListingTermsRegistryAdapter', () => {
         await setupForRenting(true);
       });
 
-      it('should return listing terms with fixed rate ', async () => {
+      it('should return listing terms with fixed rate and reward tax', async () => {
         const terms = await listingTermsRegistryAdapter.listingTerms(COMMON_ID);
-        expect(terms).toBeDefined();
-        expect(terms.id).toMatchObject(COMMON_ID);
-        expect(terms.name).toBe(LISTING_STRATEGIES.FIXED_RATE_WITH_REWARD);
-        expect(terms.data.pricePerSecondInEthers).toBeDefined();
+
+        expect(terms).toMatchObject({
+          id: COMMON_ID,
+          name: LISTING_STRATEGIES.FIXED_RATE_WITH_REWARD,
+          data: {
+            pricePerSecondInEthers: COMMON_BASE_RATE,
+            rewardRatePercent: COMMON_REWARD_RATE,
+          },
+        });
       });
     });
   });
@@ -79,9 +86,13 @@ describe('ListingTermsRegistryAdapter', () => {
           5,
         );
         expect(infos.length).toBeGreaterThan(0);
-        expect(infos[0].id).toMatchObject(COMMON_ID);
-        expect(infos[0].name).toBe(LISTING_STRATEGIES.FIXED_RATE);
-        expect(infos[0].data.pricePerSecondInEthers).toBeDefined();
+        expect(infos[0]).toMatchObject({
+          id: COMMON_ID,
+          name: LISTING_STRATEGIES.FIXED_RATE,
+          data: {
+            pricePerSecondInEthers: COMMON_BASE_RATE,
+          },
+        });
       });
     });
 
@@ -98,10 +109,13 @@ describe('ListingTermsRegistryAdapter', () => {
     describe('findListingTermsByCreationTransaction', () => {
       it('should return created listing info from transaction hash', async () => {
         const terms = await listingTermsRegistryAdapter.findListingTermsByCreationTransaction(listingCreationTxHash);
-        expect(terms).toBeDefined();
-        expect(terms?.id).toMatchObject(COMMON_ID);
-        expect(terms?.name).toBe(LISTING_STRATEGIES.FIXED_RATE);
-        expect(terms?.data.pricePerSecondInEthers).toBeDefined();
+        expect(terms).toMatchObject({
+          id: COMMON_ID,
+          name: LISTING_STRATEGIES.FIXED_RATE,
+          data: {
+            pricePerSecondInEthers: COMMON_BASE_RATE,
+          },
+        });
       });
     });
   });

@@ -15,7 +15,7 @@ import {
 } from '../src';
 import { ERC721Mock, IMetahub, ITaxTermsRegistry, IWarperManager, IWarperWizardV1 } from '../src/contracts';
 import { setupUniverse, setupUniverseAndWarper } from './helpers/setup';
-import { COMMON_ID, COMMON_RATE, COMMON_REWARD, toAccountId } from './helpers/utils';
+import { COMMON_ID, COMMON_TAX_RATE, COMMON_REWARD_RATE, toAccountId } from './helpers/utils';
 import { findWarperByDeploymentTransaction } from './helpers/warper';
 
 /**
@@ -80,10 +80,10 @@ describe('WarperWizardAdapterV1', () => {
       universeId: COMMON_ID,
       paused: false,
     };
-    warperTaxTerms = { name: TAX_STRATEGIES.FIXED_RATE_TAX, data: { ratePercent: COMMON_RATE } };
+    warperTaxTerms = { name: TAX_STRATEGIES.FIXED_RATE_TAX, data: { ratePercent: COMMON_TAX_RATE } };
     warperTaxTermsWithReward = {
       name: TAX_STRATEGIES.FIXED_RATE_TAX_WITH_REWARD,
-      data: { ratePercent: COMMON_RATE, rewardRatePercent: COMMON_REWARD },
+      data: { ratePercent: COMMON_TAX_RATE, rewardRatePercent: COMMON_REWARD_RATE },
     };
     warperInitData = {
       metahub: toAccountId(metahub.address),
