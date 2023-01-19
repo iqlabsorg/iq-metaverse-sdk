@@ -5,7 +5,7 @@ import { Adapter } from '../../adapter';
 import { AddressTranslator } from '../../address-translator';
 import { ContractResolver } from '../../contract-resolver';
 import { IUniverseRegistry, UniverseWizardV1 } from '../../contracts';
-import { TaxTerms, UniverseParams, WarperPresetIds, WarperPresetInitData, WarperRegistrationParams } from '../../types';
+import { TaxTerms, UniverseParams, WarperPresetId, WarperPresetInitData, WarperRegistrationParams } from '../../types';
 
 export class UniverseWizardAdapterV1 extends Adapter {
   private readonly contract: UniverseWizardV1;
@@ -40,7 +40,7 @@ export class UniverseWizardAdapterV1 extends Adapter {
     universeParams: UniverseParams,
     warperTaxTerms: TaxTerms,
     warperRegistrationParams: WarperRegistrationParams,
-    warperPresetId: WarperPresetIds,
+    warperPresetId: WarperPresetId,
     warperInitData: WarperPresetInitData,
   ): Promise<ContractTransaction> {
     const params: IUniverseRegistry.UniverseParamsStruct = {

@@ -27,7 +27,6 @@ export type {
   TaxTerms,
   FixedRateTaxTerms,
   FixedRateWithRewardTaxTerms,
-  WarperPresetIds,
   WarperPresetInitData,
   TokenQuoteDataEncoded,
   AssetNamespace,
@@ -35,7 +34,9 @@ export type {
   TaxTermsStrategyIdName,
   TaxTermsQueryParams,
   IQSpaceParams,
+  WarperPreset,
 } from './types';
+export { WarperPresetId } from './types';
 export { assetClasses, listingStrategies, taxStrategies } from './constants';
 export { IQSpace } from './iqspace';
 export {

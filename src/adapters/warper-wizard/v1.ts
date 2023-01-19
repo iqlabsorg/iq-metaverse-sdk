@@ -5,7 +5,7 @@ import { Adapter } from '../../adapter';
 import { AddressTranslator } from '../../address-translator';
 import { ContractResolver } from '../../contract-resolver';
 import { WarperWizardV1 } from '../../contracts';
-import { TaxTerms, WarperPresetIds, WarperPresetInitData, WarperRegistrationParams } from '../../types';
+import { TaxTerms, WarperPresetId, WarperPresetInitData, WarperRegistrationParams } from '../../types';
 
 export class WarperWizardAdapterV1 extends Adapter {
   private readonly contract: WarperWizardV1;
@@ -46,7 +46,7 @@ export class WarperWizardAdapterV1 extends Adapter {
   async createWarperFromPresetAndRegister(
     taxTerms: TaxTerms,
     registrationParams: WarperRegistrationParams,
-    presetId: WarperPresetIds,
+    presetId: WarperPresetId,
     initData: WarperPresetInitData,
   ): Promise<ContractTransaction> {
     return this.contract.registerWarper(

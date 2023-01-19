@@ -194,9 +194,17 @@ export type UniverseInfo = {
   paymentTokens: AccountId[];
 };
 
-export type WarperPresetIds = 'ERC721ConfigurablePreset';
+export enum WarperPresetId {
+  ERC721_CONFIGURABLE_PRESET = 'ERC721ConfigurablePreset',
+}
 
 export type WarperPresetInitData = {
   metahub: AccountId;
   original: AssetType;
+};
+
+export type WarperPreset = {
+  id: WarperPresetId;
+  implementation: AccountId;
+  enabled: boolean;
 };

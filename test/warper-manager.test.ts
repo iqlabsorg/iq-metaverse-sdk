@@ -141,14 +141,14 @@ describe('WarperManagerAdapter', () => {
   describe('metahub', () => {
     it('should return metahub account id', async () => {
       const metahubAccountId = await warperManagerAdapter.metahub();
-      expect(metahubAccountId.toString()).toBe(toAccountId(metahub.address).toString());
+      expect(metahubAccountId.address).toBe(metahub.address);
     });
   });
 
   describe('warperController', () => {
     it('should return warper controller account id', async () => {
       const warprControllerAccountId = await warperManagerAdapter.warperController(warperReference);
-      expect(warprControllerAccountId.toString()).toBe(toAccountId(warperController.address).toString());
+      expect(warprControllerAccountId.address).toBe(warperController.address);
     });
   });
 
@@ -166,7 +166,7 @@ describe('WarperManagerAdapter', () => {
 
     it('should set new controller for given warpers', async () => {
       const warprControllerAccountId = await warperManagerAdapter.warperController(warperReference);
-      expect(warprControllerAccountId.toString()).toBe(toAccountId(newController.address).toString());
+      expect(warprControllerAccountId.address).toBe(newController.address);
     });
   });
 });

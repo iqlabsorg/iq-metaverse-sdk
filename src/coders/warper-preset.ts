@@ -1,17 +1,17 @@
 import { BytesLike } from 'ethers';
 import { defaultAbiCoder } from 'ethers/lib/utils';
 import { AddressTranslator } from '../address-translator';
-import { warperPresetMap } from '../constants';
+import { warperPresetIdToNameMap, warperPresetNameToIdMap } from '../constants';
 import { ERC721ConfigurablePreset__factory } from '../contracts';
-import { WarperPresetIds, WarperPresetInitData } from '../types';
+import { WarperPresetId, WarperPresetInitData } from '../types';
 
 export class WarperPresetCoder {
   /**
    * Encode warper preset ID.
    * @param presetId Name of the warper preset ID.
    */
-  static encodePresetId(presetId: WarperPresetIds): BytesLike {
-    const encodedPresetId = warperPresetMap.get(presetId);
+  static encodePresetId(presetId: WarperPresetId): BytesLike {
+    const encodedPresetId = warperPresetNameToIdMap.get(presetId);
     if (!encodedPresetId) {
       throw new Error('Invalid warper preset ID');
     }
@@ -20,12 +20,25 @@ export class WarperPresetCoder {
   }
 
   /**
+   * Decodes warper preset ID.
+   * @param presetId Warper preset ID.
+   */
+  static decodePresetId(presetId: BytesLike): WarperPresetId {
+    const decodedPresetId = warperPresetIdToNameMap.get(presetId.toString());
+    if (!decodedPresetId) {
+      throw new Error('Invalid warper preset ID');
+    }
+
+    return decodedPresetId;
+  }
+
+  /**
    * Encode warper preset init data.
    * @param presetId Name of the warper preset ID.
    * @param data Warper init data.
    */
-  static encodePresetInitData(presetId: WarperPresetIds, data: WarperPresetInitData): BytesLike {
-    if (presetId !== 'ERC721ConfigurablePreset') {
+  static encodePresetInitData(presetId: WarperPresetId, data: WarperPresetInitData): BytesLike {
+    if (presetId !== WarperPresetId.ERC721_CONFIGURABLE_PRESET) {
       throw new Error(`Unknown preset ID: "${presetId}"`);
     }
 

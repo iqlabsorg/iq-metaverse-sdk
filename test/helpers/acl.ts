@@ -9,3 +9,9 @@ export const grantWizardRolesToDeployer = async (): Promise<void> => {
   await acl.grantRole(ROLES_LIBRARY_IDS.UNIVERSE_WIZARD_ROLE, deployer.address);
   await acl.grantRole(ROLES_LIBRARY_IDS.WARPER_WIZARD_ROLE, deployer.address);
 };
+
+export const grantSupervisorRole = async (): Promise<void> => {
+  const supervisor = await ethers.getNamedSigner('supervisor');
+  const acl = (await ethers.getContract('ACL')) as IACL;
+  await acl.grantRole(ROLES_LIBRARY_IDS.SUPERVISOR_ROLE, supervisor.address);
+};

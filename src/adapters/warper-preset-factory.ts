@@ -3,8 +3,8 @@ import { ContractTransaction } from 'ethers';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
-import { WarperPresetFactory } from '../contracts';
-import { WarperPresetIds, WarperPresetInitData } from '../types';
+import { IWarperPresetFactory, WarperPresetFactory } from '../contracts';
+import { WarperPreset, WarperPresetId, WarperPresetInitData } from '../types';
 import { assetClassToNamespace } from '../utils';
 
 export class WarperPresetFactoryAdapter extends Adapter {
@@ -17,10 +17,10 @@ export class WarperPresetFactoryAdapter extends Adapter {
 
   /**
    * Deploys new instance of warper from preset.
-   * @param presetId
+   * @param presetId Name of the warper preset ID.
    * @param data Preset specific configuration.
    */
-  async deployPreset(presetId: WarperPresetIds, data: WarperPresetInitData): Promise<ContractTransaction> {
+  async deployPreset(presetId: WarperPresetId, data: WarperPresetInitData): Promise<ContractTransaction> {
     return this.contract.deployPreset(
       this.encodeWarperPresetId(presetId),
       this.encodeWarperPresetInitData(presetId, data),
@@ -50,5 +50,54 @@ export class WarperPresetFactoryAdapter extends Adapter {
     const assetClass = await warper.__assetClass();
 
     return this.addressToAssetType(event.args.warper, assetClassToNamespace(assetClass));
+  }
+
+  /**
+   * Returns the warper preset details.
+   * @param presetId Name of the warper preset ID.
+   */
+  async preset(presetId: WarperPresetId): Promise<WarperPreset> {
+    const preset = await this.contract.preset(this.encodeWarperPresetId(presetId));
+    return this.normalizeWarperPreset(preset);
+  }
+
+  /**
+   * Returns the list of all registered warper presets.
+   */
+  async presets() {
+    const presets = await this.contract.presets();
+    return presets.map(x => this.normalizeWarperPreset(x));
+  }
+
+  /**
+   * Enables warper preset, which makes it deployable.
+   * @param presetId Name of the warper preset ID.
+   */
+  async enablePreset(presetId: WarperPresetId): Promise<ContractTransaction> {
+    return this.contract.enablePreset(this.encodeWarperPresetId(presetId));
+  }
+
+  /**
+   * Disable warper preset, which makes non-deployable.
+   * @param presetId Name of the warper preset ID.
+   */
+  async disablePreset(presetId: WarperPresetId): Promise<ContractTransaction> {
+    return this.contract.disablePreset(this.encodeWarperPresetId(presetId));
+  }
+
+  /**
+   * Checks whether warper preset is enabled and available for deployment.
+   * @param presetId Name of the warper preset ID.
+   */
+  async presetEnabled(presetId: WarperPresetId): Promise<boolean> {
+    return this.contract.presetEnabled(this.encodeWarperPresetId(presetId));
+  }
+
+  private normalizeWarperPreset(preset: IWarperPresetFactory.WarperPresetStructOutput): WarperPreset {
+    return {
+      id: this.decodeWarperPresetId(preset.id),
+      implementation: this.addressToAccountId(preset.implementation),
+      enabled: preset.enabled,
+    };
   }
 }
