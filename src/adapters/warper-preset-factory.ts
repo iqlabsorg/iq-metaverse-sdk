@@ -93,6 +93,24 @@ export class WarperPresetFactoryAdapter extends Adapter {
     return this.contract.presetEnabled(this.encodeWarperPresetId(presetId));
   }
 
+  /**
+   * Stores the association between `presetId` and `implementation` address.
+   * Warper `implementation` must be deployed beforehand.
+   * @param presetId Name of the warper preset ID.
+   * @param implementation Warper implementation account ID.
+   */
+  async addPreset(presetId: WarperPresetId, implementation: AccountId): Promise<ContractTransaction> {
+    return this.contract.addPreset(this.encodeWarperPresetId(presetId), this.accountIdToAddress(implementation));
+  }
+
+  /**
+   * Removes the association between `presetId` and its implementation.
+   * @param presetId Name of the warper preset ID.
+   */
+  async removePreset(presetId: WarperPresetId): Promise<ContractTransaction> {
+    return this.contract.removePreset(this.encodeWarperPresetId(presetId));
+  }
+
   private normalizeWarperPreset(preset: IWarperPresetFactory.WarperPresetStructOutput): WarperPreset {
     return {
       id: this.decodeWarperPresetId(preset.id),

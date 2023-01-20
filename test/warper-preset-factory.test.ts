@@ -143,4 +143,27 @@ describe('WarperPresetFactoryAdapter', () => {
       });
     });
   });
+
+  describe('addPreset', () => {
+    beforeEach(async () => {
+      await warperPresetFactory.connect(supervisor).removePreset(WARPER_PRESET_ERC721_IDS.ERC721_CONFIGURABLE_PRESET);
+    });
+
+    it('should add preset', async () => {
+      await supervisorWarperPresetFactoryAdapter.addPreset(
+        WarperPresetId.ERC721_CONFIGURABLE_PRESET,
+        toAccountId(warperPreset.address),
+      );
+      const preset = await warperPresetFactory.preset(WARPER_PRESET_ERC721_IDS.ERC721_CONFIGURABLE_PRESET);
+      expect(preset.implementation).toBe(warperPreset.address);
+    });
+  });
+
+  describe('removePreset', () => {
+    it('should remove the preset', async () => {
+      await supervisorWarperPresetFactoryAdapter.removePreset(WarperPresetId.ERC721_CONFIGURABLE_PRESET);
+      const presets = await warperPresetFactory.presets();
+      expect(presets.length).toBe(0);
+    });
+  });
 });
