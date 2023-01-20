@@ -17,6 +17,7 @@ export class TaxTermsRegistryAdapter extends Adapter {
   /**
    * Checks registration of universe warper tax terms.
    * @param universeId Universe ID.
+   * @param warper Warper reference.
    * @param taxStrategyIdName Name of the tax strategy ID.
    */
   async areRegisteredUniverseWarperTaxTerms(
@@ -26,6 +27,53 @@ export class TaxTermsRegistryAdapter extends Adapter {
   ): Promise<boolean> {
     return this.contract.areRegisteredUniverseWarperTaxTerms(
       universeId,
+      this.assetTypeToAddress(warper),
+      this.encodeTaxStrategyId(taxStrategyIdName),
+    );
+  }
+
+  /**
+   * Checks registration of universe local tax terms.
+   * @param universeId Universe ID.
+   * @param taxStrategyIdName Name of the tax strategy ID.
+   */
+  async areRegisteredUniverseLocalTaxTerms(
+    universeId: BigNumberish,
+    taxStrategyIdName: TaxTermsStrategyIdName,
+  ): Promise<boolean> {
+    return this.contract.areRegisteredUniverseLocalTaxTerms(universeId, this.encodeTaxStrategyId(taxStrategyIdName));
+  }
+
+  /**
+   * Checks registration of protocol global tax terms.
+   * @param taxStrategyIdName Name of the tax strategy ID.
+   */
+  async areRegisteredProtocolGlobalTaxTerms(taxStrategyIdName: TaxTermsStrategyIdName): Promise<boolean> {
+    return this.contract.areRegisteredProtocolGlobalTaxTerms(this.encodeTaxStrategyId(taxStrategyIdName));
+  }
+
+  /**
+   * Checks registration of protocol universe tax terms.
+   * @param universeId Universe ID.
+   * @param taxStrategyIdName Name of the tax strategy ID.
+   */
+  async areRegisteredProtocolUniverseTaxTerms(
+    universeId: BigNumberish,
+    taxStrategyIdName: TaxTermsStrategyIdName,
+  ): Promise<boolean> {
+    return this.contract.areRegisteredProtocolUniverseTaxTerms(universeId, this.encodeTaxStrategyId(taxStrategyIdName));
+  }
+
+  /**
+   * Checks registration of global protocol warper tax terms.
+   * @param warper Warper reference.
+   * @param taxStrategyIdName Name of the tax strategy ID.
+   */
+  async areRegisteredProtocolWarperTaxTerms(
+    warper: AssetType,
+    taxStrategyIdName: TaxTermsStrategyIdName,
+  ): Promise<boolean> {
+    return this.contract.areRegisteredProtocolWarperTaxTerms(
       this.assetTypeToAddress(warper),
       this.encodeTaxStrategyId(taxStrategyIdName),
     );
