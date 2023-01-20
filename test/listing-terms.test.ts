@@ -96,6 +96,23 @@ describe('ListingTermsRegistryAdapter', () => {
       });
     });
 
+    describe('listingTermsWithParams', () => {
+      it('should return listing terms with additional parameters', async () => {
+        const termsWithParams = await listingTermsRegistryAdapter.listingTermsWithParams(COMMON_ID);
+
+        expect(termsWithParams).toMatchObject({
+          id: COMMON_ID,
+          name: LISTING_STRATEGIES.FIXED_RATE,
+          data: {
+            pricePerSecondInEthers: COMMON_BASE_RATE,
+          },
+          universeId: COMMON_ID,
+          listingId: COMMON_ID,
+          //warper: warperReference, // zero?
+        });
+      });
+    });
+
     describe('findListingTermsIdByCreationTransaction', () => {
       it('should return created listing id from transaction hash', async () => {
         const termsId = await listingTermsRegistryAdapter.findListingTermsIdByCreationTransaction(
