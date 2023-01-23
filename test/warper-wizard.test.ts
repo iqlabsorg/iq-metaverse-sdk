@@ -8,14 +8,14 @@ import {
   TaxTerms,
   TAX_STRATEGIES,
   TAX_STRATEGY_IDS,
+  WarperPresetId,
   WarperPresetInitData,
   WarperRegistrationParams,
   WarperWizardAdapterV1,
-  WARPER_PRESETS_ERC721,
 } from '../src';
 import { ERC721Mock, IMetahub, ITaxTermsRegistry, IWarperManager, IWarperWizardV1 } from '../src/contracts';
 import { setupUniverse, setupUniverseAndWarper } from './helpers/setup';
-import { COMMON_ID, COMMON_TAX_RATE, COMMON_REWARD_RATE, toAccountId } from './helpers/utils';
+import { COMMON_ID, COMMON_REWARD_RATE, COMMON_TAX_RATE, toAccountId } from './helpers/utils';
 import { findWarperByDeploymentTransaction } from './helpers/warper';
 
 /**
@@ -51,7 +51,7 @@ describe('WarperWizardAdapterV1', () => {
     return await warperWizardAdapter.createWarperFromPresetAndRegister(
       taxTerms,
       warperParams,
-      WARPER_PRESETS_ERC721.ERC721_CONFIGURABLE_PRESET,
+      WarperPresetId.ERC721_CONFIGURABLE_PRESET,
       warperInitData,
     );
   };

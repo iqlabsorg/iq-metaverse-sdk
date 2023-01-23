@@ -10,8 +10,8 @@ import {
   TAX_STRATEGY_IDS,
   UniverseParams,
   UniverseWizardAdapterV1,
+  WarperPresetId,
   WarperPresetInitData,
-  WARPER_PRESETS_ERC721,
 } from '../src';
 import {
   ERC20Mock,
@@ -23,7 +23,7 @@ import {
 } from '../src/contracts';
 import { mintAndApproveNFTs } from './helpers/asset';
 import { createWarper } from './helpers/setup';
-import { COMMON_ID, COMMON_TAX_RATE, COMMON_REWARD_RATE, toAccountId } from './helpers/utils';
+import { COMMON_ID, COMMON_REWARD_RATE, COMMON_TAX_RATE, toAccountId } from './helpers/utils';
 import { findWarperByDeploymentTransaction } from './helpers/warper';
 
 /**
@@ -60,7 +60,7 @@ describe('UniverseWizardAdapterV1', () => {
       universeParams,
       taxTerms,
       warperParams,
-      WARPER_PRESETS_ERC721.ERC721_CONFIGURABLE_PRESET,
+      WarperPresetId.ERC721_CONFIGURABLE_PRESET,
       warperInitData,
     );
   };
