@@ -14,7 +14,7 @@ import {
 } from '../src';
 import { ERC721Mock, IListingManager, IListingTermsRegistry, IListingWizardV1, IMetahub } from '../src/contracts';
 import { setupForListing } from './helpers/setup';
-import { COMMON_ID, COMMON_PRICE, COMMON_REWARD, SECONDS_IN_DAY, toAccountId } from './helpers/utils';
+import { COMMON_ID, COMMON_PRICE, COMMON_REWARD_RATE, SECONDS_IN_DAY, toAccountId } from './helpers/utils';
 
 /**
  * @group integration
@@ -72,7 +72,7 @@ describe('ListingWizardAdapterV1', () => {
     listingTerms = { name: LISTING_STRATEGIES.FIXED_RATE, data: { pricePerSecondInEthers } };
     listingTermsWithReward = {
       name: LISTING_STRATEGIES.FIXED_RATE_WITH_REWARD,
-      data: { pricePerSecondInEthers, rewardRatePercent: COMMON_REWARD },
+      data: { pricePerSecondInEthers, rewardRatePercent: COMMON_REWARD_RATE },
     };
     listingParams = { lister: toAccountId(lister.address), configurator: toAccountId(ethers.constants.AddressZero) };
     assetListingParams = {

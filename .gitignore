@@ -41,3 +41,4 @@ src/contracts
 
 addresses.json
 hardhat.addresses.json
+active-deployment/

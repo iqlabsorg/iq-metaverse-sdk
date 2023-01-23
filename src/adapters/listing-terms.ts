@@ -4,7 +4,7 @@ import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
 import { ListingTermsRegistry } from '../contracts';
-import { ListingTermsInfo, ListingTermsQueryParams } from '../types';
+import { ListingTermsInfo, ListingTermsInfoWithParams, ListingTermsQueryParams } from '../types';
 
 export class ListingTermsRegistryAdapter extends Adapter {
   private readonly contract: ListingTermsRegistry;
@@ -22,6 +22,22 @@ export class ListingTermsRegistryAdapter extends Adapter {
   async listingTerms(listingTermsId: BigNumberish): Promise<ListingTermsInfo> {
     const terms = await this.contract.listingTerms(listingTermsId);
     return { ...this.decodeListingTerms(terms), id: BigNumber.from(listingTermsId) };
+  }
+
+  /**
+   * Returns listing terms details with additional parameters by the listing terms ID.
+   * @param listingTermsId Listing terms ID.
+   * @return Listing terms details with additional parameters.
+   */
+  async listingTermsWithParams(listingTermsId: BigNumberish): Promise<ListingTermsInfoWithParams> {
+    const [terms, params] = await this.contract.listingTermsWithParams(listingTermsId);
+    return {
+      ...this.decodeListingTerms(terms),
+      id: BigNumber.from(listingTermsId),
+      universeId: params.universeId,
+      listingId: params.listingId,
+      warper: this.addressToAssetType(params.warperAddress, 'erc721'),
+    };
   }
 
   /**

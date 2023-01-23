@@ -3,7 +3,7 @@ import {
   EMPTY_BYTES4_DATA_HEX,
   EMPTY_BYTES_DATA_HEX,
   HUNDRED_PERCENT,
-  HUNDRED_PERCENT_PRECISION_4,
+  HUNDRED_PERCENT_SCALE_2,
 } from '@iqprotocol/solidity-contracts-nft';
 import { BigNumber, BigNumberish, BytesLike, ethers, FixedNumber } from 'ethers';
 import { assetClasses } from './constants';
@@ -73,7 +73,7 @@ export const calculatePricePerSecondInWei = (
  */
 export const convertPercentage = (
   percent: string,
-  hundredPercentWithPrecision: number = HUNDRED_PERCENT_PRECISION_4,
+  hundredPercentWithPrecision: number = HUNDRED_PERCENT_SCALE_2,
 ): BigNumberish => {
   const fixedPercentage = FixedNumber.from(percent);
 

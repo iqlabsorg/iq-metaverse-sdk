@@ -4,7 +4,7 @@ import { AssetType, IQSpace, TaxTermsRegistryAdapter, TAX_STRATEGIES } from '../
 import { ITaxTermsRegistry } from '../src/contracts';
 import { setupForListing, setupUniverseAndWarper } from './helpers/setup';
 import { makeTaxTermsFixedRate, makeTaxTermsFixedRateWithReward } from './helpers/tax';
-import { COMMON_ID, COMMON_PRICE, COMMON_RATE, COMMON_REWARD, toAccountId } from './helpers/utils';
+import { COMMON_ID, COMMON_TAX_RATE, COMMON_REWARD_RATE, toAccountId } from './helpers/utils';
 
 /**
  * @group integration
@@ -58,7 +58,7 @@ describe('TaxTermsRegistryAdapter', () => {
           .registerUniverseWarperTaxTerms(
             COMMON_ID,
             warperReference.assetName.reference,
-            makeTaxTermsFixedRate(COMMON_RATE),
+            makeTaxTermsFixedRate(COMMON_TAX_RATE),
           );
       });
 
@@ -79,7 +79,7 @@ describe('TaxTermsRegistryAdapter', () => {
           .registerUniverseWarperTaxTerms(
             COMMON_ID,
             warperReference.assetName.reference,
-            makeTaxTermsFixedRateWithReward(COMMON_RATE, COMMON_REWARD),
+            makeTaxTermsFixedRateWithReward(COMMON_TAX_RATE, COMMON_REWARD_RATE),
           );
       });
 
@@ -109,7 +109,7 @@ describe('TaxTermsRegistryAdapter', () => {
 
         expect(terms).toBeDefined();
         expect(terms.name).toBe(TAX_STRATEGIES.FIXED_RATE_TAX);
-        expect(terms.data.ratePercent).toBe(COMMON_RATE);
+        expect(terms.data.ratePercent).toBe(COMMON_TAX_RATE);
       });
     });
 
@@ -127,7 +127,7 @@ describe('TaxTermsRegistryAdapter', () => {
 
         expect(terms).toBeDefined();
         expect(terms.name).toBe(TAX_STRATEGIES.FIXED_RATE_TAX_WITH_REWARD);
-        expect(terms.data.ratePercent).toBe(COMMON_RATE);
+        expect(terms.data.ratePercent).toBe(COMMON_TAX_RATE);
       });
     });
   });
@@ -147,7 +147,7 @@ describe('TaxTermsRegistryAdapter', () => {
 
         expect(terms).toBeDefined();
         expect(terms.name).toBe(TAX_STRATEGIES.FIXED_RATE_TAX);
-        expect(terms.data.ratePercent).toBe(COMMON_RATE);
+        expect(terms.data.ratePercent).toBe(COMMON_TAX_RATE);
       });
     });
 
@@ -165,7 +165,7 @@ describe('TaxTermsRegistryAdapter', () => {
 
         expect(terms).toBeDefined();
         expect(terms.name).toBe(TAX_STRATEGIES.FIXED_RATE_TAX_WITH_REWARD);
-        expect(terms.data.ratePercent).toBe(COMMON_RATE);
+        expect(terms.data.ratePercent).toBe(COMMON_TAX_RATE);
       });
     });
   });

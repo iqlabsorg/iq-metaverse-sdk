@@ -12,6 +12,7 @@ export type {
   ListingParams,
   ListingTermsInfo,
   ListingTerms,
+  ListingTermsInfoWithParams,
   RegisteredWarper,
   RentingEstimationParams,
   RentingParams,

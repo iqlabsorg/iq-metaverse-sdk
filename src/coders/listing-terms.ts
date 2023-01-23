@@ -1,5 +1,5 @@
 import { BigNumber } from 'ethers';
-import { defaultAbiCoder } from 'ethers/lib/utils';
+import { defaultAbiCoder, formatEther } from 'ethers/lib/utils';
 import { listingStrategies } from '../constants';
 import { IListingTermsRegistry } from '../contracts';
 import { ListingTerms } from '../types';
@@ -46,23 +46,23 @@ export class ListingTermsCoder {
 
     switch (params.strategyId) {
       case FIXED_RATE.id: {
-        const [pricePerSecondInEthers] = defaultAbiCoder.decode(['uint256'], params.strategyData) as [BigNumber];
+        const [pricePerSecondInWei] = defaultAbiCoder.decode(['uint256'], params.strategyData) as [BigNumber];
         return {
           name: FIXED_RATE.name,
           data: {
-            pricePerSecondInEthers,
+            pricePerSecondInEthers: formatEther(pricePerSecondInWei),
           },
         };
       }
       case FIXED_RATE_WITH_REWARD.id: {
-        const [pricePerSecondInEthers, rewardRatePercent] = defaultAbiCoder.decode(
+        const [pricePerSecondInWei, rewardRatePercent] = defaultAbiCoder.decode(
           ['uint256', 'uint16'],
           params.strategyData,
         ) as [BigNumber, BigNumber];
         return {
           name: FIXED_RATE_WITH_REWARD.name,
           data: {
-            pricePerSecondInEthers,
+            pricePerSecondInEthers: formatEther(pricePerSecondInWei),
             rewardRatePercent: convertToPercentage(rewardRatePercent),
           },
         };

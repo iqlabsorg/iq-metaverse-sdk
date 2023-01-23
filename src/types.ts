@@ -35,6 +35,8 @@ export type ListingTermsQueryParams = {
   warper: AssetType;
 };
 
+export type ListingTermsInfoWithParams = ListingTermsInfo & ListingTermsQueryParams;
+
 export type FixedPriceListingTerms = {
   name: typeof listingStrategies.FIXED_RATE.name;
   data: {
