@@ -129,6 +129,30 @@ export class TaxTermsRegistryAdapter extends Adapter {
   }
 
   /**
+   * Registers protocol warper tax terms.
+   * @param warper Warper reference.
+   * @param taxTerms Tax terms.
+   */
+  async registerProtocolWarperTaxTerms(warper: AssetType, taxTerms: TaxTerms): Promise<ContractTransaction> {
+    return this.contract.registerProtocolWarperTaxTerms(this.assetTypeToAddress(warper), this.encodeTaxTerms(taxTerms));
+  }
+
+  /**
+   * Removes protocol warper tax terms.
+   * @param warper Warper reference.
+   * @param taxStrategyIdName Name of the tax strategy ID.
+   */
+  async removeProtocolWarperTaxTerms(
+    warper: AssetType,
+    taxStrategyIdName: TaxTermsStrategyIdName,
+  ): Promise<ContractTransaction> {
+    return this.contract.removeProtocolWarperTaxTerms(
+      this.assetTypeToAddress(warper),
+      this.encodeTaxStrategyId(taxStrategyIdName),
+    );
+  }
+
+  /**
    * Checks registration of universe warper tax terms.
    * @param universeId Universe ID.
    * @param warper Warper reference.

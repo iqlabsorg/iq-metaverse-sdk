@@ -2,7 +2,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { deployments, ethers } from 'hardhat';
 import { AssetType, IQSpace, TaxTerms, TaxTermsRegistryAdapter, TAX_STRATEGIES, TAX_STRATEGY_IDS } from '../src';
 import { ITaxTermsRegistry } from '../src/contracts';
-import { setupForListing, setupUniverse, setupUniverseAndWarper } from './helpers/setup';
+import { createWarper, setupForListing, setupUniverse, setupUniverseAndWarper } from './helpers/setup';
 import { makeTaxTermsFixedRate, makeTaxTermsFixedRateWithReward } from './helpers/tax';
 import { COMMON_ID, COMMON_REWARD_RATE, COMMON_TAX_RATE, toAccountId } from './helpers/utils';
 
@@ -156,6 +156,39 @@ describe('TaxTermsRegistryAdapter', () => {
       await taxTermsRegistryAdapter.removeProtocolUniverseTaxTerms(COMMON_ID, TAX_STRATEGIES.FIXED_RATE_TAX);
       const registered = await taxTermsRegistry.areRegisteredProtocolUniverseTaxTerms(
         COMMON_ID,
+        TAX_STRATEGY_IDS.FIXED_RATE_TAX,
+      );
+      expect(registered).toBe(false);
+    });
+  });
+
+  describe('registerProtocolWarperTaxTerms', () => {
+    beforeEach(async () => {
+      ({ warperReference } = await createWarper());
+    });
+
+    it('should register protocol warper tax terms', async () => {
+      await taxTermsRegistryAdapter.registerProtocolWarperTaxTerms(warperReference, taxTermsFixedRate);
+      const registered = await taxTermsRegistry.areRegisteredProtocolWarperTaxTerms(
+        warperReference.assetName.reference,
+        TAX_STRATEGY_IDS.FIXED_RATE_TAX,
+      );
+      expect(registered).toBe(true);
+    });
+  });
+
+  describe('removeProtocolWarperTaxTerms', () => {
+    beforeEach(async () => {
+      ({ warperReference } = await createWarper());
+      await taxTermsRegistry
+        .connect(deployer)
+        .registerProtocolWarperTaxTerms(warperReference.assetName.reference, taxTermsFixedRateRaw);
+    });
+
+    it('should remove universe warper tax terms', async () => {
+      await taxTermsRegistryAdapter.removeProtocolWarperTaxTerms(warperReference, TAX_STRATEGIES.FIXED_RATE_TAX);
+      const registered = await taxTermsRegistry.areRegisteredProtocolWarperTaxTerms(
+        warperReference.assetName.reference,
         TAX_STRATEGY_IDS.FIXED_RATE_TAX,
       );
       expect(registered).toBe(false);
