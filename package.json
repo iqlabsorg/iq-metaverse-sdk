@@ -30,8 +30,9 @@
     "docs:clean": "rimraf docs",
     "cache:clean": "rimraf cache",
     "logs:clean": "rimraf logs && rimraf tslog.log",
-    "deploy:clean": "rimraf addresses.json",
-    "clean": "run-s build:clean typechain:clean cache:clean docs:clean logs:clean deploy:clean"
+    "deploy:clean": "rimraf hardhat.addresses.json && rimraf active-deployment",
+    "test:clean": "rimraf coverage",
+    "clean": "run-s build:clean typechain:clean cache:clean docs:clean logs:clean deploy:clean test:clean"
   },
   "lint-staged": {
     "packages/**/*.ts": "yarn lint:fix",
