@@ -1,10 +1,15 @@
 import { BigNumberish, BytesLike } from 'ethers';
 import { defaultAbiCoder } from 'ethers/lib/utils';
 import { ethers } from 'hardhat';
-import { IListingTermsRegistry } from 'src/contracts/contracts/listing/listing-strategies/ListingController';
 import { BASE_TOKEN_DECIMALS, EMPTY_BYTES_DATA_HEX, LISTING_STRATEGY_IDS } from '../../src';
 import { Listings } from '../../src/contracts/contracts/listing/listing-manager/ListingManager';
 import { convertPercentage, convertToWei } from '../../src/utils';
+import { IListingTermsRegistry } from '../../src/contracts';
+import {
+  GlobalListingTermsRegisteredEventFilter,
+  UniverseListingTermsRegisteredEventFilter,
+  WarperListingTermsRegisteredEventFilter,
+} from '@iqprotocol/solidity-contracts-nft/typechain/contracts/listing/listing-terms-registry/IListingTermsRegistry';
 
 export const makeListingParams = (
   listerAddress: string,
@@ -54,3 +59,44 @@ export const encodeFixedRateWithRewardListingTermsData = (
     ['uint256', 'uint16'],
     [convertToWei(baseRate.toString(), baseRateDecimals), convertPercentage(rewardRatePercent)],
   );
+
+export const findListingTermsIdByTransaction = async (
+  transactionHash: string,
+  scope: 'global' | 'universe' | 'warper',
+) => {
+  const listingTermsRegistry = (await ethers.getContract('ListingTermsRegistry')) as IListingTermsRegistry;
+  const tx = await listingTermsRegistry.provider.getTransaction(transactionHash);
+  if (!tx.blockHash) {
+    return undefined;
+  }
+
+  let filter:
+    | GlobalListingTermsRegisteredEventFilter
+    | UniverseListingTermsRegisteredEventFilter
+    | WarperListingTermsRegisteredEventFilter;
+
+  switch (scope) {
+    case 'global':
+      filter = listingTermsRegistry.filters.GlobalListingTermsRegistered();
+      break;
+    case 'universe':
+      filter = listingTermsRegistry.filters.UniverseListingTermsRegistered();
+      break;
+    case 'warper':
+      filter = listingTermsRegistry.filters.WarperListingTermsRegistered();
+      break;
+    default:
+      filter = listingTermsRegistry.filters.GlobalListingTermsRegistered();
+      break;
+  }
+
+  const event = (await listingTermsRegistry.queryFilter(filter, tx.blockHash)).find(
+    event => event.transactionHash === transactionHash,
+  );
+
+  if (!event) {
+    return undefined;
+  }
+
+  return event.args.listingTermsId;
+};

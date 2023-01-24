@@ -4,7 +4,9 @@ import { ethers } from 'hardhat';
 import { AddressTranslator, WARPER_PRESET_ERC721_IDS } from '../../src';
 import {
   ERC721Mock,
+  IListingManager,
   IListingTermsRegistry,
+  IListingWizardV1,
   IMetahub,
   ITaxTermsRegistry,
   IUniverseWizardV1,
@@ -116,13 +118,13 @@ const createAndRegisterWarper = async (): Promise<WarperCreatedAndRegistered> =>
   return { warperName, warperReference };
 };
 
-const createListing = async (
+const createListingWithTerms = async (
   withReward: boolean,
 ): Promise<{ txHash: string; listingTerms: IListingTermsRegistry.ListingTermsStruct }> => {
   const lister = await ethers.getNamedSigner('assetOwner');
 
   const collection = await ethers.getContract('ERC721Mock');
-  const listingWizard = await ethers.getContract('ListingWizardV1');
+  const listingWizard = (await ethers.getContract('ListingWizardV1')) as IListingWizardV1;
 
   const listingAssets = [makeERC721Asset(collection.address, 1)];
   const listingTerms = withReward
@@ -134,6 +136,23 @@ const createListing = async (
     .createListingWithTerms(listingAssets, listingParams, listingTerms, SECONDS_IN_DAY * 7, false, COMMON_ID);
 
   return { txHash: tx.hash, listingTerms };
+};
+
+export const createListing = async (): Promise<void> => {
+  const lister = await ethers.getNamedSigner('assetOwner');
+  const collection = (await ethers.getContract('ERC721Mock')) as ERC721Mock;
+  const listingManager = (await ethers.getContract('ListingManager')) as IListingManager;
+
+  /** Mint NFTs to lister */
+  await mintAndApproveNFTs(collection, lister);
+
+  /** Grant wizard roles to deployer */
+  await grantWizardRolesToDeployer();
+
+  /** Create listing */
+  const listingAssets = [makeERC721Asset(collection.address, 1)];
+  const listingParams = makeListingParams(lister.address);
+  await listingManager.createListing(listingAssets, listingParams, SECONDS_IN_DAY * 7, true);
 };
 
 /** Creates universe */
@@ -208,7 +227,7 @@ export const setupForRenting = async (
   const { collectionReference, warperReference } = await setupForListing(withReward);
 
   /** Create listing */
-  const { txHash: listingCreationTxHash, listingTerms } = await createListing(withReward);
+  const { txHash: listingCreationTxHash, listingTerms } = await createListingWithTerms(withReward);
 
   return {
     collectionReference,
