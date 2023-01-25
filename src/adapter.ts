@@ -11,7 +11,7 @@ import {
   Asset,
   ChainAware,
   ListingTerms,
-  WarperPresetIds,
+  WarperPresetId,
   TaxTerms,
   WarperPresetInitData,
   TaxTermsStrategyIdName,
@@ -84,11 +84,15 @@ export abstract class Adapter implements ChainAware {
     return AgreementTermsCoder.decode(this.addressTranslator, params);
   }
 
-  protected encodeWarperPresetId(presetId: WarperPresetIds): BytesLike {
+  protected encodeWarperPresetId(presetId: WarperPresetId): BytesLike {
     return WarperPresetCoder.encodePresetId(presetId);
   }
 
-  protected encodeWarperPresetInitData(presetId: WarperPresetIds, data: WarperPresetInitData): BytesLike {
+  protected decodeWarperPresetId(presetId: BytesLike): WarperPresetId {
+    return WarperPresetCoder.decodePresetId(presetId);
+  }
+
+  protected encodeWarperPresetInitData(presetId: WarperPresetId, data: WarperPresetInitData): BytesLike {
     return WarperPresetCoder.encodePresetInitData(presetId, data);
   }
 

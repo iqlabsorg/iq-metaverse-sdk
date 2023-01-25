@@ -1,10 +1,10 @@
-import { AccountId } from 'caip';
-import { BigNumber, BigNumberish } from 'ethers';
+import { AccountId, AssetType } from 'caip';
+import { BigNumber, BigNumberish, ContractTransaction } from 'ethers';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
 import { ListingTermsRegistry } from '../contracts';
-import { ListingTermsInfo, ListingTermsInfoWithParams, ListingTermsQueryParams } from '../types';
+import { ListingTerms, ListingTermsInfo, ListingTermsInfoWithParams, ListingTermsQueryParams } from '../types';
 
 export class ListingTermsRegistryAdapter extends Adapter {
   private readonly contract: ListingTermsRegistry;
@@ -105,5 +105,107 @@ export class ListingTermsRegistryAdapter extends Adapter {
     }
 
     return this.listingTerms(termsId);
+  }
+
+  /**
+   * Registers global listing terms.
+   * @param listingId Listing ID.
+   * @param listingTerms Listing terms.
+   */
+  async registerGlobalListingTerms(listingId: BigNumberish, listingTerms: ListingTerms): Promise<ContractTransaction> {
+    return this.contract.registerGlobalListingTerms(listingId, this.encodeListingTerms(listingTerms));
+  }
+
+  /**
+   * Removes global listing terms.
+   * @param listingId Listing ID.
+   * @param listingTermsId Listing Terms ID.
+   */
+  async removeGlobalListingTerms(listingId: BigNumberish, listingTermsId: BigNumberish): Promise<ContractTransaction> {
+    return this.contract.removeGlobalListingTerms(listingId, listingTermsId);
+  }
+
+  /**
+   * Registers universe listing terms.
+   * @param listingId Listing ID.
+   * @param universeId Universe ID.
+   * @param terms Listing terms.
+   */
+  async registerUniverseListingTerms(
+    listingId: BigNumberish,
+    universeId: BigNumberish,
+    listingTerms: ListingTerms,
+  ): Promise<ContractTransaction> {
+    return this.contract.registerUniverseListingTerms(listingId, universeId, this.encodeListingTerms(listingTerms));
+  }
+
+  /**
+   * Removes universe listing terms.
+   * @param listingId Listing ID.
+   * @param universeId Universe ID.
+   * @param listingTermsId Listing Terms ID.
+   */
+  async removeUniverseListingTerms(
+    listingId: BigNumberish,
+    universeId: BigNumberish,
+    listingTermsId: BigNumberish,
+  ): Promise<ContractTransaction> {
+    return this.contract.removeUniverseListingTerms(listingId, universeId, listingTermsId);
+  }
+
+  /**
+   * Registers warper listing terms.
+   * @param listingId Listing ID.
+   * @param warper Warper reference.
+   * @param listingTerms Listing terms.
+   */
+  async registerWarperListingTerms(
+    listingId: BigNumberish,
+    warper: AssetType,
+    listingTerms: ListingTerms,
+  ): Promise<ContractTransaction> {
+    return this.contract.registerWarperListingTerms(
+      listingId,
+      this.assetTypeToAddress(warper),
+      this.encodeListingTerms(listingTerms),
+    );
+  }
+
+  /**
+   * Removes warper listing terms.
+   * @param listingId Listing ID.
+   * @param warper Warper reference.
+   * @param listingTermsId Listing Terms ID.
+   */
+  async removeWarperListingTerms(
+    listingId: BigNumberish,
+    warper: AssetType,
+    listingTermsId: BigNumberish,
+  ): Promise<ContractTransaction> {
+    return this.contract.removeWarperListingTerms(listingId, this.assetTypeToAddress(warper), listingTermsId);
+  }
+
+  /**
+   * Checks registration of listing terms.
+   * @param listingTermsId Listing Terms ID.
+   */
+  async areRegisteredListingTerms(listingTermsId: BigNumberish): Promise<boolean> {
+    return this.contract.areRegisteredListingTerms(listingTermsId);
+  }
+
+  /**
+   * Checks registration of listing terms.
+   * @param listingTermsId Listing Terms ID.
+   * @param queryParams Query parameters.
+   */
+  async areRegisteredListingTermsWithParams(
+    listingTermsId: BigNumberish,
+    queryParams: ListingTermsQueryParams,
+  ): Promise<boolean> {
+    return this.contract.areRegisteredListingTermsWithParams(listingTermsId, {
+      listingId: queryParams.listingId,
+      universeId: queryParams.universeId,
+      warperAddress: this.assetTypeToAddress(queryParams.warper),
+    });
   }
 }

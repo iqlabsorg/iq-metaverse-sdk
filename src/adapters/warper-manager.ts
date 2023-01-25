@@ -110,6 +110,35 @@ export class WarperManagerAdapter extends Adapter {
   }
 
   /**
+   * Returns metahub account ID.
+   */
+  async metahub(): Promise<AccountId> {
+    const address = await this.contract.metahub();
+    return this.addressToAccountId(address);
+  }
+
+  /**
+   * Returns warper controller account ID.
+   * @param warper Warper reference.
+   */
+  async warperController(warper: AssetType): Promise<AccountId> {
+    const address = await this.contract.warperController(this.assetTypeToAddress(warper));
+    return this.addressToAccountId(address);
+  }
+
+  /**
+   * Sets the new controller address for one or multiple registered warpers.
+   * @param warpers List of warpers.
+   * @param controller Controller account ID.
+   */
+  async setWarperController(warpers: AssetType[], controller: AccountId): Promise<ContractTransaction> {
+    return this.contract.setWarperController(
+      warpers.map(x => this.assetTypeToAddress(x)),
+      this.accountIdToAddress(controller),
+    );
+  }
+
+  /**
    * Normalizes warper structure.
    * @param warperAddress
    * @param warper
