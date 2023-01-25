@@ -121,12 +121,13 @@ The Preset Factory allows you to easily deploy warpers from presets. These prese
 IQ Protocol team.
 
 ```ts
-// Deploy ERC721ConfigurablePreset preset.
-const presetId = 'ERC721ConfigurablePreset';
+import { WarperPresetId } from '@iqprotocol/iq-space-sdk-js';
+
 const metahubAddress = '0x...';
 const originalAssetAddress = '0x...';
 
-const tx = await warperPresetFactory.deployPreset(presetId, {
+// Deploy ERC721ConfigurablePreset preset.
+const tx = await warperPresetFactory.deployPreset(WarperPresetId.ERC721_CONFIGURABLE_PRESET, {
   metahub: new AccountId({
     chainId,
     address: metahubAddress,
