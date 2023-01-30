@@ -1,6 +1,7 @@
 import { AccountId, AssetType, ChainId } from 'caip';
 import { Signer } from 'ethers';
 import {
+  ACLAdapter,
   ListingManagerAdapter,
   ListingTermsRegistryAdapter,
   ListingWizardAdapterV1,
@@ -44,7 +45,16 @@ export class IQSpace implements ChainAware {
   }
 
   /**
-   * Resolves ERC721 warper adapter
+   * Resolves ACL adapter.
+   * @param accountId ACL account ID.
+   */
+  acl(accountId: AccountId): ACLAdapter {
+    this.addressTranslator.assertSameChainId(accountId.chainId);
+    return new ACLAdapter(accountId, this.contractResolver, this.addressTranslator);
+  }
+
+  /**
+   * Resolves ERC721 warper adapter.
    * @param assetType Warper asset type.
    */
   warperERC721(assetType: AssetType): ERC721WarperAdapter {

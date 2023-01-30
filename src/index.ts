@@ -53,6 +53,7 @@ export {
   ListingTermsRegistryAdapter,
   TaxTermsRegistryAdapter,
   ERC721WarperAdapter,
+  ACLAdapter,
 } from './adapters';
 export {
   calculatePricePerSecondInEthers,
