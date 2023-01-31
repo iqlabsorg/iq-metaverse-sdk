@@ -215,3 +215,8 @@ export type AssetClassConfig = {
   vault: AccountId;
   controller: AccountId;
 };
+
+export type ListingStrategyConfig = {
+  controller: AccountId;
+  taxStrategyId: BytesLike; // could be custom..
+};

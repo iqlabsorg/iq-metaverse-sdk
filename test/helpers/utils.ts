@@ -2,6 +2,7 @@ import { AccountId, AssetId, ChainId } from 'caip';
 import { BigNumber } from 'ethers';
 import { ethers } from 'hardhat';
 import { calculatePricePerSecondInEthers } from '../../src';
+import { hexDataSlice, id } from 'ethers/lib/utils';
 
 export const toAccountId = (address: string): AccountId => {
   return new AccountId({ chainId: getChainId(), address });
@@ -26,6 +27,22 @@ export const latestBlockTimestamp = async (): Promise<number> => {
 export const waitBlockchainTime = async (seconds: number): Promise<void> => {
   const time = await latestBlockTimestamp();
   await mineBlock(time + seconds);
+};
+
+/**
+ * Calculates ID by taking 4 byte of the provided string hashed value.
+ * @param string Arbitrary string.
+ */
+export const solidityIdBytes4 = (string: string): string => {
+  return hexDataSlice(solidityIdBytes32(string), 0, 4);
+};
+
+/**
+ * Calculates ID for bytes32 string.
+ * @param string Arbitrary string.
+ */
+export const solidityIdBytes32 = (string: string): string => {
+  return id(string);
 };
 
 export const SECONDS_IN_DAY = 86400;

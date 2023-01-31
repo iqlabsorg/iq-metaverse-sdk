@@ -17,7 +17,7 @@ export class AssetClassRegistryAdapter extends Adapter {
   /**
    * Registers new asset class.
    * @param namespace Asset class namespace.
-   * @param config Asset class config.
+   * @param config Asset class configuration.
    */
   async registerAssetClass(namespace: AssetNamespace, config: AssetClassConfig): Promise<ContractTransaction> {
     return this.contract.registerAssetClass(this.encodeAssetClass(namespace), {

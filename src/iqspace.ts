@@ -4,6 +4,7 @@ import {
   ACLAdapter,
   AssetClassRegistryAdapter,
   ListingManagerAdapter,
+  ListingStrategyRegistryAdapter,
   ListingTermsRegistryAdapter,
   ListingWizardAdapterV1,
   MetahubAdapter,
@@ -133,6 +134,15 @@ export class IQSpace implements ChainAware {
   listingTermsRegistry(accountId: AccountId): ListingTermsRegistryAdapter {
     this.addressTranslator.assertSameChainId(accountId.chainId);
     return new ListingTermsRegistryAdapter(accountId, this.contractResolver, this.addressTranslator);
+  }
+
+  /**
+   * Resolves the listing strategy registry adapter.
+   * @param accountId Listing strategy registry account ID.
+   */
+  listingStrategyRegistry(accountId: AccountId): ListingStrategyRegistryAdapter {
+    this.addressTranslator.assertSameChainId(accountId.chainId);
+    return new ListingStrategyRegistryAdapter(accountId, this.contractResolver, this.addressTranslator);
   }
 
   /**
