@@ -1,5 +1,4 @@
 import { AccountId, AssetId, AssetType, ChainId } from 'caip';
-import { assetClasses } from './constants';
 import { Address, AssetNamespace } from './types';
 
 export class AddressTranslator {
@@ -31,7 +30,7 @@ export class AddressTranslator {
    */
   static assertTypeERC721 = (asset: AssetType | AssetId): void => {
     const { namespace } = asset.assetName;
-    if (namespace !== assetClasses.ERC721.namespace) {
+    if (namespace !== 'erc721') {
       throw new Error(`Invalid asset type: "${namespace}"! Expected: "erc721"`);
     }
   };
@@ -41,7 +40,7 @@ export class AddressTranslator {
    */
   static assertTypeERC20 = (asset: AssetType | AssetId): void => {
     const { namespace } = asset.assetName;
-    if (namespace !== assetClasses.ERC20.namespace) {
+    if (namespace !== 'erc20') {
       throw new Error(`Invalid asset type: "${namespace}"! Expected: "erc20"`);
     }
   };

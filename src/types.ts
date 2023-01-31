@@ -210,3 +210,8 @@ export type WarperPreset = {
   implementation: AccountId;
   enabled: boolean;
 };
+
+export type AssetClassConfig = {
+  vault: AccountId;
+  controller: AccountId;
+};

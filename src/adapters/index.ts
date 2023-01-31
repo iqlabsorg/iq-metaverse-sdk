@@ -1,4 +1,5 @@
 export * from './acl';
+export * from './asset-class-registry';
 export * from './erc721-warper';
 export * from './listing-manager';
 export * from './listing-terms';

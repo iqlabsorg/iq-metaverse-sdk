@@ -6,7 +6,6 @@ import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
 import { Metahub } from '../contracts';
 import { AccountBalance, Asset, BaseToken } from '../types';
-import { assetClassToNamespace } from '../utils';
 
 export class MetahubAdapter extends Adapter {
   private readonly contract: Metahub;
@@ -128,7 +127,7 @@ export class MetahubAdapter extends Adapter {
   async supportedAssets(offset: BigNumberish, limit: BigNumberish): Promise<AssetType[]> {
     const [addresses, assetConfigs] = await this.contract.supportedAssets(offset, limit);
     return assetConfigs.map((assetConfig, i) =>
-      this.addressToAssetType(addresses[i], assetClassToNamespace(assetConfig.assetClass)),
+      this.addressToAssetType(addresses[i], this.decodeAssetClass(assetConfig.assetClass)),
     );
   }
 

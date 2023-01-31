@@ -137,13 +137,13 @@ describe('ACLAdapter', () => {
     });
   });
 
-  describe('retrieveRoleMembers', () => {
+  describe('getRoleMembers', () => {
     beforeEach(async () => {
       await acl.grantRole(ROLES_LIBRARY_IDS.ADMIN_ROLE, admin.address);
     });
 
-    it('should retrieve role members', async () => {
-      const members = await aclAdapter.retrieveRoleMembers(ROLES_LIBRARY_IDS.ADMIN_ROLE);
+    it('should return role members', async () => {
+      const members = await aclAdapter.getRoleMembers(ROLES_LIBRARY_IDS.ADMIN_ROLE);
       expect(members).toMatchObject([toAccountId(deployer.address), toAccountId(admin.address)]);
     });
   });

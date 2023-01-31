@@ -93,10 +93,10 @@ export class ACLAdapter extends Adapter {
   }
 
   /**
-   * Retrieves role members.
+   * Returns role members.
    * @param role Role bytes.
    */
-  async retrieveRoleMembers(role: string): Promise<AccountId[]> {
+  async getRoleMembers(role: string): Promise<AccountId[]> {
     const memberCount = (await this.contract.getRoleMemberCount(role)).toNumber();
 
     const membersProm = [...Array(memberCount).keys()].map(async i => this.contract.getRoleMember(role, i));

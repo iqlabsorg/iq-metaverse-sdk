@@ -2,6 +2,7 @@ import { AccountId, AssetType, ChainId } from 'caip';
 import { Signer } from 'ethers';
 import {
   ACLAdapter,
+  AssetClassRegistryAdapter,
   ListingManagerAdapter,
   ListingTermsRegistryAdapter,
   ListingWizardAdapterV1,
@@ -51,6 +52,15 @@ export class IQSpace implements ChainAware {
   acl(accountId: AccountId): ACLAdapter {
     this.addressTranslator.assertSameChainId(accountId.chainId);
     return new ACLAdapter(accountId, this.contractResolver, this.addressTranslator);
+  }
+
+  /**
+   * Resolves asset class registry adapter.
+   * @param accountId Asset class registry account ID.
+   */
+  assetClassRegistry(accountId: AccountId): AssetClassRegistryAdapter {
+    this.addressTranslator.assertSameChainId(accountId.chainId);
+    return new AssetClassRegistryAdapter(accountId, this.contractResolver, this.addressTranslator);
   }
 
   /**
