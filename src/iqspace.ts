@@ -4,6 +4,8 @@ import {
   ACLAdapter,
   AssetClassRegistryAdapter,
   ERC721AssetVaultAdapter,
+  ListingConfiguratorPresetFactoryAdapter,
+  ListingConfiguratorRegistryAdapter,
   ListingManagerAdapter,
   ListingStrategyRegistryAdapter,
   ListingTermsRegistryAdapter,
@@ -153,6 +155,24 @@ export class IQSpace implements ChainAware {
   listingStrategyRegistry(accountId: AccountId): ListingStrategyRegistryAdapter {
     this.addressTranslator.assertSameChainId(accountId.chainId);
     return new ListingStrategyRegistryAdapter(accountId, this.contractResolver, this.addressTranslator);
+  }
+
+  /**
+   * Resolves the listing configurator registry adapter.
+   * @param accountId Listing configurator registry account ID.
+   */
+  listingConfiguratorRegistry(accountId: AccountId): ListingConfiguratorRegistryAdapter {
+    this.addressTranslator.assertSameChainId(accountId.chainId);
+    return new ListingConfiguratorRegistryAdapter(accountId, this.contractResolver, this.addressTranslator);
+  }
+
+  /**
+   * Resolves the listing configurator preset factory adapter.
+   * @param accountId Listing configurator preset factory account ID.
+   */
+  listingConfiguratorPresetFactory(accountId: AccountId): ListingConfiguratorPresetFactoryAdapter {
+    this.addressTranslator.assertSameChainId(accountId.chainId);
+    return new ListingConfiguratorPresetFactoryAdapter(accountId, this.contractResolver, this.addressTranslator);
   }
 
   /**

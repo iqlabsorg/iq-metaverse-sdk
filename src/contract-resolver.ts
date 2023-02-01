@@ -1,54 +1,58 @@
+import { ChainId } from 'caip';
 import { Signer } from 'ethers';
-import { Address, ChainAware } from './types';
 import {
   ACL,
   ACL__factory,
   AssetClassRegistry,
   AssetClassRegistry__factory,
-  IERC20,
-  IERC20__factory,
+  AssetVault,
+  AssetVault__factory,
+  ERC20,
+  ERC20__factory,
+  ERC721,
+  ERC721AssetVault,
+  ERC721AssetVault__factory,
+  ERC721Warper,
+  ERC721Warper__factory,
+  ERC721__factory,
   IERC20Metadata,
   IERC20Metadata__factory,
-  IERC721,
-  IERC721__factory,
   IERC721Metadata,
   IERC721Metadata__factory,
-  IERC721Warper,
-  IERC721Warper__factory,
-  IWarper,
-  IWarper__factory,
+  ListingConfiguratorPresetFactory,
+  ListingConfiguratorPresetFactory__factory,
+  ListingConfiguratorRegistry,
+  ListingConfiguratorRegistry__factory,
+  ListingManager,
+  ListingManager__factory,
   ListingStrategyRegistry,
   ListingStrategyRegistry__factory,
+  ListingTermsRegistry,
+  ListingTermsRegistry__factory,
+  ListingWizardV1,
+  ListingWizardV1__factory,
   Metahub,
   Metahub__factory,
+  RentingManager,
+  RentingManager__factory,
+  TaxTermsRegistry,
+  TaxTermsRegistry__factory,
   UniverseRegistry,
   UniverseRegistry__factory,
   UniverseToken,
   UniverseToken__factory,
+  UniverseWizardV1,
+  UniverseWizardV1__factory,
+  Warper,
   WarperManager,
   WarperManager__factory,
   WarperPresetFactory,
   WarperPresetFactory__factory,
-  ListingWizardV1,
-  ListingWizardV1__factory,
-  UniverseWizardV1,
-  UniverseWizardV1__factory,
   WarperWizardV1,
   WarperWizardV1__factory,
-  RentingManager,
-  ListingManager,
-  ListingManager__factory,
-  RentingManager__factory,
-  ListingTermsRegistry,
-  ListingTermsRegistry__factory,
-  TaxTermsRegistry,
-  TaxTermsRegistry__factory,
-  IERC721AssetVault,
-  IERC721AssetVault__factory,
-  IAssetVault,
-  IAssetVault__factory,
+  Warper__factory,
 } from './contracts';
-import { ChainId } from 'caip';
+import { Address, ChainAware } from './types';
 
 export class ContractResolver implements ChainAware {
   constructor(private readonly signer: Signer) {}
@@ -98,6 +102,14 @@ export class ContractResolver implements ChainAware {
     return ListingTermsRegistry__factory.connect(address, this.signer);
   }
 
+  resolveListingConfiguratorRegistry(address: Address): ListingConfiguratorRegistry {
+    return ListingConfiguratorRegistry__factory.connect(address, this.signer);
+  }
+
+  resolveListingConfiguratorPresetFactory(address: Address): ListingConfiguratorPresetFactory {
+    return ListingConfiguratorPresetFactory__factory.connect(address, this.signer);
+  }
+
   resolveTaxTermsRegistry(address: Address): TaxTermsRegistry {
     return TaxTermsRegistry__factory.connect(address, this.signer);
   }
@@ -110,32 +122,32 @@ export class ContractResolver implements ChainAware {
     return WarperManager__factory.connect(address, this.signer);
   }
 
-  resolveWarper(address: Address): IWarper {
-    return IWarper__factory.connect(address, this.signer);
+  resolveWarper(address: Address): Warper {
+    return Warper__factory.connect(address, this.signer);
   }
 
-  resolveAssetVault(address: Address): IAssetVault {
-    return IAssetVault__factory.connect(address, this.signer);
+  resolveAssetVault(address: Address): AssetVault {
+    return AssetVault__factory.connect(address, this.signer);
   }
 
-  resolveERC721Warper(address: Address): IERC721Warper {
-    return IERC721Warper__factory.connect(address, this.signer);
+  resolveERC721Warper(address: Address): ERC721Warper {
+    return ERC721Warper__factory.connect(address, this.signer);
   }
 
-  resolveERC721AssetVault(address: Address): IERC721AssetVault {
-    return IERC721AssetVault__factory.connect(address, this.signer);
+  resolveERC721AssetVault(address: Address): ERC721AssetVault {
+    return ERC721AssetVault__factory.connect(address, this.signer);
   }
 
-  resolveERC721Asset(address: Address): IERC721 {
-    return IERC721__factory.connect(address, this.signer);
+  resolveERC721Asset(address: Address): ERC721 {
+    return ERC721__factory.connect(address, this.signer);
   }
 
   resolveERC721Metadata(address: Address): IERC721Metadata {
     return IERC721Metadata__factory.connect(address, this.signer);
   }
 
-  resolveERC20Asset(address: Address): IERC20 {
-    return IERC20__factory.connect(address, this.signer);
+  resolveERC20Asset(address: Address): ERC20 {
+    return ERC20__factory.connect(address, this.signer);
   }
 
   resolveERC20Metadata(address: Address): IERC20Metadata {

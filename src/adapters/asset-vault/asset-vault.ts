@@ -4,10 +4,10 @@ import { AssetNamespace } from 'src/types';
 import { Adapter } from '../../adapter';
 import { AddressTranslator } from '../../address-translator';
 import { ContractResolver } from '../../contract-resolver';
-import { IAssetVault } from '../../contracts';
+import { AssetVault } from '../../contracts';
 
 export abstract class AssetVaultAdapter extends Adapter {
-  private readonly _contract: IAssetVault;
+  private readonly _contract: AssetVault;
 
   constructor(accountId: AccountId, contractResolver: ContractResolver, addressTranslator: AddressTranslator) {
     super(contractResolver, addressTranslator);

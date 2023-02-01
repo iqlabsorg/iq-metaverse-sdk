@@ -218,5 +218,11 @@ export type AssetClassConfig = {
 
 export type ListingStrategyConfig = {
   controller: AccountId;
-  taxStrategyId: BytesLike; // could be custom..
+  taxStrategyId: BytesLike;
+};
+
+export type ListingConfiguratorPreset = {
+  id: BytesLike;
+  implementation: AccountId;
+  enabled: boolean;
 };
