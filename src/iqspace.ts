@@ -3,6 +3,7 @@ import { Signer } from 'ethers';
 import {
   ACLAdapter,
   AssetClassRegistryAdapter,
+  ERC721AssetVaultAdapter,
   ListingManagerAdapter,
   ListingStrategyRegistryAdapter,
   ListingTermsRegistryAdapter,
@@ -62,6 +63,15 @@ export class IQSpace implements ChainAware {
   assetClassRegistry(accountId: AccountId): AssetClassRegistryAdapter {
     this.addressTranslator.assertSameChainId(accountId.chainId);
     return new AssetClassRegistryAdapter(accountId, this.contractResolver, this.addressTranslator);
+  }
+
+  /**
+   * Resolves ERC721 asset vault adapter.
+   * @param accountId Asset vault account ID.
+   */
+  erc721AssetVault(accountId: AccountId): ERC721AssetVaultAdapter {
+    this.addressTranslator.assertSameChainId(accountId.chainId);
+    return new ERC721AssetVaultAdapter(accountId, this.contractResolver, this.addressTranslator);
   }
 
   /**

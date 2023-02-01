@@ -7,6 +7,7 @@ export { AccountId, AssetId, AssetType, ChainId } from 'caip';
 export {
   ACLAdapter,
   AssetClassRegistryAdapter,
+  ERC721AssetVaultAdapter,
   ERC721WarperAdapter,
   ListingManagerAdapter,
   ListingStrategyRegistryAdapter,

@@ -43,6 +43,10 @@ import {
   ListingTermsRegistry__factory,
   TaxTermsRegistry,
   TaxTermsRegistry__factory,
+  IERC721AssetVault,
+  IERC721AssetVault__factory,
+  IAssetVault,
+  IAssetVault__factory,
 } from './contracts';
 import { ChainId } from 'caip';
 
@@ -110,8 +114,16 @@ export class ContractResolver implements ChainAware {
     return IWarper__factory.connect(address, this.signer);
   }
 
+  resolveAssetVault(address: Address): IAssetVault {
+    return IAssetVault__factory.connect(address, this.signer);
+  }
+
   resolveERC721Warper(address: Address): IERC721Warper {
     return IERC721Warper__factory.connect(address, this.signer);
+  }
+
+  resolveERC721AssetVault(address: Address): IERC721AssetVault {
+    return IERC721AssetVault__factory.connect(address, this.signer);
   }
 
   resolveERC721Asset(address: Address): IERC721 {
