@@ -6,8 +6,6 @@ import { ContractResolver } from '../contract-resolver';
 import { ListingStrategyRegistry } from '../contracts';
 import { ListingStrategyConfig } from '../types';
 
-/** @todo: understand if listing and tax strategy IDs should have specific type or just BytesLike */
-
 export class ListingStrategyRegistryAdapter extends Adapter {
   private readonly contract: ListingStrategyRegistry;
 

@@ -35,6 +35,8 @@ import {
   Metahub__factory,
   RentingManager,
   RentingManager__factory,
+  TaxStrategyRegistry,
+  TaxStrategyRegistry__factory,
   TaxTermsRegistry,
   TaxTermsRegistry__factory,
   UniverseRegistry,
@@ -112,6 +114,10 @@ export class ContractResolver implements ChainAware {
 
   resolveTaxTermsRegistry(address: Address): TaxTermsRegistry {
     return TaxTermsRegistry__factory.connect(address, this.signer);
+  }
+
+  resolveTaxStrategyRegistry(address: Address): TaxStrategyRegistry {
+    return TaxStrategyRegistry__factory.connect(address, this.signer);
   }
 
   resolveRentingManager(address: Address): RentingManager {

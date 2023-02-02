@@ -226,3 +226,7 @@ export type ListingConfiguratorPreset = {
   implementation: AccountId;
   enabled: boolean;
 };
+
+export type TaxStrategyConfig = {
+  controller: AccountId;
+};
