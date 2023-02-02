@@ -81,6 +81,27 @@ export class ListingConfiguratorPresetFactoryAdapter extends Adapter {
     return this.normalizePreset(preset);
   }
 
+  /**
+   * Retrieves the listing configurator account ID from deployment transaction.
+   * @param transactionHash Deployment transaction hash.
+   */
+  async findListingConfiguratorByDeploymentTransaction(transactionHash: string): Promise<AccountId | undefined> {
+    const tx = await this.contract.provider.getTransaction(transactionHash);
+    if (!tx.blockHash) {
+      return undefined;
+    }
+
+    const event = (
+      await this.contract.queryFilter(this.contract.filters.ListingConfiguratorPresetDeployed(), tx.blockHash)
+    ).find(event => event.transactionHash === transactionHash);
+
+    if (!event) {
+      return undefined;
+    }
+
+    return this.addressToAccountId(event.args.listingConfigurator);
+  }
+
   private normalizePreset(
     preset: IListingConfiguratorPresetFactory.ListingConfiguratorPresetStructOutput,
   ): ListingConfiguratorPreset {
