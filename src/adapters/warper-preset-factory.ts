@@ -5,7 +5,6 @@ import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
 import { IWarperPresetFactory, WarperPresetFactory } from '../contracts';
 import { WarperPreset, WarperPresetId, WarperPresetInitData } from '../types';
-import { assetClassToNamespace } from '../utils';
 
 export class WarperPresetFactoryAdapter extends Adapter {
   private readonly contract: WarperPresetFactory;
@@ -49,7 +48,7 @@ export class WarperPresetFactoryAdapter extends Adapter {
     const warper = this.contractResolver.resolveWarper(event.args.warper);
     const assetClass = await warper.__assetClass();
 
-    return this.addressToAssetType(event.args.warper, assetClassToNamespace(assetClass));
+    return this.addressToAssetType(event.args.warper, this.decodeAssetClass(assetClass));
   }
 
   /**

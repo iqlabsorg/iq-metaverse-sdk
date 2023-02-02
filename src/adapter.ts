@@ -15,6 +15,7 @@ import {
   TaxTerms,
   WarperPresetInitData,
   TaxTermsStrategyIdName,
+  AssetNamespace,
 } from './types';
 
 export abstract class Adapter implements ChainAware {
@@ -58,6 +59,14 @@ export abstract class Adapter implements ChainAware {
 
   protected decodeAsset(asset: Assets.AssetStructOutput): Asset {
     return AssetCoder.decode(asset, this.addressTranslator.chainId);
+  }
+
+  protected encodeAssetClass(namespace: AssetNamespace): string {
+    return AssetCoder.encodeAssetClass(namespace);
+  }
+
+  protected decodeAssetClass(assetClass: string): AssetNamespace {
+    return AssetCoder.decodeAssetClass(assetClass);
   }
 
   protected encodeListingTerms(params: ListingTerms): IListingTermsRegistry.ListingTermsStruct {

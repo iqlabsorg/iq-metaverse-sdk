@@ -1,11 +1,18 @@
 import { AccountId, AssetType, ChainId } from 'caip';
 import { Signer } from 'ethers';
 import {
+  ACLAdapter,
+  AssetClassRegistryAdapter,
+  ERC721AssetVaultAdapter,
+  ListingConfiguratorPresetFactoryAdapter,
+  ListingConfiguratorRegistryAdapter,
   ListingManagerAdapter,
+  ListingStrategyRegistryAdapter,
   ListingTermsRegistryAdapter,
   ListingWizardAdapterV1,
   MetahubAdapter,
   RentingManagerAdapter,
+  TaxStrategyRegistryAdapter,
   TaxTermsRegistryAdapter,
   UniverseRegistryAdapter,
   UniverseWizardAdapterV1,
@@ -44,7 +51,34 @@ export class IQSpace implements ChainAware {
   }
 
   /**
-   * Resolves ERC721 warper adapter
+   * Resolves ACL adapter.
+   * @param accountId ACL account ID.
+   */
+  acl(accountId: AccountId): ACLAdapter {
+    this.addressTranslator.assertSameChainId(accountId.chainId);
+    return new ACLAdapter(accountId, this.contractResolver, this.addressTranslator);
+  }
+
+  /**
+   * Resolves asset class registry adapter.
+   * @param accountId Asset class registry account ID.
+   */
+  assetClassRegistry(accountId: AccountId): AssetClassRegistryAdapter {
+    this.addressTranslator.assertSameChainId(accountId.chainId);
+    return new AssetClassRegistryAdapter(accountId, this.contractResolver, this.addressTranslator);
+  }
+
+  /**
+   * Resolves ERC721 asset vault adapter.
+   * @param accountId Asset vault account ID.
+   */
+  erc721AssetVault(accountId: AccountId): ERC721AssetVaultAdapter {
+    this.addressTranslator.assertSameChainId(accountId.chainId);
+    return new ERC721AssetVaultAdapter(accountId, this.contractResolver, this.addressTranslator);
+  }
+
+  /**
+   * Resolves ERC721 warper adapter.
    * @param assetType Warper asset type.
    */
   warperERC721(assetType: AssetType): ERC721WarperAdapter {
@@ -116,12 +150,48 @@ export class IQSpace implements ChainAware {
   }
 
   /**
+   * Resolves the listing strategy registry adapter.
+   * @param accountId Listing strategy registry account ID.
+   */
+  listingStrategyRegistry(accountId: AccountId): ListingStrategyRegistryAdapter {
+    this.addressTranslator.assertSameChainId(accountId.chainId);
+    return new ListingStrategyRegistryAdapter(accountId, this.contractResolver, this.addressTranslator);
+  }
+
+  /**
+   * Resolves the listing configurator registry adapter.
+   * @param accountId Listing configurator registry account ID.
+   */
+  listingConfiguratorRegistry(accountId: AccountId): ListingConfiguratorRegistryAdapter {
+    this.addressTranslator.assertSameChainId(accountId.chainId);
+    return new ListingConfiguratorRegistryAdapter(accountId, this.contractResolver, this.addressTranslator);
+  }
+
+  /**
+   * Resolves the listing configurator preset factory adapter.
+   * @param accountId Listing configurator preset factory account ID.
+   */
+  listingConfiguratorPresetFactory(accountId: AccountId): ListingConfiguratorPresetFactoryAdapter {
+    this.addressTranslator.assertSameChainId(accountId.chainId);
+    return new ListingConfiguratorPresetFactoryAdapter(accountId, this.contractResolver, this.addressTranslator);
+  }
+
+  /**
    * Resolves the tax terms registry adapter.
    * @param accountId Tax terms registry account ID.
    */
   taxTermsRegistry(accountId: AccountId): TaxTermsRegistryAdapter {
     this.addressTranslator.assertSameChainId(accountId.chainId);
     return new TaxTermsRegistryAdapter(accountId, this.contractResolver, this.addressTranslator);
+  }
+
+  /**
+   * Resolves the tax strategy registry adapter.
+   * @param accountId Tax strategy registry account ID.
+   */
+  taxStrategyRegistry(accountId: AccountId): TaxStrategyRegistryAdapter {
+    this.addressTranslator.assertSameChainId(accountId.chainId);
+    return new TaxStrategyRegistryAdapter(accountId, this.contractResolver, this.addressTranslator);
   }
 
   /**

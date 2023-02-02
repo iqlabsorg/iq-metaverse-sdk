@@ -4,7 +4,7 @@ import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
 import { Address, RegisteredWarper } from '../types';
-import { assetClassToNamespace, pick } from '../utils';
+import { pick } from '../utils';
 
 import { WarperManager } from '../contracts';
 import { Warpers } from '../contracts/contracts/warper/IWarperController';
@@ -145,7 +145,7 @@ export class WarperManagerAdapter extends Adapter {
    * @private
    */
   private normalizeWarper(warperAddress: Address, warper: Warpers.WarperStructOutput): RegisteredWarper {
-    const namespace = assetClassToNamespace(warper.assetClass);
+    const namespace = this.decodeAssetClass(warper.assetClass);
     return {
       ...pick(warper, ['name', 'universeId', 'paused']),
       self: this.addressToAssetType(warperAddress, namespace),

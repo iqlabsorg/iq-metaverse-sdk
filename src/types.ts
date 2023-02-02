@@ -210,3 +210,23 @@ export type WarperPreset = {
   implementation: AccountId;
   enabled: boolean;
 };
+
+export type AssetClassConfig = {
+  vault: AccountId;
+  controller: AccountId;
+};
+
+export type ListingStrategyConfig = {
+  controller: AccountId;
+  taxStrategyId: BytesLike;
+};
+
+export type ListingConfiguratorPreset = {
+  id: BytesLike;
+  implementation: AccountId;
+  enabled: boolean;
+};
+
+export type TaxStrategyConfig = {
+  controller: AccountId;
+};

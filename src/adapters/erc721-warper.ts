@@ -2,11 +2,11 @@ import { AssetType } from 'caip';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
-import { IAvailabilityPeriodMechanics__factory, IERC721Warper, IRentalPeriodMechanics__factory } from '../contracts';
+import { ERC721Warper, IAvailabilityPeriodMechanics__factory, IRentalPeriodMechanics__factory } from '../contracts';
 import { WarperRentingConstraints } from '../types';
 
 export class ERC721WarperAdapter extends Adapter {
-  private readonly contract: IERC721Warper;
+  private readonly contract: ERC721Warper;
 
   constructor(assetType: AssetType, contractResolver: ContractResolver, addressTranslator: AddressTranslator) {
     super(contractResolver, addressTranslator);

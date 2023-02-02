@@ -5,14 +5,20 @@ import {
   TAX_STRATEGIES,
   TAX_STRATEGY_IDS,
 } from '@iqprotocol/solidity-contracts-nft';
-import { RentalStatus, RentalStatusEnum, WarperPresetId } from './types';
+import { AssetNamespace, RentalStatus, RentalStatusEnum, WarperPresetId } from './types';
 import { WARPER_PRESET_ERC721_IDS } from '@iqprotocol/solidity-contracts-nft';
 
-// The `namespace` value must be a correct CAIP-19 asset type namespace.
-export const assetClasses = {
-  ERC721: { id: ASSET_CLASS.ERC721, namespace: 'erc721' },
-  ERC20: { id: ASSET_CLASS.ERC20, namespace: 'erc20' },
-} as const;
+export const assetClassToNamespaceMap: Map<string, AssetNamespace> = new Map([
+  [ASSET_CLASS.ERC20, 'erc20'],
+  [ASSET_CLASS.ERC721, 'erc721'],
+  [ASSET_CLASS.ERC1155, 'erc1155'],
+]);
+
+export const namespaceToAssetClassMap: Map<AssetNamespace, string> = new Map([
+  ['erc20', ASSET_CLASS.ERC20],
+  ['erc721', ASSET_CLASS.ERC721],
+  ['erc1155', ASSET_CLASS.ERC1155],
+]);
 
 export const listingStrategies = {
   FIXED_RATE: { id: LISTING_STRATEGY_IDS.FIXED_RATE, name: LISTING_STRATEGIES.FIXED_RATE },

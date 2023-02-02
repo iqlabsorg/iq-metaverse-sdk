@@ -6,7 +6,8 @@ import {
   HUNDRED_PERCENT_SCALE_2,
 } from '@iqprotocol/solidity-contracts-nft';
 import { BigNumber, BigNumberish, BytesLike, ethers, FixedNumber } from 'ethers';
-import { assetClasses } from './constants';
+import { assetClassToNamespaceMap } from './constants';
+import { AssetNamespace } from './types';
 
 export const pick = <T extends object, K extends keyof T>(obj: T, names: readonly K[]): Pick<T, K> => {
   const result = {} as Pick<T, K>;
@@ -18,11 +19,6 @@ export const pick = <T extends object, K extends keyof T>(obj: T, names: readonl
     idx += 1;
   }
   return result;
-};
-
-/** Decodes asset class as a CAIP namespace */
-export const assetClassToNamespace = (assetClass: string): string => {
-  return Object.values(assetClasses).find(({ id }) => assetClass === id)?.namespace ?? 'unknown';
 };
 
 /**

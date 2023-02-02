@@ -2,7 +2,6 @@ import { AccountId, AssetType } from 'caip';
 import { BigNumber, BigNumberish, ContractTransaction } from 'ethers';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
-import { assetClasses } from '../constants';
 import { ContractResolver } from '../contract-resolver';
 import { UniverseRegistry } from '../contracts';
 import { UniverseInfo } from '../types';
@@ -73,7 +72,7 @@ export class UniverseRegistryAdapter extends Adapter {
    * Returns the Universe token address.
    */
   async universeToken(): Promise<AssetType> {
-    return this.addressToAssetType(await this.contract.universeToken(), assetClasses.ERC721.namespace);
+    return this.addressToAssetType(await this.contract.universeToken(), 'erc721');
   }
 
   /**

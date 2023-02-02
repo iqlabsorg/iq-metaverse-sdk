@@ -1,32 +1,28 @@
 /* eslint-disable sonarjs/no-small-switch */
 import { defaultAbiCoder } from 'ethers/lib/utils';
-import { assetClasses } from '../constants';
-import { Asset } from '../types';
+import { Asset, AssetNamespace } from '../types';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Assets } from '../contracts/contracts/metahub/core/IMetahub';
 import { AssetId, ChainId } from 'caip';
-import { assetClassToNamespace } from '../utils';
+import { ASSET_CLASS } from '@iqprotocol/solidity-contracts-nft';
+import { assetClassToNamespaceMap, namespaceToAssetClassMap } from '../constants';
 
 export class AssetCoder {
   /**
    * Encodes asset structure.
-   * @param asset
+   * @param asset Asset.
    */
   static encode({ id, value }: Asset): Assets.AssetStruct {
-    const { ERC721 } = assetClasses;
-
     switch (id.assetName.namespace) {
-      case ERC721.namespace: {
+      case 'erc721': {
         return {
           id: {
-            class: ERC721.id,
+            class: ASSET_CLASS.ERC721,
             data: defaultAbiCoder.encode(['address', 'uint256'], [id.assetName.reference, id.tokenId]),
           },
           value,
         };
       }
-      // Add new asset class support below:
-      // case ERC1155.namespace: {}
 
       default: {
         throw Error('Unrecognized asset class');
@@ -36,33 +32,56 @@ export class AssetCoder {
 
   /**
    * Decodes asset structure.
-   * @param params
-   * @param chainId
+   * @param params Asset structure.
+   * @param chainId Chain ID.
    */
   static decode({ id, value }: Assets.AssetStructOutput, chainId: ChainId): Asset {
-    const { ERC721 } = assetClasses;
-
     switch (id.class) {
-      case ERC721.id: {
+      case ASSET_CLASS.ERC721: {
         const [address, tokenId] = defaultAbiCoder.decode(['address', 'uint256'], id.data) as [string, BigNumber];
         return {
           value,
           id: new AssetId({
             chainId,
             assetName: {
-              namespace: assetClassToNamespace(id.class),
+              namespace: AssetCoder.decodeAssetClass(id.class),
               reference: address,
             },
             tokenId: tokenId.toString(),
           }),
         };
       }
-      // Add new asset class support below:
-      // case ERC1155.id: {}
 
       default: {
         throw Error('Unrecognized asset class');
       }
     }
+  }
+
+  /**
+   * Encodes asset class (from namespace).
+   * @param namespace CAIP-19 namespace.
+   */
+  static encodeAssetClass(namespace: AssetNamespace): string {
+    const assetClass = namespaceToAssetClassMap.get(namespace);
+    if (!assetClass) {
+      throw new Error('Unknown asset class');
+    }
+
+    return assetClass;
+  }
+
+  /**
+   * Decodes asset class (to namespace).
+   * @param assetClass Asset class bytes.
+   * @returns CAIP-19 namespace.
+   */
+  static decodeAssetClass(assetClass: string): AssetNamespace {
+    const namespace = assetClassToNamespaceMap.get(assetClass);
+    if (!namespace) {
+      throw new Error('Unknown asset class');
+    }
+
+    return namespace;
   }
 }
