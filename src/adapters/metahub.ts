@@ -34,7 +34,6 @@ export class MetahubAdapter extends Adapter {
    * Returns the amount of `token`, currently accumulated by the user.
    * @param account The account to query the balance for.
    * @param token The token in which the balance is nominated.
-   * @return Balance of `token`.
    */
   async balance(account: AccountId, token: AssetType): Promise<BigNumber> {
     return this.contract.balance(this.accountIdToAddress(account), this.assetTypeToAddress(token));
@@ -43,7 +42,6 @@ export class MetahubAdapter extends Adapter {
   /**
    * Returns the list of user balances in various tokens.
    * @param account The account to query the balance for.
-   * @return List of balances.
    */
   async balances(account: AccountId): Promise<AccountBalance[]> {
     const balances = await this.contract.balances(this.accountIdToAddress(account));
@@ -57,7 +55,6 @@ export class MetahubAdapter extends Adapter {
    * Returns the amount of `token`, currently accumulated by the universe.
    * @param universeId The universe ID.
    * @param token The token address.
-   * @return Balance of `token`.
    */
   async universeBalance(universeId: BigNumberish, token: AssetType): Promise<BigNumber> {
     return this.contract.universeBalance(universeId, this.assetTypeToAddress(token));
@@ -66,7 +63,6 @@ export class MetahubAdapter extends Adapter {
   /**
    * Returns the list of universe balances in various tokens.
    * @param universeId The universe ID.
-   * @return List of balances.
    */
   async universeBalances(universeId: BigNumberish): Promise<AccountBalance[]> {
     const balances = await this.contract.universeBalances(universeId);

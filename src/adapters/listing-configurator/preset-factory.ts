@@ -50,7 +50,7 @@ export class ListingConfiguratorPresetFactoryAdapter extends Adapter {
   /**
    * Deploys a new listing configurator from the given preset.
    * @param presetId Preset ID (to deploy from).
-   * @param initData Initialization payload
+   * @param initData Initialization payload.
    */
   async deployPreset(presetId: BytesLike, initData: BytesLike): Promise<ContractTransaction> {
     return this.contract.deployPreset(presetId, initData);

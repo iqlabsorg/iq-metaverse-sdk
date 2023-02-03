@@ -9,13 +9,13 @@ import {
   Address,
   AgreementTerms,
   Asset,
-  ChainAware,
-  ListingTerms,
-  WarperPresetId,
-  TaxTerms,
-  WarperPresetInitData,
-  TaxTermsStrategyIdName,
   AssetNamespace,
+  ChainAware,
+  ListingTermsDecoded,
+  TaxTerms,
+  TaxTermsStrategyIdName,
+  WarperPresetId,
+  WarperPresetInitData,
 } from './types';
 
 export abstract class Adapter implements ChainAware {
@@ -69,11 +69,11 @@ export abstract class Adapter implements ChainAware {
     return AssetCoder.decodeAssetClass(assetClass);
   }
 
-  protected encodeListingTerms(params: ListingTerms): IListingTermsRegistry.ListingTermsStruct {
+  protected encodeListingTerms(params: ListingTermsDecoded): IListingTermsRegistry.ListingTermsStruct {
     return ListingTermsCoder.encode(params);
   }
 
-  protected decodeListingTerms(params: IListingTermsRegistry.ListingTermsStruct): ListingTerms {
+  protected decodeListingTerms(params: IListingTermsRegistry.ListingTermsStruct): ListingTermsDecoded {
     return ListingTermsCoder.decode(params);
   }
 

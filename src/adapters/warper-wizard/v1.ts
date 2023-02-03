@@ -1,11 +1,11 @@
 import { EMPTY_BYTES32_DATA_HEX, EMPTY_BYTES_DATA_HEX } from '@iqprotocol/solidity-contracts-nft';
 import { AccountId, AssetType } from 'caip';
-import { ContractTransaction, constants } from 'ethers';
+import { BytesLike, constants, ContractTransaction } from 'ethers';
 import { Adapter } from '../../adapter';
 import { AddressTranslator } from '../../address-translator';
 import { ContractResolver } from '../../contract-resolver';
-import { WarperWizardV1 } from '../../contracts';
-import { TaxTerms, WarperPresetId, WarperPresetInitData, WarperRegistrationParams } from '../../types';
+import { ITaxTermsRegistry, WarperWizardV1 } from '../../contracts';
+import { WarperRegistrationParams } from '../../types';
 
 export class WarperWizardAdapterV1 extends Adapter {
   private readonly contract: WarperWizardV1;
@@ -24,12 +24,12 @@ export class WarperWizardAdapterV1 extends Adapter {
    */
   async registerExistingWarper(
     warper: AssetType,
-    taxTerms: TaxTerms,
+    taxTerms: ITaxTermsRegistry.TaxTermsStruct,
     registrationParams: WarperRegistrationParams,
   ): Promise<ContractTransaction> {
     return this.contract.registerWarper(
       this.assetTypeToAddress(warper),
-      this.encodeTaxTerms(taxTerms),
+      taxTerms,
       registrationParams,
       EMPTY_BYTES32_DATA_HEX,
       EMPTY_BYTES_DATA_HEX,
@@ -44,18 +44,12 @@ export class WarperWizardAdapterV1 extends Adapter {
    * @param initData Warper init data.
    */
   async createWarperFromPresetAndRegister(
-    taxTerms: TaxTerms,
+    taxTerms: ITaxTermsRegistry.TaxTermsStruct,
     registrationParams: WarperRegistrationParams,
-    presetId: WarperPresetId,
-    initData: WarperPresetInitData,
+    presetId: BytesLike,
+    initData: BytesLike,
   ): Promise<ContractTransaction> {
-    return this.contract.registerWarper(
-      constants.AddressZero,
-      this.encodeTaxTerms(taxTerms),
-      registrationParams,
-      this.encodeWarperPresetId(presetId),
-      this.encodeWarperPresetInitData(presetId, initData),
-    );
+    return this.contract.registerWarper(constants.AddressZero, taxTerms, registrationParams, presetId, initData);
   }
 
   /**
@@ -72,7 +66,10 @@ export class WarperWizardAdapterV1 extends Adapter {
    * @param warper Warper reference.
    * @param newTaxTermsParams New warper tax terms params.
    */
-  async alterWarperTaxTerms(warper: AssetType, newTaxTermsParams: TaxTerms): Promise<ContractTransaction> {
-    return this.contract.alterWarperTaxTerms(this.assetTypeToAddress(warper), this.encodeTaxTerms(newTaxTermsParams));
+  async alterWarperTaxTerms(
+    warper: AssetType,
+    newTaxTermsParams: ITaxTermsRegistry.TaxTermsStruct,
+  ): Promise<ContractTransaction> {
+    return this.contract.alterWarperTaxTerms(this.assetTypeToAddress(warper), newTaxTermsParams);
   }
 }

@@ -9,12 +9,19 @@ import {
   ListingParams,
   ListingTerms,
   ListingWizardAdapterV1,
-  LISTING_STRATEGIES,
   LISTING_STRATEGY_IDS,
 } from '../src';
 import { ERC721Mock, IListingManager, IListingTermsRegistry, IListingWizardV1, IMetahub } from '../src/contracts';
+import { makeListingTermsFixedRate, makeListingTermsFixedRateWithReward } from './helpers/listing-renting';
 import { setupForListing } from './helpers/setup';
-import { COMMON_ID, COMMON_PRICE, COMMON_REWARD_RATE, SECONDS_IN_DAY, toAccountId } from './helpers/utils';
+import {
+  COMMON_BASE_RATE,
+  COMMON_ID,
+  COMMON_PRICE,
+  COMMON_REWARD_RATE,
+  SECONDS_IN_DAY,
+  toAccountId,
+} from './helpers/utils';
 
 /**
  * @group integration
@@ -69,11 +76,8 @@ describe('ListingWizardAdapterV1', () => {
     listingWizardAdapter = iqspace.listingWizardV1(toAccountId(listingWizard.address));
 
     pricePerSecondInEthers = calculatePricePerSecondInEthers(COMMON_PRICE, SECONDS_IN_DAY);
-    listingTerms = { name: LISTING_STRATEGIES.FIXED_RATE, data: { pricePerSecondInEthers } };
-    listingTermsWithReward = {
-      name: LISTING_STRATEGIES.FIXED_RATE_WITH_REWARD,
-      data: { pricePerSecondInEthers, rewardRatePercent: COMMON_REWARD_RATE },
-    };
+    listingTerms = makeListingTermsFixedRate(COMMON_BASE_RATE);
+    listingTermsWithReward = makeListingTermsFixedRateWithReward(COMMON_BASE_RATE, COMMON_REWARD_RATE);
     listingParams = { lister: toAccountId(lister.address), configurator: toAccountId(ethers.constants.AddressZero) };
     assetListingParams = {
       assets: [createAsset('erc721', toAccountId(collection.address), 1)],

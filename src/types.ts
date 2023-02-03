@@ -18,11 +18,16 @@ export interface ChainAware {
   getChainId(): Promise<ChainId>;
 }
 
-export type ListingTerms = FixedPriceListingTerms | FixedPriceWithRewardListingTerms;
+export type ListingTermsDecoded = FixedPriceListingTerms | FixedPriceWithRewardListingTerms;
 
 export type ListingParams = {
   lister: AccountId;
   configurator: AccountId;
+};
+
+export type ListingTerms = {
+  strategyId: BytesLike;
+  strategyData: BytesLike;
 };
 
 export type ListingTermsInfo = ListingTerms & {
@@ -74,7 +79,7 @@ export type TaxTermsStrategyIdName =
   | typeof taxStrategies.FIXED_RATE_TAX_WITH_REWARD.name;
 
 export type TaxTermsQueryParams = {
-  taxStrategyIdName: TaxTermsStrategyIdName;
+  taxStrategyId: BytesLike;
   universeId: BigNumberish;
   warper: AssetType;
 };
@@ -116,11 +121,11 @@ export type RentingEstimationParams = Pick<Rentings.ParamsStruct, 'listingId' | 
   selectedConfiguratorListingTerms?: ListingTerms;
 };
 
-export type TokenQuoteDataEncoded = { tokenQuote: BytesLike; tokenQuoteSignature: BytesLike };
+export type TokenQuoteData = { tokenQuote: BytesLike; tokenQuoteSignature: BytesLike };
 
 export type RentingParams = RentingEstimationParams & {
   maxPaymentAmount: BigNumberish;
-  tokenQuoteDataEncoded?: TokenQuoteDataEncoded;
+  tokenQuoteData?: TokenQuoteData;
 };
 
 export type RentalFees = Pick<
@@ -206,7 +211,7 @@ export type WarperPresetInitData = {
 };
 
 export type WarperPreset = {
-  id: WarperPresetId;
+  id: BytesLike;
   implementation: AccountId;
   enabled: boolean;
 };

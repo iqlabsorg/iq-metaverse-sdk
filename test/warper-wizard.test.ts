@@ -1,22 +1,19 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AssetType } from 'caip';
-import { ContractTransaction } from 'ethers';
+import { BytesLike, ContractTransaction } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import {
-  AddressTranslator,
   IQSpace,
-  TaxTerms,
-  TAX_STRATEGIES,
   TAX_STRATEGY_IDS,
-  WarperPresetId,
-  WarperPresetInitData,
   WarperRegistrationParams,
   WarperWizardAdapterV1,
+  WARPER_PRESET_ERC721_IDS,
 } from '../src';
 import { ERC721Mock, IMetahub, ITaxTermsRegistry, IWarperManager, IWarperWizardV1 } from '../src/contracts';
 import { setupUniverse, setupUniverseAndWarper } from './helpers/setup';
+import { makeTaxTermsFixedRate, makeTaxTermsFixedRateWithReward } from './helpers/tax';
 import { COMMON_ID, COMMON_REWARD_RATE, COMMON_TAX_RATE, toAccountId } from './helpers/utils';
-import { findWarperByDeploymentTransaction } from './helpers/warper';
+import { findWarperByDeploymentTransaction, makeERC721ConfigurablePresetInitData } from './helpers/warper';
 
 /**
  * @group integration
@@ -39,19 +36,21 @@ describe('WarperWizardAdapterV1', () => {
   /** Data Structs */
   let warperReference: AssetType;
   let warperParams: WarperRegistrationParams;
-  let warperTaxTerms: TaxTerms;
-  let warperTaxTermsWithReward: TaxTerms;
-  let warperInitData: WarperPresetInitData;
+  let warperTaxTerms: ITaxTermsRegistry.TaxTermsStruct;
+  let warperTaxTermsWithReward: ITaxTermsRegistry.TaxTermsStruct;
+  let warperInitData: BytesLike;
 
-  const registerExistingWarper = async (taxTerms: TaxTerms): Promise<void> => {
+  const registerExistingWarper = async (taxTerms: ITaxTermsRegistry.TaxTermsStruct): Promise<void> => {
     await warperWizardAdapter.registerExistingWarper(warperReference, taxTerms, warperParams);
   };
 
-  const createWarperFromPresetAndRegister = async (taxTerms: TaxTerms): Promise<ContractTransaction> => {
+  const createWarperFromPresetAndRegister = async (
+    taxTerms: ITaxTermsRegistry.TaxTermsStruct,
+  ): Promise<ContractTransaction> => {
     return await warperWizardAdapter.createWarperFromPresetAndRegister(
       taxTerms,
       warperParams,
-      WarperPresetId.ERC721_CONFIGURABLE_PRESET,
+      WARPER_PRESET_ERC721_IDS.ERC721_CONFIGURABLE_PRESET,
       warperInitData,
     );
   };
@@ -80,15 +79,9 @@ describe('WarperWizardAdapterV1', () => {
       universeId: COMMON_ID,
       paused: false,
     };
-    warperTaxTerms = { name: TAX_STRATEGIES.FIXED_RATE_TAX, data: { ratePercent: COMMON_TAX_RATE } };
-    warperTaxTermsWithReward = {
-      name: TAX_STRATEGIES.FIXED_RATE_TAX_WITH_REWARD,
-      data: { ratePercent: COMMON_TAX_RATE, rewardRatePercent: COMMON_REWARD_RATE },
-    };
-    warperInitData = {
-      metahub: toAccountId(metahub.address),
-      original: AddressTranslator.createAssetType(toAccountId(collection.address), 'erc721'),
-    };
+    warperTaxTerms = makeTaxTermsFixedRate(COMMON_TAX_RATE);
+    warperTaxTermsWithReward = makeTaxTermsFixedRateWithReward(COMMON_TAX_RATE, COMMON_REWARD_RATE);
+    warperInitData = makeERC721ConfigurablePresetInitData(metahub.address, collection.address);
   });
 
   describe('registerExistingWarper', () => {

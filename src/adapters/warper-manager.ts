@@ -3,11 +3,10 @@ import { BigNumber, BigNumberish, ContractTransaction } from 'ethers';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
-import { Address, RegisteredWarper } from '../types';
-import { pick } from '../utils';
-
 import { WarperManager } from '../contracts';
 import { Warpers } from '../contracts/contracts/warper/IWarperController';
+import { Address, RegisteredWarper } from '../types';
+import { pick } from '../utils';
 
 export class WarperManagerAdapter extends Adapter {
   private readonly contract: WarperManager;

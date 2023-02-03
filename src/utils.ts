@@ -6,8 +6,7 @@ import {
   HUNDRED_PERCENT_SCALE_2,
 } from '@iqprotocol/solidity-contracts-nft';
 import { BigNumber, BigNumberish, BytesLike, ethers, FixedNumber } from 'ethers';
-import { assetClassToNamespaceMap } from './constants';
-import { AssetNamespace } from './types';
+import { ListingTerms, TokenQuoteData } from './types';
 
 export const pick = <T extends object, K extends keyof T>(obj: T, names: readonly K[]): Pick<T, K> => {
   const result = {} as Pick<T, K>;
@@ -115,10 +114,10 @@ export const calculateTaxFeeForFixedRateInWei = (
   );
 };
 
-export const createEmptyListingTerms = (): { strategyId: BytesLike; strategyData: BytesLike } => {
+export const createEmptyListingTerms = (): ListingTerms => {
   return { strategyId: EMPTY_BYTES4_DATA_HEX, strategyData: EMPTY_BYTES_DATA_HEX };
 };
 
-export const createEmptyTokenQuoteData = (): { tokenQuote: BytesLike; tokenQuoteSignature: BytesLike } => {
+export const createEmptyTokenQuoteData = (): TokenQuoteData => {
   return { tokenQuote: EMPTY_BYTES_DATA_HEX, tokenQuoteSignature: EMPTY_BYTES_DATA_HEX };
 };
