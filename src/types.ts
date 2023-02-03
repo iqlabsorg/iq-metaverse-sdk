@@ -1,7 +1,6 @@
 import { BigNumberish } from '@ethersproject/bignumber';
 import { AccountId, AssetId, AssetType, ChainId } from 'caip';
 import { BigNumber, BytesLike, Overrides as BaseOverrides, Signer } from 'ethers';
-import { listingStrategies, taxStrategies } from './constants';
 import { Accounts, ITokenQuote, Listings, Rentings } from './contracts/contracts/metahub/core/IMetahub';
 import { Warpers } from './contracts/contracts/warper/IWarperController';
 
@@ -17,8 +16,6 @@ export interface ChainAware {
   // https://github.com/ChainAgnostic/CAIPs/blob/master/CAIPs/caip-2.md
   getChainId(): Promise<ChainId>;
 }
-
-export type ListingTermsDecoded = FixedPriceListingTerms | FixedPriceWithRewardListingTerms;
 
 export type ListingParams = {
   lister: AccountId;
@@ -41,42 +38,6 @@ export type ListingTermsQueryParams = {
 };
 
 export type ListingTermsInfoWithParams = ListingTermsInfo & ListingTermsQueryParams;
-
-export type FixedPriceListingTerms = {
-  name: typeof listingStrategies.FIXED_RATE.name;
-  data: {
-    pricePerSecondInEthers: BigNumberish;
-  };
-};
-
-export type FixedPriceWithRewardListingTerms = {
-  name: typeof listingStrategies.FIXED_RATE_WITH_REWARD.name;
-  data: {
-    pricePerSecondInEthers: BigNumberish;
-    rewardRatePercent: string;
-  };
-};
-
-export type FixedRateTaxTerms = {
-  name: typeof taxStrategies.FIXED_RATE_TAX.name;
-  data: {
-    ratePercent: string;
-  };
-};
-
-export type FixedRateWithRewardTaxTerms = {
-  name: typeof taxStrategies.FIXED_RATE_TAX_WITH_REWARD.name;
-  data: {
-    ratePercent: string;
-    rewardRatePercent: string;
-  };
-};
-
-export type TaxTerms = FixedRateTaxTerms | FixedRateWithRewardTaxTerms;
-
-export type TaxTermsStrategyIdName =
-  | typeof taxStrategies.FIXED_RATE_TAX.name
-  | typeof taxStrategies.FIXED_RATE_TAX_WITH_REWARD.name;
 
 export type TaxTermsQueryParams = {
   taxStrategyId: BytesLike;
@@ -199,15 +160,6 @@ export type UniverseInfo = {
   id: BigNumber;
   name: string;
   paymentTokens: AccountId[];
-};
-
-export enum WarperPresetId {
-  ERC721_CONFIGURABLE_PRESET = 'ERC721ConfigurablePreset',
-}
-
-export type WarperPresetInitData = {
-  metahub: AccountId;
-  original: AssetType;
 };
 
 export type WarperPreset = {

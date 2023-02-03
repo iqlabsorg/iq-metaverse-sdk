@@ -1,22 +1,9 @@
 import { AccountId, AssetId, AssetType, ChainId } from 'caip';
-import { BytesLike } from 'ethers';
 import { AddressTranslator } from './address-translator';
-import { AgreementTermsCoder, AssetCoder, ListingTermsCoder, TaxTermsCoder, WarperPresetCoder } from './coders';
+import { AgreementTermsCoder, AssetCoder } from './coders';
 import { ContractResolver } from './contract-resolver';
-import { IListingTermsRegistry, ITaxTermsRegistry } from './contracts';
 import { Assets, Rentings } from './contracts/contracts/metahub/core/IMetahub';
-import {
-  Address,
-  AgreementTerms,
-  Asset,
-  AssetNamespace,
-  ChainAware,
-  ListingTermsDecoded,
-  TaxTerms,
-  TaxTermsStrategyIdName,
-  WarperPresetId,
-  WarperPresetInitData,
-} from './types';
+import { Address, AgreementTerms, Asset, AssetNamespace, ChainAware } from './types';
 
 export abstract class Adapter implements ChainAware {
   protected constructor(
@@ -69,40 +56,8 @@ export abstract class Adapter implements ChainAware {
     return AssetCoder.decodeAssetClass(assetClass);
   }
 
-  protected encodeListingTerms(params: ListingTermsDecoded): IListingTermsRegistry.ListingTermsStruct {
-    return ListingTermsCoder.encode(params);
-  }
-
-  protected decodeListingTerms(params: IListingTermsRegistry.ListingTermsStruct): ListingTermsDecoded {
-    return ListingTermsCoder.decode(params);
-  }
-
-  protected encodeTaxTerms(params: TaxTerms): ITaxTermsRegistry.TaxTermsStruct {
-    return TaxTermsCoder.encode(params);
-  }
-
-  protected decodeTaxTerms(params: ITaxTermsRegistry.TaxTermsStruct): TaxTerms {
-    return TaxTermsCoder.decode(params);
-  }
-
-  protected encodeTaxStrategyId(taxStrategyIdName: TaxTermsStrategyIdName): BytesLike {
-    return TaxTermsCoder.encodeTaxStrategyId(taxStrategyIdName);
-  }
-
   protected decodeAgreementTerms(params: Rentings.AgreementTermsStruct): AgreementTerms {
     return AgreementTermsCoder.decode(this.addressTranslator, params);
-  }
-
-  protected encodeWarperPresetId(presetId: WarperPresetId): BytesLike {
-    return WarperPresetCoder.encodePresetId(presetId);
-  }
-
-  protected decodeWarperPresetId(presetId: BytesLike): WarperPresetId {
-    return WarperPresetCoder.decodePresetId(presetId);
-  }
-
-  protected encodeWarperPresetInitData(presetId: WarperPresetId, data: WarperPresetInitData): BytesLike {
-    return WarperPresetCoder.encodePresetInitData(presetId, data);
   }
 
   protected async erc20AssetMetadata(assetType: AssetType): Promise<{
