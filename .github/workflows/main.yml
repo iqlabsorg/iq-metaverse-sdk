@@ -28,7 +28,7 @@ jobs:
           node-version: ${{ matrix.node }}
 
       - name: Install dependencies (with cache)
-        run: yarn --frozen-lockfile --ignore-scripts --skip-integrity-check --network-concurrency 1
+        run: yarn --ignore-scripts --skip-integrity-check --network-concurrency 1
         # https://github.com/yarnpkg/yarn/issues/6312
 
       - name: Build packages
