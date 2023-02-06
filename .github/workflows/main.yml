@@ -53,7 +53,8 @@ jobs:
           node-version: '16'
 
       - name: Install dependencies (with cache)
-        uses: bahmutov/npm-install@v1
+        # uses: bahmutov/npm-install@v1
+        run: yarn --ignore-scripts --skip-integrity-check --network-concurrency 1
 
       - name: Generate docs
         run: yarn docs
