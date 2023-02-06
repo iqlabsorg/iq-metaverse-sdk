@@ -56,6 +56,9 @@ jobs:
         # uses: bahmutov/npm-install@v1
         run: yarn --ignore-scripts --skip-integrity-check --network-concurrency 1
 
+      - name: Generate typechain artifacts
+        run: yarn typechain
+
       - name: Generate docs
         run: yarn docs
 
