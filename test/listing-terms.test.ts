@@ -11,7 +11,11 @@ import {
   LISTING_STRATEGIES,
 } from '../src';
 import { IListingTermsRegistry } from '../src/contracts';
-import { findListingTermsIdByTransaction } from './helpers/listing-renting';
+import {
+  findListingTermsIdByTransaction,
+  makeListingTermsFixedRate,
+  makeListingTermsFixedRateWithReward,
+} from './helpers/listing-renting';
 import { createListing, setupForRenting, setupUniverseAndRegisteredWarper } from './helpers/setup';
 import { COMMON_BASE_RATE, COMMON_ID, COMMON_REWARD_RATE, toAccountId } from './helpers/utils';
 
@@ -35,26 +39,14 @@ describe('ListingTermsRegistryAdapter', () => {
   let warperReference: AssetType;
 
   /** Constants */
-  const fixedTerms: ListingTerms = {
-    name: LISTING_STRATEGIES.FIXED_RATE,
-    data: {
-      pricePerSecondInEthers: COMMON_BASE_RATE,
-    },
-  };
+  const fixedTerms: ListingTerms = makeListingTermsFixedRate(COMMON_BASE_RATE);
   const fixedTermsInfo: ListingTermsInfo = {
     id: COMMON_ID,
-    name: LISTING_STRATEGIES.FIXED_RATE,
-    data: {
-      pricePerSecondInEthers: COMMON_BASE_RATE,
-    },
+    ...fixedTerms,
   };
   const fixedTermsWithRewardInfo: ListingTermsInfo = {
     id: COMMON_ID,
-    name: LISTING_STRATEGIES.FIXED_RATE_WITH_REWARD,
-    data: {
-      pricePerSecondInEthers: COMMON_BASE_RATE,
-      rewardRatePercent: COMMON_REWARD_RATE,
-    },
+    ...makeListingTermsFixedRateWithReward(COMMON_BASE_RATE, COMMON_REWARD_RATE),
   };
 
   beforeEach(async () => {
@@ -120,11 +112,7 @@ describe('ListingTermsRegistryAdapter', () => {
         const termsWithParams = await listingTermsRegistryAdapter.listingTermsWithParams(COMMON_ID);
 
         expect(termsWithParams).toMatchObject({
-          id: COMMON_ID,
-          name: LISTING_STRATEGIES.FIXED_RATE,
-          data: {
-            pricePerSecondInEthers: COMMON_BASE_RATE,
-          },
+          ...fixedTermsInfo,
           universeId: COMMON_ID,
           listingId: COMMON_ID,
         });

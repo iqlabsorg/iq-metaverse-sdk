@@ -24,9 +24,7 @@ export class RentingManagerAdapter extends Adapter {
   async estimateRent(params: RentingEstimationParams): Promise<RentalFees> {
     const { listingId, paymentToken, rentalPeriod, renter, warper, selectedConfiguratorListingTerms, listingTermsId } =
       params;
-    const configuratorListingTerms = selectedConfiguratorListingTerms
-      ? this.encodeListingTerms(selectedConfiguratorListingTerms)
-      : createEmptyListingTerms();
+    const configuratorListingTerms = selectedConfiguratorListingTerms ?? createEmptyListingTerms();
     const fees = await this.contract.estimateRent({
       listingId,
       rentalPeriod,
@@ -54,12 +52,10 @@ export class RentingManagerAdapter extends Adapter {
       maxPaymentAmount,
       selectedConfiguratorListingTerms,
       listingTermsId,
-      tokenQuoteDataEncoded,
+      tokenQuoteData: tokenQuoteDataParam,
     } = params;
-    const configuratorListingTerms = selectedConfiguratorListingTerms
-      ? this.encodeListingTerms(selectedConfiguratorListingTerms)
-      : createEmptyListingTerms();
-    const tokenQuoteData = tokenQuoteDataEncoded ?? createEmptyTokenQuoteData();
+    const configuratorListingTerms = selectedConfiguratorListingTerms ?? createEmptyListingTerms();
+    const tokenQuoteData = tokenQuoteDataParam ?? createEmptyTokenQuoteData();
     return this.contract.rent(
       {
         listingId,

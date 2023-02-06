@@ -27,9 +27,7 @@ export {
 } from './adapters';
 export { AddressTranslator } from './address-translator';
 export { createAsset } from './asset';
-export { listingStrategies, taxStrategies } from './constants';
 export { IQSpace } from './iqspace';
-export { WarperPresetId } from './types';
 export type {
   AccountBalance,
   Address,
@@ -38,10 +36,6 @@ export type {
   AssetListingParams,
   AssetNamespace,
   BaseToken,
-  FixedPriceListingTerms,
-  FixedPriceWithRewardListingTerms,
-  FixedRateTaxTerms,
-  FixedRateWithRewardTaxTerms,
   IQSpaceParams,
   Listing,
   ListingConfiguratorPreset,
@@ -58,14 +52,11 @@ export type {
   RentingEstimationParams,
   RentingParams,
   TaxStrategyConfig,
-  TaxTerms,
   TaxTermsQueryParams,
-  TaxTermsStrategyIdName,
-  TokenQuoteDataEncoded,
+  TokenQuoteData,
   UniverseInfo,
   UniverseParams,
   WarperPreset,
-  WarperPresetInitData,
   WarperRegistrationParams,
   WarperRentingConstraints,
 } from './types';

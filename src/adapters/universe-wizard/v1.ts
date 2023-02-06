@@ -1,11 +1,11 @@
 import { EMPTY_BYTES32_DATA_HEX, EMPTY_BYTES_DATA_HEX } from '@iqprotocol/solidity-contracts-nft';
 import { AccountId, AssetType } from 'caip';
-import { constants, ContractTransaction } from 'ethers';
+import { BytesLike, constants, ContractTransaction } from 'ethers';
 import { Adapter } from '../../adapter';
 import { AddressTranslator } from '../../address-translator';
 import { ContractResolver } from '../../contract-resolver';
-import { IUniverseRegistry, UniverseWizardV1 } from '../../contracts';
-import { TaxTerms, UniverseParams, WarperPresetId, WarperPresetInitData, WarperRegistrationParams } from '../../types';
+import { ITaxTermsRegistry, IUniverseRegistry, UniverseWizardV1 } from '../../contracts';
+import { UniverseParams, WarperRegistrationParams } from '../../types';
 
 export class UniverseWizardAdapterV1 extends Adapter {
   private readonly contract: UniverseWizardV1;
@@ -38,10 +38,10 @@ export class UniverseWizardAdapterV1 extends Adapter {
    */
   async setupUniverseAndCreateWarperFromPresetAndRegister(
     universeParams: UniverseParams,
-    warperTaxTerms: TaxTerms,
+    warperTaxTerms: ITaxTermsRegistry.TaxTermsStruct,
     warperRegistrationParams: WarperRegistrationParams,
-    warperPresetId: WarperPresetId,
-    warperInitData: WarperPresetInitData,
+    warperPresetId: BytesLike,
+    warperInitData: BytesLike,
   ): Promise<ContractTransaction> {
     const params: IUniverseRegistry.UniverseParamsStruct = {
       name: universeParams.name,
@@ -49,11 +49,11 @@ export class UniverseWizardAdapterV1 extends Adapter {
     };
     return this.contract.setupUniverseAndWarper(
       params,
-      this.encodeTaxTerms(warperTaxTerms),
+      warperTaxTerms,
       constants.AddressZero,
       warperRegistrationParams,
-      this.encodeWarperPresetId(warperPresetId),
-      this.encodeWarperPresetInitData(warperPresetId, warperInitData),
+      warperPresetId,
+      warperInitData,
     );
   }
 
@@ -67,7 +67,7 @@ export class UniverseWizardAdapterV1 extends Adapter {
   async setupUniverseAndRegisterExistingWarper(
     universeParams: UniverseParams,
     warper: AssetType,
-    warperTaxTerms: TaxTerms,
+    warperTaxTerms: ITaxTermsRegistry.TaxTermsStruct,
     warperRegistrationParams: WarperRegistrationParams,
   ): Promise<ContractTransaction> {
     const params: IUniverseRegistry.UniverseParamsStruct = {
@@ -76,7 +76,7 @@ export class UniverseWizardAdapterV1 extends Adapter {
     };
     return this.contract.setupUniverseAndWarper(
       params,
-      this.encodeTaxTerms(warperTaxTerms),
+      warperTaxTerms,
       this.assetTypeToAddress(warper),
       warperRegistrationParams,
       EMPTY_BYTES32_DATA_HEX,

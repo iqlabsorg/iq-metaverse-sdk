@@ -121,25 +121,12 @@ The Preset Factory allows you to easily deploy warpers from presets. These prese
 IQ Protocol team.
 
 ```ts
-import { WarperPresetId } from '@iqprotocol/iq-space-sdk-js';
+import { WARPER_PRESET_ERC721_IDS } from '@iqprotocol/iq-space-sdk-js';
 
-const metahubAddress = '0x...';
-const originalAssetAddress = '0x...';
+const warperInitData = '0x8993dafd0...';
 
 // Deploy ERC721ConfigurablePreset preset.
-const tx = await warperPresetFactory.deployPreset(WarperPresetId.ERC721_CONFIGURABLE_PRESET, {
-  metahub: new AccountId({
-    chainId,
-    address: metahubAddress,
-  }),
-  original: new AssetType({
-    chainId,
-    assetName: {
-      namespace: 'erc721',
-      reference: originalAssetAddress,
-    },
-  }),
-});
+const tx = await warperPresetFactory.deployPreset(WARPER_PRESET_ERC721_IDS.ERC721_CONFIGURABLE_PRESET, warperInitData);
 
 // Wait for TX confirmation.
 await tx.wait();
@@ -180,14 +167,14 @@ Please refer to the code snippet below for more details for how to exactly regis
 The code snippet assumes that the custom Warper has already been deployed.
 
 ```ts
-import { TAX_STRATEGIES } from '@iqprotocol/iq-space-sdk-js';
+import { TAX_STRATEGY_IDS } from '@iqprotocol/iq-space-sdk-js';
 
 const warperAddress = '0x...';
 const warperAssetType = new AssetType({
   chainId,
   assetName: { namespace: 'erc721', reference: warperAddress },
 });
-const warperTaxTerms = { name: TAX_STRATEGIES.FIXED_RATE_TAX, data: { ratePercent: '0.5' } }; // 0.5% tax rate
+const warperTaxTerms = { strategyId: TAX_STRATEGY_IDS.FIXED_RATE_TAX, strategyData: '0x8993dafd0...' };
 const warperParams = {
   name: 'My Warper',
   universeId: '<your universe ID>',
@@ -303,7 +290,7 @@ To list an asset for rent, there must be at least one IQVerse with a registered 
 
 ```ts
 import { BigNumber } from 'ethers';
-import { calculatePricePerSecondInEthers, LISTING_STRATEGIES, createAsset } from '@iqprotocol/iq-space-sdk-js'
+import { calculatePricePerSecondInEthers, LISTING_STRATEGY_IDS, createAsset } from '@iqprotocol/iq-space-sdk-js'
 
 const universeId = '<your universe ID>';
 const originalAsset = new AccountId({ chainId, address: '0x0...' });
@@ -331,7 +318,7 @@ const assetListingParams = {
 
 // calculate price per second (we are setting 100 ethers per day as a base rate)
 const pricePerSecondInEthers = calculatePricePerSecondInEthers('100', SECONDS_IN_DAY);
-const listingTerms = { name: LISTING_STRATEGIES.FIXED_RATE, data: { pricePerSecondInEthers } };
+const listingTerms = { strategyId: LISTING_STRATEGY_IDS.FIXED_RATE, strategyData: '0x1a34b...' };
 const tx = await listingWizard.createListingWithTerms({
   universeId,
   assetListingParams,

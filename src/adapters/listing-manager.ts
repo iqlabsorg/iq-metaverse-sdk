@@ -52,7 +52,6 @@ export class ListingManagerAdapter extends Adapter {
   /**
    * Returns the listing details by the listing ID.
    * @param listingId Listing ID.
-   * @return Listing details.
    */
   async listing(listingId: BigNumberish): Promise<Listing> {
     const listing = await this.contract.listingInfo(listingId);
@@ -61,7 +60,6 @@ export class ListingManagerAdapter extends Adapter {
 
   /**
    * Returns the number of currently registered listings.
-   * @return Listing count.
    */
   async listingCount(): Promise<BigNumber> {
     return this.contract.listingCount();
@@ -79,7 +77,6 @@ export class ListingManagerAdapter extends Adapter {
   /**
    * Returns the number of currently registered listings for the particular lister account.
    * @param lister Lister account ID.
-   * @return Listing count.
    */
   async userListingCount(lister: AccountId): Promise<BigNumber> {
     return this.contract.userListingCount(this.accountIdToAddress(lister));
@@ -98,7 +95,6 @@ export class ListingManagerAdapter extends Adapter {
   /**
    * Returns the number of currently registered listings for the particular original asset.
    * @param asset Original asset reference.
-   * @return Listing count.
    */
   async assetListingCount(asset: AssetType): Promise<BigNumber> {
     return this.contract.assetListingCount(this.assetTypeToAddress(asset));

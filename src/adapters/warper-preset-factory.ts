@@ -1,10 +1,10 @@
 import { AccountId, AssetType } from 'caip';
-import { ContractTransaction } from 'ethers';
+import { BytesLike, ContractTransaction } from 'ethers';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
 import { IWarperPresetFactory, WarperPresetFactory } from '../contracts';
-import { WarperPreset, WarperPresetId, WarperPresetInitData } from '../types';
+import { WarperPreset } from '../types';
 
 export class WarperPresetFactoryAdapter extends Adapter {
   private readonly contract: WarperPresetFactory;
@@ -16,14 +16,11 @@ export class WarperPresetFactoryAdapter extends Adapter {
 
   /**
    * Deploys new instance of warper from preset.
-   * @param presetId Name of the warper preset ID.
-   * @param data Preset specific configuration.
+   * @param presetId Warper preset ID.
+   * @param initData Preset initialization data.
    */
-  async deployPreset(presetId: WarperPresetId, data: WarperPresetInitData): Promise<ContractTransaction> {
-    return this.contract.deployPreset(
-      this.encodeWarperPresetId(presetId),
-      this.encodeWarperPresetInitData(presetId, data),
-    );
+  async deployPreset(presetId: BytesLike, initData: BytesLike): Promise<ContractTransaction> {
+    return this.contract.deployPreset(presetId, initData);
   }
 
   /**
@@ -53,10 +50,10 @@ export class WarperPresetFactoryAdapter extends Adapter {
 
   /**
    * Returns the warper preset details.
-   * @param presetId Name of the warper preset ID.
+   * @param presetId Warper preset ID.
    */
-  async preset(presetId: WarperPresetId): Promise<WarperPreset> {
-    const preset = await this.contract.preset(this.encodeWarperPresetId(presetId));
+  async preset(presetId: BytesLike): Promise<WarperPreset> {
+    const preset = await this.contract.preset(presetId);
     return this.normalizeWarperPreset(preset);
   }
 
@@ -70,49 +67,49 @@ export class WarperPresetFactoryAdapter extends Adapter {
 
   /**
    * Enables warper preset, which makes it deployable.
-   * @param presetId Name of the warper preset ID.
+   * @param presetId Warper preset ID.
    */
-  async enablePreset(presetId: WarperPresetId): Promise<ContractTransaction> {
-    return this.contract.enablePreset(this.encodeWarperPresetId(presetId));
+  async enablePreset(presetId: BytesLike): Promise<ContractTransaction> {
+    return this.contract.enablePreset(presetId);
   }
 
   /**
    * Disable warper preset, which makes non-deployable.
-   * @param presetId Name of the warper preset ID.
+   * @param presetId Warper preset ID.
    */
-  async disablePreset(presetId: WarperPresetId): Promise<ContractTransaction> {
-    return this.contract.disablePreset(this.encodeWarperPresetId(presetId));
+  async disablePreset(presetId: BytesLike): Promise<ContractTransaction> {
+    return this.contract.disablePreset(presetId);
   }
 
   /**
    * Checks whether warper preset is enabled and available for deployment.
-   * @param presetId Name of the warper preset ID.
+   * @param presetId Warper preset ID.
    */
-  async presetEnabled(presetId: WarperPresetId): Promise<boolean> {
-    return this.contract.presetEnabled(this.encodeWarperPresetId(presetId));
+  async presetEnabled(presetId: BytesLike): Promise<boolean> {
+    return this.contract.presetEnabled(presetId);
   }
 
   /**
    * Stores the association between `presetId` and `implementation` address.
    * Warper `implementation` must be deployed beforehand.
-   * @param presetId Name of the warper preset ID.
+   * @param presetId Warper preset ID.
    * @param implementation Warper implementation account ID.
    */
-  async addPreset(presetId: WarperPresetId, implementation: AccountId): Promise<ContractTransaction> {
-    return this.contract.addPreset(this.encodeWarperPresetId(presetId), this.accountIdToAddress(implementation));
+  async addPreset(presetId: BytesLike, implementation: AccountId): Promise<ContractTransaction> {
+    return this.contract.addPreset(presetId, this.accountIdToAddress(implementation));
   }
 
   /**
    * Removes the association between `presetId` and its implementation.
-   * @param presetId Name of the warper preset ID.
+   * @param presetId Warper preset ID.
    */
-  async removePreset(presetId: WarperPresetId): Promise<ContractTransaction> {
-    return this.contract.removePreset(this.encodeWarperPresetId(presetId));
+  async removePreset(presetId: BytesLike): Promise<ContractTransaction> {
+    return this.contract.removePreset(presetId);
   }
 
   private normalizeWarperPreset(preset: IWarperPresetFactory.WarperPresetStructOutput): WarperPreset {
     return {
-      id: this.decodeWarperPresetId(preset.id),
+      id: preset.id,
       implementation: this.addressToAccountId(preset.implementation),
       enabled: preset.enabled,
     };

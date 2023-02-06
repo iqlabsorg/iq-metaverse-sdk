@@ -1,6 +1,6 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { deployments, ethers } from 'hardhat';
-import { AssetType, IQSpace, TaxTerms, TaxTermsRegistryAdapter, TAX_STRATEGIES, TAX_STRATEGY_IDS } from '../src';
+import { AssetType, IQSpace, TaxTermsRegistryAdapter, TAX_STRATEGY_IDS } from '../src';
 import { ITaxTermsRegistry } from '../src/contracts';
 import { createWarper, setupForListing, setupUniverse, setupUniverseAndWarper } from './helpers/setup';
 import { makeTaxTermsFixedRate, makeTaxTermsFixedRateWithReward } from './helpers/tax';
@@ -24,9 +24,8 @@ describe('TaxTermsRegistryAdapter', () => {
   let warperReference: AssetType;
 
   /** Constants */
-  const taxTermsFixedRate: TaxTerms = { name: TAX_STRATEGIES.FIXED_RATE_TAX, data: { ratePercent: COMMON_TAX_RATE } };
-  const taxTermsFixedRateRaw = makeTaxTermsFixedRate(COMMON_TAX_RATE);
-  const taxTermsFixedRateWithRewardRaw = makeTaxTermsFixedRateWithReward(COMMON_TAX_RATE, COMMON_REWARD_RATE);
+  const taxTermsFixedRate: ITaxTermsRegistry.TaxTermsStruct = makeTaxTermsFixedRate(COMMON_TAX_RATE);
+  const taxTermsFixedRateWithReward = makeTaxTermsFixedRateWithReward(COMMON_TAX_RATE, COMMON_REWARD_RATE);
 
   beforeEach(async () => {
     await deployments.fixture();
@@ -57,11 +56,11 @@ describe('TaxTermsRegistryAdapter', () => {
   describe('removeUniverseLocalTaxTerms', () => {
     beforeEach(async () => {
       await setupUniverse();
-      await taxTermsRegistry.connect(deployer).registerUniverseLocalTaxTerms(COMMON_ID, taxTermsFixedRateRaw);
+      await taxTermsRegistry.connect(deployer).registerUniverseLocalTaxTerms(COMMON_ID, taxTermsFixedRate);
     });
 
     it('should remove universe local tax terms', async () => {
-      await taxTermsRegistryAdapter.removeUniverseLocalTaxTerms(COMMON_ID, TAX_STRATEGIES.FIXED_RATE_TAX);
+      await taxTermsRegistryAdapter.removeUniverseLocalTaxTerms(COMMON_ID, TAX_STRATEGY_IDS.FIXED_RATE_TAX);
       const registered = await taxTermsRegistry.areRegisteredUniverseLocalTaxTerms(
         COMMON_ID,
         TAX_STRATEGY_IDS.FIXED_RATE_TAX,
@@ -93,14 +92,14 @@ describe('TaxTermsRegistryAdapter', () => {
       warperReference = warperData.warperReference;
       await taxTermsRegistry
         .connect(deployer)
-        .registerUniverseWarperTaxTerms(COMMON_ID, warperReference.assetName.reference, taxTermsFixedRateRaw);
+        .registerUniverseWarperTaxTerms(COMMON_ID, warperReference.assetName.reference, taxTermsFixedRate);
     });
 
     it('should remove universe warper tax terms', async () => {
       await taxTermsRegistryAdapter.removeUniverseWarperTaxTerms(
         COMMON_ID,
         warperReference,
-        TAX_STRATEGIES.FIXED_RATE_TAX,
+        TAX_STRATEGY_IDS.FIXED_RATE_TAX,
       );
       const registered = await taxTermsRegistry.areRegisteredUniverseWarperTaxTerms(
         COMMON_ID,
@@ -121,11 +120,11 @@ describe('TaxTermsRegistryAdapter', () => {
 
   describe('removeProtocolGlobalTaxTerms', () => {
     beforeEach(async () => {
-      await taxTermsRegistry.connect(deployer).registerProtocolGlobalTaxTerms(taxTermsFixedRateRaw);
+      await taxTermsRegistry.connect(deployer).registerProtocolGlobalTaxTerms(taxTermsFixedRate);
     });
 
     it('should remove protocol global tax terms', async () => {
-      await taxTermsRegistryAdapter.removeProtocolGlobalTaxTerms(TAX_STRATEGIES.FIXED_RATE_TAX);
+      await taxTermsRegistryAdapter.removeProtocolGlobalTaxTerms(TAX_STRATEGY_IDS.FIXED_RATE_TAX);
       const registered = await taxTermsRegistry.areRegisteredProtocolGlobalTaxTerms(TAX_STRATEGY_IDS.FIXED_RATE_TAX);
       expect(registered).toBe(false);
     });
@@ -149,11 +148,11 @@ describe('TaxTermsRegistryAdapter', () => {
   describe('removeProtocolUniverseTaxTerms', () => {
     beforeEach(async () => {
       await setupUniverse();
-      await taxTermsRegistry.connect(deployer).registerProtocolUniverseTaxTerms(COMMON_ID, taxTermsFixedRateRaw);
+      await taxTermsRegistry.connect(deployer).registerProtocolUniverseTaxTerms(COMMON_ID, taxTermsFixedRate);
     });
 
     it('should remove protocol universe tax terms', async () => {
-      await taxTermsRegistryAdapter.removeProtocolUniverseTaxTerms(COMMON_ID, TAX_STRATEGIES.FIXED_RATE_TAX);
+      await taxTermsRegistryAdapter.removeProtocolUniverseTaxTerms(COMMON_ID, TAX_STRATEGY_IDS.FIXED_RATE_TAX);
       const registered = await taxTermsRegistry.areRegisteredProtocolUniverseTaxTerms(
         COMMON_ID,
         TAX_STRATEGY_IDS.FIXED_RATE_TAX,
@@ -182,11 +181,11 @@ describe('TaxTermsRegistryAdapter', () => {
       ({ warperReference } = await createWarper());
       await taxTermsRegistry
         .connect(deployer)
-        .registerProtocolWarperTaxTerms(warperReference.assetName.reference, taxTermsFixedRateRaw);
+        .registerProtocolWarperTaxTerms(warperReference.assetName.reference, taxTermsFixedRate);
     });
 
     it('should remove universe warper tax terms', async () => {
-      await taxTermsRegistryAdapter.removeProtocolWarperTaxTerms(warperReference, TAX_STRATEGIES.FIXED_RATE_TAX);
+      await taxTermsRegistryAdapter.removeProtocolWarperTaxTerms(warperReference, TAX_STRATEGY_IDS.FIXED_RATE_TAX);
       const registered = await taxTermsRegistry.areRegisteredProtocolWarperTaxTerms(
         warperReference.assetName.reference,
         TAX_STRATEGY_IDS.FIXED_RATE_TAX,
@@ -206,7 +205,7 @@ describe('TaxTermsRegistryAdapter', () => {
         const registered = await taxTermsRegistryAdapter.areRegisteredUniverseWarperTaxTerms(
           COMMON_ID,
           warperReference,
-          TAX_STRATEGIES.FIXED_RATE_TAX,
+          TAX_STRATEGY_IDS.FIXED_RATE_TAX,
         );
         expect(registered).toBe(false);
       });
@@ -216,14 +215,14 @@ describe('TaxTermsRegistryAdapter', () => {
       beforeEach(async () => {
         await taxTermsRegistry
           .connect(deployer)
-          .registerUniverseWarperTaxTerms(COMMON_ID, warperReference.assetName.reference, taxTermsFixedRateRaw);
+          .registerUniverseWarperTaxTerms(COMMON_ID, warperReference.assetName.reference, taxTermsFixedRate);
       });
 
       it('should return true', async () => {
         const registered = await taxTermsRegistryAdapter.areRegisteredUniverseWarperTaxTerms(
           COMMON_ID,
           warperReference,
-          TAX_STRATEGIES.FIXED_RATE_TAX,
+          TAX_STRATEGY_IDS.FIXED_RATE_TAX,
         );
         expect(registered).toBe(true);
       });
@@ -233,18 +232,14 @@ describe('TaxTermsRegistryAdapter', () => {
       beforeEach(async () => {
         await taxTermsRegistry
           .connect(deployer)
-          .registerUniverseWarperTaxTerms(
-            COMMON_ID,
-            warperReference.assetName.reference,
-            taxTermsFixedRateWithRewardRaw,
-          );
+          .registerUniverseWarperTaxTerms(COMMON_ID, warperReference.assetName.reference, taxTermsFixedRateWithReward);
       });
 
       it('should return true', async () => {
         const registered = await taxTermsRegistryAdapter.areRegisteredUniverseWarperTaxTerms(
           COMMON_ID,
           warperReference,
-          TAX_STRATEGIES.FIXED_RATE_TAX_WITH_REWARD,
+          TAX_STRATEGY_IDS.FIXED_RATE_TAX_WITH_REWARD,
         );
         expect(registered).toBe(true);
       });
@@ -260,7 +255,7 @@ describe('TaxTermsRegistryAdapter', () => {
       it('should return false', async () => {
         const registered = await taxTermsRegistryAdapter.areRegisteredUniverseLocalTaxTerms(
           COMMON_ID,
-          TAX_STRATEGIES.FIXED_RATE_TAX,
+          TAX_STRATEGY_IDS.FIXED_RATE_TAX,
         );
         expect(registered).toBe(false);
       });
@@ -268,13 +263,13 @@ describe('TaxTermsRegistryAdapter', () => {
 
     describe('when fixed tax terms are registered', () => {
       beforeEach(async () => {
-        await taxTermsRegistry.connect(deployer).registerUniverseLocalTaxTerms(COMMON_ID, taxTermsFixedRateRaw);
+        await taxTermsRegistry.connect(deployer).registerUniverseLocalTaxTerms(COMMON_ID, taxTermsFixedRate);
       });
 
       it('should return true', async () => {
         const registered = await taxTermsRegistryAdapter.areRegisteredUniverseLocalTaxTerms(
           COMMON_ID,
-          TAX_STRATEGIES.FIXED_RATE_TAX,
+          TAX_STRATEGY_IDS.FIXED_RATE_TAX,
         );
         expect(registered).toBe(true);
       });
@@ -282,15 +277,13 @@ describe('TaxTermsRegistryAdapter', () => {
 
     describe('when fixed with reward tax terms are registered', () => {
       beforeEach(async () => {
-        await taxTermsRegistry
-          .connect(deployer)
-          .registerUniverseLocalTaxTerms(COMMON_ID, taxTermsFixedRateWithRewardRaw);
+        await taxTermsRegistry.connect(deployer).registerUniverseLocalTaxTerms(COMMON_ID, taxTermsFixedRateWithReward);
       });
 
       it('should return true', async () => {
         const registered = await taxTermsRegistryAdapter.areRegisteredUniverseLocalTaxTerms(
           COMMON_ID,
-          TAX_STRATEGIES.FIXED_RATE_TAX_WITH_REWARD,
+          TAX_STRATEGY_IDS.FIXED_RATE_TAX_WITH_REWARD,
         );
         expect(registered).toBe(true);
       });
@@ -305,7 +298,7 @@ describe('TaxTermsRegistryAdapter', () => {
     describe('when tax terms are not registered', () => {
       it('should return false', async () => {
         const registered = await taxTermsRegistryAdapter.areRegisteredProtocolGlobalTaxTerms(
-          TAX_STRATEGIES.FIXED_RATE_TAX,
+          TAX_STRATEGY_IDS.FIXED_RATE_TAX,
         );
         expect(registered).toBe(false);
       });
@@ -313,12 +306,12 @@ describe('TaxTermsRegistryAdapter', () => {
 
     describe('when fixed tax terms are registered', () => {
       beforeEach(async () => {
-        await taxTermsRegistry.connect(deployer).registerProtocolGlobalTaxTerms(taxTermsFixedRateRaw);
+        await taxTermsRegistry.connect(deployer).registerProtocolGlobalTaxTerms(taxTermsFixedRate);
       });
 
       it('should return true', async () => {
         const registered = await taxTermsRegistryAdapter.areRegisteredProtocolGlobalTaxTerms(
-          TAX_STRATEGIES.FIXED_RATE_TAX,
+          TAX_STRATEGY_IDS.FIXED_RATE_TAX,
         );
         expect(registered).toBe(true);
       });
@@ -326,12 +319,12 @@ describe('TaxTermsRegistryAdapter', () => {
 
     describe('when fixed with reward tax terms are registered', () => {
       beforeEach(async () => {
-        await taxTermsRegistry.connect(deployer).registerProtocolGlobalTaxTerms(taxTermsFixedRateWithRewardRaw);
+        await taxTermsRegistry.connect(deployer).registerProtocolGlobalTaxTerms(taxTermsFixedRateWithReward);
       });
 
       it('should return true', async () => {
         const registered = await taxTermsRegistryAdapter.areRegisteredProtocolGlobalTaxTerms(
-          TAX_STRATEGIES.FIXED_RATE_TAX_WITH_REWARD,
+          TAX_STRATEGY_IDS.FIXED_RATE_TAX_WITH_REWARD,
         );
         expect(registered).toBe(true);
       });
@@ -347,7 +340,7 @@ describe('TaxTermsRegistryAdapter', () => {
       it('should return false', async () => {
         const registered = await taxTermsRegistryAdapter.areRegisteredProtocolUniverseTaxTerms(
           COMMON_ID,
-          TAX_STRATEGIES.FIXED_RATE_TAX,
+          TAX_STRATEGY_IDS.FIXED_RATE_TAX,
         );
         expect(registered).toBe(false);
       });
@@ -355,13 +348,13 @@ describe('TaxTermsRegistryAdapter', () => {
 
     describe('when fixed tax terms are registered', () => {
       beforeEach(async () => {
-        await taxTermsRegistry.connect(deployer).registerProtocolUniverseTaxTerms(COMMON_ID, taxTermsFixedRateRaw);
+        await taxTermsRegistry.connect(deployer).registerProtocolUniverseTaxTerms(COMMON_ID, taxTermsFixedRate);
       });
 
       it('should return true', async () => {
         const registered = await taxTermsRegistryAdapter.areRegisteredProtocolUniverseTaxTerms(
           COMMON_ID,
-          TAX_STRATEGIES.FIXED_RATE_TAX,
+          TAX_STRATEGY_IDS.FIXED_RATE_TAX,
         );
         expect(registered).toBe(true);
       });
@@ -371,13 +364,13 @@ describe('TaxTermsRegistryAdapter', () => {
       beforeEach(async () => {
         await taxTermsRegistry
           .connect(deployer)
-          .registerProtocolUniverseTaxTerms(COMMON_ID, taxTermsFixedRateWithRewardRaw);
+          .registerProtocolUniverseTaxTerms(COMMON_ID, taxTermsFixedRateWithReward);
       });
 
       it('should return true', async () => {
         const registered = await taxTermsRegistryAdapter.areRegisteredProtocolUniverseTaxTerms(
           COMMON_ID,
-          TAX_STRATEGIES.FIXED_RATE_TAX_WITH_REWARD,
+          TAX_STRATEGY_IDS.FIXED_RATE_TAX_WITH_REWARD,
         );
         expect(registered).toBe(true);
       });
@@ -394,7 +387,7 @@ describe('TaxTermsRegistryAdapter', () => {
       it('should return false', async () => {
         const registered = await taxTermsRegistryAdapter.areRegisteredProtocolWarperTaxTerms(
           warperReference,
-          TAX_STRATEGIES.FIXED_RATE_TAX,
+          TAX_STRATEGY_IDS.FIXED_RATE_TAX,
         );
         expect(registered).toBe(false);
       });
@@ -404,13 +397,13 @@ describe('TaxTermsRegistryAdapter', () => {
       beforeEach(async () => {
         await taxTermsRegistry
           .connect(deployer)
-          .registerProtocolWarperTaxTerms(warperReference.assetName.reference, taxTermsFixedRateRaw);
+          .registerProtocolWarperTaxTerms(warperReference.assetName.reference, taxTermsFixedRate);
       });
 
       it('should return true', async () => {
         const registered = await taxTermsRegistryAdapter.areRegisteredProtocolWarperTaxTerms(
           warperReference,
-          TAX_STRATEGIES.FIXED_RATE_TAX,
+          TAX_STRATEGY_IDS.FIXED_RATE_TAX,
         );
         expect(registered).toBe(true);
       });
@@ -420,13 +413,13 @@ describe('TaxTermsRegistryAdapter', () => {
       beforeEach(async () => {
         await taxTermsRegistry
           .connect(deployer)
-          .registerProtocolWarperTaxTerms(warperReference.assetName.reference, taxTermsFixedRateWithRewardRaw);
+          .registerProtocolWarperTaxTerms(warperReference.assetName.reference, taxTermsFixedRateWithReward);
       });
 
       it('should return true', async () => {
         const registered = await taxTermsRegistryAdapter.areRegisteredProtocolWarperTaxTerms(
           warperReference,
-          TAX_STRATEGIES.FIXED_RATE_TAX_WITH_REWARD,
+          TAX_STRATEGY_IDS.FIXED_RATE_TAX_WITH_REWARD,
         );
         expect(registered).toBe(true);
       });
@@ -441,14 +434,13 @@ describe('TaxTermsRegistryAdapter', () => {
 
       it('should return fixed rate universe tax terms', async () => {
         const terms = await taxTermsRegistryAdapter.universeTaxTerms({
-          taxStrategyIdName: TAX_STRATEGIES.FIXED_RATE_TAX,
+          taxStrategyId: TAX_STRATEGY_IDS.FIXED_RATE_TAX,
           universeId: COMMON_ID,
           warper: warperReference,
         });
 
         expect(terms).toBeDefined();
-        expect(terms.name).toBe(TAX_STRATEGIES.FIXED_RATE_TAX);
-        expect(terms.data.ratePercent).toBe(COMMON_TAX_RATE);
+        expect(terms).toMatchObject(taxTermsFixedRate);
       });
     });
 
@@ -459,14 +451,13 @@ describe('TaxTermsRegistryAdapter', () => {
 
       it('should return fixed with reward universe tax terms ', async () => {
         const terms = await taxTermsRegistryAdapter.universeTaxTerms({
-          taxStrategyIdName: TAX_STRATEGIES.FIXED_RATE_TAX_WITH_REWARD,
+          taxStrategyId: TAX_STRATEGY_IDS.FIXED_RATE_TAX_WITH_REWARD,
           universeId: COMMON_ID,
           warper: warperReference,
         });
 
         expect(terms).toBeDefined();
-        expect(terms.name).toBe(TAX_STRATEGIES.FIXED_RATE_TAX_WITH_REWARD);
-        expect(terms.data.ratePercent).toBe(COMMON_TAX_RATE);
+        expect(terms).toMatchObject(taxTermsFixedRateWithReward);
       });
     });
   });
@@ -479,14 +470,13 @@ describe('TaxTermsRegistryAdapter', () => {
 
       it('should return fixed rate protocol tax terms', async () => {
         const terms = await taxTermsRegistryAdapter.protocolTaxTerms({
-          taxStrategyIdName: TAX_STRATEGIES.FIXED_RATE_TAX,
+          taxStrategyId: TAX_STRATEGY_IDS.FIXED_RATE_TAX,
           universeId: COMMON_ID,
           warper: warperReference,
         });
 
         expect(terms).toBeDefined();
-        expect(terms.name).toBe(TAX_STRATEGIES.FIXED_RATE_TAX);
-        expect(terms.data.ratePercent).toBe(COMMON_TAX_RATE);
+        expect(terms).toMatchObject(taxTermsFixedRate);
       });
     });
 
@@ -497,14 +487,13 @@ describe('TaxTermsRegistryAdapter', () => {
 
       it('should return fixed rate with reward protocol tax terms', async () => {
         const terms = await taxTermsRegistryAdapter.protocolTaxTerms({
-          taxStrategyIdName: TAX_STRATEGIES.FIXED_RATE_TAX_WITH_REWARD,
+          taxStrategyId: TAX_STRATEGY_IDS.FIXED_RATE_TAX_WITH_REWARD,
           universeId: COMMON_ID,
           warper: warperReference,
         });
 
         expect(terms).toBeDefined();
-        expect(terms.name).toBe(TAX_STRATEGIES.FIXED_RATE_TAX_WITH_REWARD);
-        expect(terms.data.ratePercent).toBe(COMMON_TAX_RATE);
+        expect(terms).toMatchObject(taxTermsFixedRateWithReward);
       });
     });
   });

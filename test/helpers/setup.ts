@@ -19,7 +19,7 @@ import { makeListingParams, makeListingTermsFixedRate, makeListingTermsFixedRate
 import { makeTaxTermsFixedRate, makeTaxTermsFixedRateWithReward } from './tax';
 import { makeUniverseParams } from './universe';
 import { COMMON_BASE_RATE, COMMON_ID, COMMON_REWARD_RATE, COMMON_TAX_RATE, SECONDS_IN_DAY, toAccountId } from './utils';
-import { findWarperByDeploymentTransaction, getERC721ConfigurablePresetInitData } from './warper';
+import { findWarperByDeploymentTransaction, makeERC721ConfigurablePresetInitData } from './warper';
 
 export type UniverseCreated = {
   universeCreationTxHash: string;
@@ -72,7 +72,7 @@ const createUniverseAndWarperWithWizards = async (withReward: boolean): Promise<
     ethers.constants.AddressZero,
     warperParams,
     WARPER_PRESET_ERC721_IDS.ERC721_CONFIGURABLE_PRESET,
-    getERC721ConfigurablePresetInitData(metahub.address, collection.address),
+    makeERC721ConfigurablePresetInitData(metahub.address, collection.address),
   );
 
   const warperAddress = await findWarperByDeploymentTransaction(tx.hash);
@@ -91,7 +91,7 @@ export const createWarper = async (): Promise<WarperCreated> => {
 
   const tx = await warperPresetFactory.deployPreset(
     WARPER_PRESET_ERC721_IDS.ERC721_CONFIGURABLE_PRESET,
-    getERC721ConfigurablePresetInitData(metahub.address, collection.address),
+    makeERC721ConfigurablePresetInitData(metahub.address, collection.address),
   );
 
   const warperAddress = await findWarperByDeploymentTransaction(tx.hash);

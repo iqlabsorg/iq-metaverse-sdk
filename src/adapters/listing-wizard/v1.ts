@@ -1,11 +1,11 @@
 import { AccountId } from 'caip';
 import { BigNumberish, ContractTransaction } from 'ethers';
-import { Listings } from '../../contracts/contracts/listing/listing-manager/ListingManager';
 import { Adapter } from '../../adapter';
 import { AddressTranslator } from '../../address-translator';
 import { ContractResolver } from '../../contract-resolver';
-import { ListingWizardV1 } from '../../contracts';
-import { AssetListingParams, ListingTerms } from '../../types';
+import { IListingTermsRegistry, ListingWizardV1 } from '../../contracts';
+import { Listings } from '../../contracts/contracts/listing/listing-manager/ListingManager';
+import { AssetListingParams } from '../../types';
 
 export class ListingWizardAdapterV1 extends Adapter {
   private readonly contract: ListingWizardV1;
@@ -24,7 +24,7 @@ export class ListingWizardAdapterV1 extends Adapter {
   async createListingWithTerms(
     universeId: BigNumberish,
     assetListingParams: AssetListingParams,
-    listingTerms: ListingTerms,
+    listingTerms: IListingTermsRegistry.ListingTermsStruct,
   ): Promise<ContractTransaction> {
     const { assets, params, maxLockPeriod, immediatePayout } = assetListingParams;
 
@@ -37,7 +37,7 @@ export class ListingWizardAdapterV1 extends Adapter {
     return this.contract.createListingWithTerms(
       encodedAssets,
       listingParams,
-      this.encodeListingTerms(listingTerms),
+      listingTerms,
       maxLockPeriod,
       immediatePayout,
       universeId,

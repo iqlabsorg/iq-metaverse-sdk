@@ -3,7 +3,7 @@ import { BigNumber, BigNumberish, ContractTransaction } from 'ethers';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
-import { ListingTermsRegistry } from '../contracts';
+import { IListingTermsRegistry, ListingTermsRegistry } from '../contracts';
 import { ListingTerms, ListingTermsInfo, ListingTermsInfoWithParams, ListingTermsQueryParams } from '../types';
 
 export class ListingTermsRegistryAdapter extends Adapter {
@@ -17,22 +17,21 @@ export class ListingTermsRegistryAdapter extends Adapter {
   /**
    * Returns listing terms details by the listing terms ID.
    * @param listingTermsId Listing terms ID.
-   * @return Listing terms details.
    */
   async listingTerms(listingTermsId: BigNumberish): Promise<ListingTermsInfo> {
     const terms = await this.contract.listingTerms(listingTermsId);
-    return { ...this.decodeListingTerms(terms), id: BigNumber.from(listingTermsId) };
+    return { strategyId: terms.strategyId, strategyData: terms.strategyData, id: BigNumber.from(listingTermsId) };
   }
 
   /**
    * Returns listing terms details with additional parameters by the listing terms ID.
    * @param listingTermsId Listing terms ID.
-   * @return Listing terms details with additional parameters.
    */
   async listingTermsWithParams(listingTermsId: BigNumberish): Promise<ListingTermsInfoWithParams> {
     const [terms, params] = await this.contract.listingTermsWithParams(listingTermsId);
     return {
-      ...this.decodeListingTerms(terms),
+      strategyId: terms.strategyId,
+      strategyData: terms.strategyData,
       id: BigNumber.from(listingTermsId),
       universeId: params.universeId,
       listingId: params.listingId,
@@ -45,7 +44,6 @@ export class ListingTermsRegistryAdapter extends Adapter {
    * @param queryParams Query parameters.
    * @param offset Starting index.
    * @param limit Max number of items.
-   * @returns List of listing terms.
    */
   async allListingTerms(
     queryParams: ListingTermsQueryParams,
@@ -66,7 +64,7 @@ export class ListingTermsRegistryAdapter extends Adapter {
 
     listingTermsIds.forEach((id, index) => {
       const terms = listingTermsList[index];
-      infos.push({ ...this.decodeListingTerms(terms), id });
+      infos.push({ strategyId: terms.strategyId, strategyData: terms.strategyData, id });
     });
 
     return infos;
@@ -113,7 +111,7 @@ export class ListingTermsRegistryAdapter extends Adapter {
    * @param listingTerms Listing terms.
    */
   async registerGlobalListingTerms(listingId: BigNumberish, listingTerms: ListingTerms): Promise<ContractTransaction> {
-    return this.contract.registerGlobalListingTerms(listingId, this.encodeListingTerms(listingTerms));
+    return this.contract.registerGlobalListingTerms(listingId, listingTerms);
   }
 
   /**
@@ -134,9 +132,9 @@ export class ListingTermsRegistryAdapter extends Adapter {
   async registerUniverseListingTerms(
     listingId: BigNumberish,
     universeId: BigNumberish,
-    listingTerms: ListingTerms,
+    listingTerms: IListingTermsRegistry.ListingTermsStruct,
   ): Promise<ContractTransaction> {
-    return this.contract.registerUniverseListingTerms(listingId, universeId, this.encodeListingTerms(listingTerms));
+    return this.contract.registerUniverseListingTerms(listingId, universeId, listingTerms);
   }
 
   /**
@@ -162,13 +160,9 @@ export class ListingTermsRegistryAdapter extends Adapter {
   async registerWarperListingTerms(
     listingId: BigNumberish,
     warper: AssetType,
-    listingTerms: ListingTerms,
+    listingTerms: IListingTermsRegistry.ListingTermsStruct,
   ): Promise<ContractTransaction> {
-    return this.contract.registerWarperListingTerms(
-      listingId,
-      this.assetTypeToAddress(warper),
-      this.encodeListingTerms(listingTerms),
-    );
+    return this.contract.registerWarperListingTerms(listingId, this.assetTypeToAddress(warper), listingTerms);
   }
 
   /**
