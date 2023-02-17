@@ -4,7 +4,7 @@ import { Asset, AssetNamespace } from '../types';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Assets } from '../contracts/contracts/metahub/core/IMetahub';
 import { AssetId, ChainId } from 'caip';
-import { ASSET_CLASS } from '@iqprotocol/solidity-contracts-nft';
+import { ASSET_CLASS_IDS } from '@iqprotocol/solidity-contracts-nft';
 import { assetClassToNamespaceMap, namespaceToAssetClassMap } from '../constants';
 
 export class AssetCoder {
@@ -17,7 +17,7 @@ export class AssetCoder {
       case 'erc721': {
         return {
           id: {
-            class: ASSET_CLASS.ERC721,
+            class: ASSET_CLASS_IDS.ERC721,
             data: defaultAbiCoder.encode(['address', 'uint256'], [id.assetName.reference, id.tokenId]),
           },
           value,
@@ -37,7 +37,7 @@ export class AssetCoder {
    */
   static decode({ id, value }: Assets.AssetStructOutput, chainId: ChainId): Asset {
     switch (id.class) {
-      case ASSET_CLASS.ERC721: {
+      case ASSET_CLASS_IDS.ERC721: {
         const [address, tokenId] = defaultAbiCoder.decode(['address', 'uint256'], id.data) as [string, BigNumber];
         return {
           value,

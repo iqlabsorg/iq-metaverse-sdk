@@ -1,8 +1,14 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { deployments, ethers } from 'hardhat';
-import { IQSpace, ListingStrategyRegistryAdapter, LISTING_STRATEGY_IDS, TAX_STRATEGY_IDS } from '../src';
+import {
+  IQSpace,
+  ListingStrategyRegistryAdapter,
+  LISTING_STRATEGY_IDS,
+  solidityIdBytes4,
+  TAX_STRATEGY_IDS,
+} from '../src';
 import { IFixedRateListingController, IFixedRateTaxController, IListingStrategyRegistry } from '../src/contracts';
-import { solidityIdBytes4, toAccountId } from './helpers/utils';
+import { toAccountId } from './helpers/utils';
 
 /**
  * @group integration

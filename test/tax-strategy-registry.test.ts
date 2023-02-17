@@ -1,8 +1,8 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { deployments, ethers } from 'hardhat';
-import { IQSpace, TaxStrategyRegistryAdapter, TAX_STRATEGY_IDS } from '../src';
+import { IQSpace, solidityIdBytes4, TaxStrategyRegistryAdapter, TAX_STRATEGY_IDS } from '../src';
 import { IFixedRateTaxController, ITaxStrategyRegistry } from '../src/contracts';
-import { solidityIdBytes4, toAccountId } from './helpers/utils';
+import { toAccountId } from './helpers/utils';
 
 /**
  * @group integration

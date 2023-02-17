@@ -290,7 +290,7 @@ To list an asset for rent, there must be at least one IQVerse with a registered 
 
 ```ts
 import { BigNumber } from 'ethers';
-import { calculatePricePerSecondInEthers, LISTING_STRATEGY_IDS, createAsset } from '@iqprotocol/iq-space-sdk-js'
+import { calculateBaseRateInBaseTokenEthers, LISTING_STRATEGY_IDS, createAsset } from '@iqprotocol/iq-space-sdk-js'
 
 const universeId = '<your universe ID>';
 const originalAsset = new AccountId({ chainId, address: '0x0...' });
@@ -317,7 +317,7 @@ const assetListingParams = {
 };
 
 // calculate price per second (we are setting 100 ethers per day as a base rate)
-const pricePerSecondInEthers = calculatePricePerSecondInEthers('100', SECONDS_IN_DAY);
+const pricePerSecondInEthers = calculateBaseRateInBaseTokenEthers('100', SECONDS_IN_DAY);
 const listingTerms = { strategyId: LISTING_STRATEGY_IDS.FIXED_RATE, strategyData: '0x1a34b...' };
 const tx = await listingWizard.createListingWithTerms({
   universeId,

@@ -1,9 +1,15 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { deployments, ethers } from 'hardhat';
-import { AssetType, IQSpace, TaxTermsRegistryAdapter, TAX_STRATEGY_IDS } from '../src';
+import {
+  AssetType,
+  IQSpace,
+  makeTaxTermsFixedRateFromRawPercent,
+  makeTaxTermsFixedRateWithReward,
+  TaxTermsRegistryAdapter,
+  TAX_STRATEGY_IDS,
+} from '../src';
 import { ITaxTermsRegistry } from '../src/contracts';
 import { createWarper, setupForListing, setupUniverse, setupUniverseAndWarper } from './helpers/setup';
-import { makeTaxTermsFixedRate, makeTaxTermsFixedRateWithReward } from './helpers/tax';
 import { COMMON_ID, COMMON_REWARD_RATE, COMMON_TAX_RATE, toAccountId } from './helpers/utils';
 
 /**
@@ -24,7 +30,7 @@ describe('TaxTermsRegistryAdapter', () => {
   let warperReference: AssetType;
 
   /** Constants */
-  const taxTermsFixedRate: ITaxTermsRegistry.TaxTermsStruct = makeTaxTermsFixedRate(COMMON_TAX_RATE);
+  const taxTermsFixedRate: ITaxTermsRegistry.TaxTermsStruct = makeTaxTermsFixedRateFromRawPercent(COMMON_TAX_RATE);
   const taxTermsFixedRateWithReward = makeTaxTermsFixedRateWithReward(COMMON_TAX_RATE, COMMON_REWARD_RATE);
 
   beforeEach(async () => {

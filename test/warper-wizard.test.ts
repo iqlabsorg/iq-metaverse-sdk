@@ -7,13 +7,15 @@ import {
   TAX_STRATEGY_IDS,
   WarperRegistrationParams,
   WarperWizardAdapterV1,
-  WARPER_PRESET_ERC721_IDS,
+  ERC721_WARPER_PRESET_IDS,
+  makeWarperPresetInitData,
+  makeTaxTermsFixedRateFromRawPercent,
+  makeTaxTermsFixedRateWithReward,
 } from '../src';
 import { ERC721Mock, IMetahub, ITaxTermsRegistry, IWarperManager, IWarperWizardV1 } from '../src/contracts';
 import { setupUniverse, setupUniverseAndWarper } from './helpers/setup';
-import { makeTaxTermsFixedRate, makeTaxTermsFixedRateWithReward } from './helpers/tax';
 import { COMMON_ID, COMMON_REWARD_RATE, COMMON_TAX_RATE, toAccountId } from './helpers/utils';
-import { findWarperByDeploymentTransaction, makeERC721ConfigurablePresetInitData } from './helpers/warper';
+import { findWarperByDeploymentTransaction } from './helpers/warper';
 
 /**
  * @group integration
@@ -50,7 +52,7 @@ describe('WarperWizardAdapterV1', () => {
     return await warperWizardAdapter.createWarperFromPresetAndRegister(
       taxTerms,
       warperParams,
-      WARPER_PRESET_ERC721_IDS.ERC721_CONFIGURABLE_PRESET,
+      ERC721_WARPER_PRESET_IDS.ERC721_CONFIGURABLE_PRESET,
       warperInitData,
     );
   };
@@ -79,9 +81,9 @@ describe('WarperWizardAdapterV1', () => {
       universeId: COMMON_ID,
       paused: false,
     };
-    warperTaxTerms = makeTaxTermsFixedRate(COMMON_TAX_RATE);
+    warperTaxTerms = makeTaxTermsFixedRateFromRawPercent(COMMON_TAX_RATE);
     warperTaxTermsWithReward = makeTaxTermsFixedRateWithReward(COMMON_TAX_RATE, COMMON_REWARD_RATE);
-    warperInitData = makeERC721ConfigurablePresetInitData(metahub.address, collection.address);
+    warperInitData = makeWarperPresetInitData(collection.address, metahub.address);
   });
 
   describe('registerExistingWarper', () => {

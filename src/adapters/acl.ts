@@ -1,5 +1,5 @@
 import { AccountId } from 'caip';
-import { BytesLike, ContractTransaction } from 'ethers';
+import { ContractTransaction } from 'ethers';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';

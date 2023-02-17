@@ -1,13 +1,5 @@
-import { BytesLike, defaultAbiCoder } from 'ethers/lib/utils';
 import { ethers } from 'hardhat';
 import { IWarperPresetFactory } from '../../src/contracts';
-import { IWarperPreset__factory } from '../../src/contracts/factories/contracts/warper/IWarperPreset__factory';
-
-export function makeERC721ConfigurablePresetInitData(metahub: string, originalAsset: string): BytesLike {
-  return IWarperPreset__factory.createInterface().encodeFunctionData('__initialize', [
-    defaultAbiCoder.encode(['address', 'address'], [originalAsset, metahub]),
-  ]);
-}
 
 export const findWarperByDeploymentTransaction = async (transactionHash: string) => {
   const warperPresetFactory = (await ethers.getContract('WarperPresetFactory')) as IWarperPresetFactory;

@@ -1,4 +1,4 @@
-import { CONTRACT_REGISTRY_KEY_IDS } from '@iqprotocol/solidity-contracts-nft';
+import { CONTRACT_REGISTRY } from '@iqprotocol/solidity-contracts-nft';
 import { AccountId, AssetType } from 'caip';
 import { BigNumber, BigNumberish, ContractTransaction } from 'ethers';
 import { Adapter } from '../adapter';
@@ -192,7 +192,7 @@ export class MetahubAdapter extends Adapter {
    * @dev Returns warper preset factory address.
    */
   async warperPresetFactory(): Promise<AccountId> {
-    const address = await this.contract.getContract(CONTRACT_REGISTRY_KEY_IDS.WARPER_PRESET_FACTORY);
+    const address = await this.contract.getContract(CONTRACT_REGISTRY.WarperPresetFactory.contractRegistryKeyId);
     return this.addressToAccountId(address);
   }
 }

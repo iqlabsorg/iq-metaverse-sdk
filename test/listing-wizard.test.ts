@@ -3,16 +3,17 @@ import { deployments, ethers } from 'hardhat';
 import {
   AssetListingParams,
   AssetType,
-  calculatePricePerSecondInEthers,
+  calculateBaseRateInBaseTokenEthers,
   createAsset,
   IQSpace,
   ListingParams,
   ListingTerms,
   ListingWizardAdapterV1,
   LISTING_STRATEGY_IDS,
+  makeListingTermsFixedRate,
+  makeListingTermsFixedRateWithReward,
 } from '../src';
 import { ERC721Mock, IListingManager, IListingTermsRegistry, IListingWizardV1, IMetahub } from '../src/contracts';
-import { makeListingTermsFixedRate, makeListingTermsFixedRateWithReward } from './helpers/listing-renting';
 import { setupForListing } from './helpers/setup';
 import {
   COMMON_BASE_RATE,
@@ -75,7 +76,7 @@ describe('ListingWizardAdapterV1', () => {
     iqspace = await IQSpace.init({ signer: lister });
     listingWizardAdapter = iqspace.listingWizardV1(toAccountId(listingWizard.address));
 
-    pricePerSecondInEthers = calculatePricePerSecondInEthers(COMMON_PRICE, SECONDS_IN_DAY);
+    pricePerSecondInEthers = calculateBaseRateInBaseTokenEthers(COMMON_PRICE, SECONDS_IN_DAY);
     listingTerms = makeListingTermsFixedRate(COMMON_BASE_RATE);
     listingTermsWithReward = makeListingTermsFixedRateWithReward(COMMON_BASE_RATE, COMMON_REWARD_RATE);
     listingParams = { lister: toAccountId(lister.address), configurator: toAccountId(ethers.constants.AddressZero) };

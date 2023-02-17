@@ -8,14 +8,11 @@ import {
   ListingTerms,
   ListingTermsInfo,
   ListingTermsRegistryAdapter,
-  LISTING_STRATEGIES,
-} from '../src';
-import { IListingTermsRegistry } from '../src/contracts';
-import {
-  findListingTermsIdByTransaction,
   makeListingTermsFixedRate,
   makeListingTermsFixedRateWithReward,
-} from './helpers/listing-renting';
+} from '../src';
+import { IListingTermsRegistry } from '../src/contracts';
+import { findListingTermsIdByTransaction } from './helpers/listing-renting';
 import { createListing, setupForRenting, setupUniverseAndRegisteredWarper } from './helpers/setup';
 import { COMMON_BASE_RATE, COMMON_ID, COMMON_REWARD_RATE, toAccountId } from './helpers/utils';
 

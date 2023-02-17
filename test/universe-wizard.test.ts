@@ -2,7 +2,16 @@ import { ITaxTermsRegistry } from '@iqprotocol/solidity-contracts-nft/typechain'
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { BigNumber, BytesLike, ContractTransaction } from 'ethers';
 import { deployments, ethers } from 'hardhat';
-import { IQSpace, TAX_STRATEGY_IDS, UniverseParams, UniverseWizardAdapterV1, WARPER_PRESET_ERC721_IDS } from '../src';
+import {
+  IQSpace,
+  TAX_STRATEGY_IDS,
+  UniverseParams,
+  UniverseWizardAdapterV1,
+  ERC721_WARPER_PRESET_IDS,
+  makeWarperPresetInitData,
+  makeTaxTermsFixedRateFromRawPercent,
+  makeTaxTermsFixedRateWithReward,
+} from '../src';
 import {
   ERC20Mock,
   ERC721Mock,
@@ -13,9 +22,8 @@ import {
 } from '../src/contracts';
 import { mintAndApproveNFTs } from './helpers/asset';
 import { createWarper } from './helpers/setup';
-import { makeTaxTermsFixedRate, makeTaxTermsFixedRateWithReward } from './helpers/tax';
 import { COMMON_ID, COMMON_REWARD_RATE, COMMON_TAX_RATE, toAccountId } from './helpers/utils';
-import { findWarperByDeploymentTransaction, makeERC721ConfigurablePresetInitData } from './helpers/warper';
+import { findWarperByDeploymentTransaction } from './helpers/warper';
 
 /**
  * @group integration
@@ -51,7 +59,7 @@ describe('UniverseWizardAdapterV1', () => {
       universeParams,
       taxTerms,
       warperParams,
-      WARPER_PRESET_ERC721_IDS.ERC721_CONFIGURABLE_PRESET,
+      ERC721_WARPER_PRESET_IDS.ERC721_CONFIGURABLE_PRESET,
       warperInitData,
     );
   };
@@ -86,14 +94,14 @@ describe('UniverseWizardAdapterV1', () => {
     universeWizardAdapter = iqspace.universeWizardV1(toAccountId(universeWizard.address));
 
     universeParams = { name: 'Test Universe', paymentTokens: [toAccountId(baseToken.address)] };
-    warperTaxTerms = makeTaxTermsFixedRate(COMMON_TAX_RATE);
+    warperTaxTerms = makeTaxTermsFixedRateFromRawPercent(COMMON_TAX_RATE);
     warperTaxTermsWithReward = makeTaxTermsFixedRateWithReward(COMMON_TAX_RATE, COMMON_REWARD_RATE);
     warperParams = {
       name: 'Warper',
       universeId: BigNumber.from(0),
       paused: false,
     };
-    warperInitData = makeERC721ConfigurablePresetInitData(metahub.address, collection.address);
+    warperInitData = makeWarperPresetInitData(collection.address, metahub.address);
   });
 
   describe('setupUniverse', () => {
