@@ -60,4 +60,3 @@ export type {
   WarperRegistrationParams,
   WarperRentingConstraints,
 } from './types';
-export { calculatePricePerSecondInWei, calculateTaxFeeForFixedRateInWei } from './utils';
