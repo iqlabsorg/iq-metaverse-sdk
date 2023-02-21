@@ -3,14 +3,13 @@ import { AssetType } from 'caip';
 import { BytesLike, ContractTransaction } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import {
-  IQSpace,
-  TAX_STRATEGY_IDS,
-  WarperRegistrationParams,
-  WarperWizardAdapterV1,
   ERC721_WARPER_PRESET_IDS,
-  makeWarperPresetInitData,
+  IQSpace,
   makeTaxTermsFixedRateFromRawPercent,
   makeTaxTermsFixedRateWithReward,
+  makeWarperPresetInitData,
+  TAX_STRATEGY_IDS,
+  WarperWizardAdapterV1,
 } from '../src';
 import { ERC721Mock, IMetahub, ITaxTermsRegistry, IWarperManager, IWarperWizardV1 } from '../src/contracts';
 import { setupUniverse, setupUniverseAndWarper } from './helpers/setup';
@@ -37,7 +36,7 @@ describe('WarperWizardAdapterV1', () => {
 
   /** Data Structs */
   let warperReference: AssetType;
-  let warperParams: WarperRegistrationParams;
+  let warperParams: IWarperManager.WarperRegistrationParamsStruct;
   let warperTaxTerms: ITaxTermsRegistry.TaxTermsStruct;
   let warperTaxTermsWithReward: ITaxTermsRegistry.TaxTermsStruct;
   let warperInitData: BytesLike;

@@ -1,3 +1,4 @@
+import { EMPTY_BYTES_DATA_HEX } from '@iqprotocol/solidity-contracts-nft';
 import { AccountId } from 'caip';
 import { BigNumber, BigNumberish, BytesLike, ContractTransaction } from 'ethers';
 import { Adapter } from '../adapter';
@@ -7,7 +8,7 @@ import { ContractResolver } from '../contract-resolver';
 import { RentingManager } from '../contracts';
 import { Rentings } from '../contracts/contracts/metahub/core/IMetahub';
 import { Asset, RentalAgreement, RentalFees, RentalStatus, RentingEstimationParams, RentingParams } from '../types';
-import { createEmptyListingTerms, createEmptyTokenQuoteData, pick } from '../utils';
+import { createEmptyListingTerms, pick } from '../utils';
 
 export class RentingManagerAdapter extends Adapter {
   private readonly contract: RentingManager;
@@ -52,10 +53,10 @@ export class RentingManagerAdapter extends Adapter {
       maxPaymentAmount,
       selectedConfiguratorListingTerms,
       listingTermsId,
-      tokenQuoteData: tokenQuoteDataParam,
+      tokenQuote,
+      tokenQuoteSignature,
     } = params;
     const configuratorListingTerms = selectedConfiguratorListingTerms ?? createEmptyListingTerms();
-    const tokenQuoteData = tokenQuoteDataParam ?? createEmptyTokenQuoteData();
     return this.contract.rent(
       {
         listingId,
@@ -66,8 +67,8 @@ export class RentingManagerAdapter extends Adapter {
         listingTermsId,
         selectedConfiguratorListingTerms: configuratorListingTerms,
       },
-      tokenQuoteData.tokenQuote,
-      tokenQuoteData.tokenQuoteSignature,
+      tokenQuote ?? EMPTY_BYTES_DATA_HEX,
+      tokenQuoteSignature ?? EMPTY_BYTES_DATA_HEX,
       maxPaymentAmount,
     );
   }

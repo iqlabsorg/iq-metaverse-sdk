@@ -4,8 +4,8 @@ import { BytesLike, constants, ContractTransaction } from 'ethers';
 import { Adapter } from '../../adapter';
 import { AddressTranslator } from '../../address-translator';
 import { ContractResolver } from '../../contract-resolver';
-import { ITaxTermsRegistry, IUniverseRegistry, UniverseWizardV1 } from '../../contracts';
-import { UniverseParams, WarperRegistrationParams } from '../../types';
+import { ITaxTermsRegistry, IUniverseRegistry, IWarperManager, UniverseWizardV1 } from '../../contracts';
+import { UniverseParams } from '../../types';
 
 export class UniverseWizardAdapterV1 extends Adapter {
   private readonly contract: UniverseWizardV1;
@@ -39,7 +39,7 @@ export class UniverseWizardAdapterV1 extends Adapter {
   async setupUniverseAndCreateWarperFromPresetAndRegister(
     universeParams: UniverseParams,
     warperTaxTerms: ITaxTermsRegistry.TaxTermsStruct,
-    warperRegistrationParams: WarperRegistrationParams,
+    warperRegistrationParams: IWarperManager.WarperRegistrationParamsStruct,
     warperPresetId: BytesLike,
     warperInitData: BytesLike,
   ): Promise<ContractTransaction> {
@@ -68,7 +68,7 @@ export class UniverseWizardAdapterV1 extends Adapter {
     universeParams: UniverseParams,
     warper: AssetType,
     warperTaxTerms: ITaxTermsRegistry.TaxTermsStruct,
-    warperRegistrationParams: WarperRegistrationParams,
+    warperRegistrationParams: IWarperManager.WarperRegistrationParamsStruct,
   ): Promise<ContractTransaction> {
     const params: IUniverseRegistry.UniverseParamsStruct = {
       name: universeParams.name,

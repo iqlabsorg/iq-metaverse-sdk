@@ -5,7 +5,6 @@ import {
   AddressTranslator,
   AssetType,
   IQSpace,
-  ListingTerms,
   ListingTermsInfo,
   ListingTermsRegistryAdapter,
   makeListingTermsFixedRate,
@@ -36,7 +35,7 @@ describe('ListingTermsRegistryAdapter', () => {
   let warperReference: AssetType;
 
   /** Constants */
-  const fixedTerms: ListingTerms = makeListingTermsFixedRate(COMMON_BASE_RATE);
+  const fixedTerms = makeListingTermsFixedRate(COMMON_BASE_RATE);
   const fixedTermsInfo: ListingTermsInfo = {
     id: COMMON_ID,
     ...fixedTerms,

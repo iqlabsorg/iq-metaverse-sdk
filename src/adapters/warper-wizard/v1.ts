@@ -4,8 +4,7 @@ import { BytesLike, constants, ContractTransaction } from 'ethers';
 import { Adapter } from '../../adapter';
 import { AddressTranslator } from '../../address-translator';
 import { ContractResolver } from '../../contract-resolver';
-import { ITaxTermsRegistry, WarperWizardV1 } from '../../contracts';
-import { WarperRegistrationParams } from '../../types';
+import { ITaxTermsRegistry, IWarperManager, WarperWizardV1 } from '../../contracts';
 
 export class WarperWizardAdapterV1 extends Adapter {
   private readonly contract: WarperWizardV1;
@@ -25,7 +24,7 @@ export class WarperWizardAdapterV1 extends Adapter {
   async registerExistingWarper(
     warper: AssetType,
     taxTerms: ITaxTermsRegistry.TaxTermsStruct,
-    registrationParams: WarperRegistrationParams,
+    registrationParams: IWarperManager.WarperRegistrationParamsStruct,
   ): Promise<ContractTransaction> {
     return this.contract.registerWarper(
       this.assetTypeToAddress(warper),
@@ -45,7 +44,7 @@ export class WarperWizardAdapterV1 extends Adapter {
    */
   async createWarperFromPresetAndRegister(
     taxTerms: ITaxTermsRegistry.TaxTermsStruct,
-    registrationParams: WarperRegistrationParams,
+    registrationParams: IWarperManager.WarperRegistrationParamsStruct,
     presetId: BytesLike,
     initData: BytesLike,
   ): Promise<ContractTransaction> {

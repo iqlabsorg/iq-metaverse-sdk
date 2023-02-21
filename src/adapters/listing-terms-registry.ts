@@ -4,7 +4,7 @@ import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
 import { IListingTermsRegistry, ListingTermsRegistry } from '../contracts';
-import { ListingTerms, ListingTermsInfo, ListingTermsInfoWithParams, ListingTermsQueryParams } from '../types';
+import { ListingTermsInfo, ListingTermsInfoWithParams, ListingTermsQueryParams } from '../types';
 
 export class ListingTermsRegistryAdapter extends Adapter {
   private readonly contract: ListingTermsRegistry;
@@ -110,7 +110,10 @@ export class ListingTermsRegistryAdapter extends Adapter {
    * @param listingId Listing ID.
    * @param listingTerms Listing terms.
    */
-  async registerGlobalListingTerms(listingId: BigNumberish, listingTerms: ListingTerms): Promise<ContractTransaction> {
+  async registerGlobalListingTerms(
+    listingId: BigNumberish,
+    listingTerms: IListingTermsRegistry.ListingTermsStruct,
+  ): Promise<ContractTransaction> {
     return this.contract.registerGlobalListingTerms(listingId, listingTerms);
   }
 

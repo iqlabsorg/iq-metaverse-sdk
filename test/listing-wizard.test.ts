@@ -7,7 +7,6 @@ import {
   createAsset,
   IQSpace,
   ListingParams,
-  ListingTerms,
   ListingWizardAdapterV1,
   LISTING_STRATEGY_IDS,
   makeListingTermsFixedRate,
@@ -45,8 +44,8 @@ describe('ListingWizardAdapterV1', () => {
 
   /** Data Structs */
   let pricePerSecondInEthers: string;
-  let listingTerms: ListingTerms;
-  let listingTermsWithReward: ListingTerms;
+  let listingTerms: IListingTermsRegistry.ListingTermsStruct;
+  let listingTermsWithReward: IListingTermsRegistry.ListingTermsStruct;
   let listingParams: ListingParams;
   let assetListingParams: AssetListingParams;
   let warperReference: AssetType;

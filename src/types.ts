@@ -1,6 +1,7 @@
 import { BigNumberish } from '@ethersproject/bignumber';
 import { AccountId, AssetId, AssetType, ChainId } from 'caip';
 import { BigNumber, BytesLike, Overrides as BaseOverrides, Signer } from 'ethers';
+import { IListingTermsRegistry } from './contracts';
 import { Accounts, ITokenQuote, Listings, Rentings } from './contracts/contracts/metahub/core/IMetahub';
 import { Warpers } from './contracts/contracts/warper/IWarperController';
 
@@ -22,12 +23,7 @@ export type ListingParams = {
   configurator: AccountId;
 };
 
-export type ListingTerms = {
-  strategyId: BytesLike;
-  strategyData: BytesLike;
-};
-
-export type ListingTermsInfo = ListingTerms & {
+export type ListingTermsInfo = IListingTermsRegistry.ListingTermsStruct & {
   id: BigNumber;
 };
 
@@ -79,14 +75,13 @@ export type RentingEstimationParams = Pick<Rentings.ParamsStruct, 'listingId' | 
   warper: AssetType;
   renter: AccountId;
   paymentToken: AssetType;
-  selectedConfiguratorListingTerms?: ListingTerms;
+  selectedConfiguratorListingTerms?: IListingTermsRegistry.ListingTermsStruct;
 };
-
-export type TokenQuoteData = { tokenQuote: BytesLike; tokenQuoteSignature: BytesLike };
 
 export type RentingParams = RentingEstimationParams & {
   maxPaymentAmount: BigNumberish;
-  tokenQuoteData?: TokenQuoteData;
+  tokenQuote?: BytesLike;
+  tokenQuoteSignature?: BytesLike;
 };
 
 export type RentalFees = Pick<
@@ -143,12 +138,6 @@ export type WarperRentingConstraints = {
     min: number;
     max: number;
   };
-};
-
-export type WarperRegistrationParams = {
-  name: string;
-  universeId: BigNumberish;
-  paused: boolean;
 };
 
 export type UniverseParams = {

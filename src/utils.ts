@@ -1,5 +1,5 @@
 import { EMPTY_BYTES4_DATA_HEX, EMPTY_BYTES_DATA_HEX } from '@iqprotocol/solidity-contracts-nft';
-import { ListingTerms, TokenQuoteData } from './types';
+import { IListingTermsRegistry } from './contracts';
 
 export const pick = <T extends object, K extends keyof T>(obj: T, names: readonly K[]): Pick<T, K> => {
   const result = {} as Pick<T, K>;
@@ -13,10 +13,6 @@ export const pick = <T extends object, K extends keyof T>(obj: T, names: readonl
   return result;
 };
 
-export const createEmptyListingTerms = (): ListingTerms => {
+export const createEmptyListingTerms = (): IListingTermsRegistry.ListingTermsStruct => {
   return { strategyId: EMPTY_BYTES4_DATA_HEX, strategyData: EMPTY_BYTES_DATA_HEX };
-};
-
-export const createEmptyTokenQuoteData = (): TokenQuoteData => {
-  return { tokenQuote: EMPTY_BYTES_DATA_HEX, tokenQuoteSignature: EMPTY_BYTES_DATA_HEX };
 };

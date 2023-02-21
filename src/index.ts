@@ -41,7 +41,6 @@ export type {
   ListingConfiguratorPreset,
   ListingParams,
   ListingStrategyConfig,
-  ListingTerms,
   ListingTermsInfo,
   ListingTermsInfoWithParams,
   ListingTermsQueryParams,
@@ -53,10 +52,8 @@ export type {
   RentingParams,
   TaxStrategyConfig,
   TaxTermsQueryParams,
-  TokenQuoteData,
   UniverseInfo,
   UniverseParams,
   WarperPreset,
-  WarperRegistrationParams,
   WarperRentingConstraints,
 } from './types';
