@@ -5,8 +5,8 @@ import { deployments, ethers } from 'hardhat';
 import {
   ERC721_WARPER_PRESET_IDS,
   IQSpace,
-  makeTaxTermsFixedRateFromRawPercent,
-  makeTaxTermsFixedRateWithReward,
+  makeFixedRateTaxTermsFromUnconverted,
+  makeFixedRateWithRewardTaxTermsFromUnconverted,
   makeWarperPresetInitData,
   TAX_STRATEGY_IDS,
   WarperWizardAdapterV1,
@@ -80,8 +80,8 @@ describe('WarperWizardAdapterV1', () => {
       universeId: COMMON_ID,
       paused: false,
     };
-    warperTaxTerms = makeTaxTermsFixedRateFromRawPercent(COMMON_TAX_RATE);
-    warperTaxTermsWithReward = makeTaxTermsFixedRateWithReward(COMMON_TAX_RATE, COMMON_REWARD_RATE);
+    warperTaxTerms = makeFixedRateTaxTermsFromUnconverted(COMMON_TAX_RATE);
+    warperTaxTermsWithReward = makeFixedRateWithRewardTaxTermsFromUnconverted(COMMON_TAX_RATE, COMMON_REWARD_RATE);
     warperInitData = makeWarperPresetInitData(collection.address, metahub.address);
   });
 

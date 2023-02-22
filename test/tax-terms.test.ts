@@ -3,8 +3,8 @@ import { deployments, ethers } from 'hardhat';
 import {
   AssetType,
   IQSpace,
-  makeTaxTermsFixedRateFromRawPercent,
-  makeTaxTermsFixedRateWithReward,
+  makeFixedRateTaxTermsFromUnconverted,
+  makeFixedRateWithRewardTaxTermsFromUnconverted,
   TaxTermsRegistryAdapter,
   TAX_STRATEGY_IDS,
 } from '../src';
@@ -30,8 +30,11 @@ describe('TaxTermsRegistryAdapter', () => {
   let warperReference: AssetType;
 
   /** Constants */
-  const taxTermsFixedRate: ITaxTermsRegistry.TaxTermsStruct = makeTaxTermsFixedRateFromRawPercent(COMMON_TAX_RATE);
-  const taxTermsFixedRateWithReward = makeTaxTermsFixedRateWithReward(COMMON_TAX_RATE, COMMON_REWARD_RATE);
+  const taxTermsFixedRate: ITaxTermsRegistry.TaxTermsStruct = makeFixedRateTaxTermsFromUnconverted(COMMON_TAX_RATE);
+  const taxTermsFixedRateWithReward = makeFixedRateWithRewardTaxTermsFromUnconverted(
+    COMMON_TAX_RATE,
+    COMMON_REWARD_RATE,
+  );
 
   beforeEach(async () => {
     await deployments.fixture();

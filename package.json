@@ -39,7 +39,7 @@
     "package.json": "sort-package-json"
   },
   "dependencies": {
-    "@iqprotocol/solidity-contracts-nft": "2.1.7-alpha.22",
+    "@iqprotocol/solidity-contracts-nft": "2.1.7-alpha.24",
     "winston": "^3.8.2",
     "caip": "^1.1.0"
   },

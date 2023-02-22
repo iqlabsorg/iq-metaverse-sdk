@@ -9,6 +9,7 @@ import {
   RentingEstimationParams,
   RentingManagerAdapter,
   convertToWei,
+  BASE_TOKEN_DECIMALS,
 } from '../src';
 import { ERC20Mock, IMetahub, IRentingManager } from '../src/contracts';
 import { setupForRenting } from './helpers/setup';
@@ -74,7 +75,7 @@ describe('RentingManagerAdapter', () => {
     baseTokenReference = AddressTranslator.createAssetType(toAccountId(baseToken.address), 'erc20');
     renterAccountId = toAccountId(renter.address);
 
-    await baseToken.connect(deployer).mint(renter.address, convertToWei('1000'));
+    await baseToken.connect(deployer).mint(renter.address, convertToWei('1000', BASE_TOKEN_DECIMALS));
 
     rentingEstimationParams = {
       warper: warperReference,

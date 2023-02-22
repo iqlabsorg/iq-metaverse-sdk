@@ -12,6 +12,7 @@ import {
   convertToWei,
   createAsset,
   Asset,
+  BASE_TOKEN_DECIMALS,
 } from '../src';
 import { ERC20Mock, ERC721Mock, IMetahub, IRentingManager, IWarperPresetFactory } from '../src/contracts';
 import { mintNFTs } from './helpers/asset';
@@ -113,7 +114,7 @@ describe('MetahubAdapter', () => {
     baseTokenReference = AddressTranslator.createAssetType(toAccountId(baseToken.address), 'erc20');
     asset = createAsset('erc721', toAccountId(collection.address), 1);
 
-    await baseToken.connect(deployer).mint(renter.address, convertToWei('1000'));
+    await baseToken.connect(deployer).mint(renter.address, convertToWei('1000', BASE_TOKEN_DECIMALS));
   });
 
   describe('getChainId', () => {
@@ -309,7 +310,7 @@ describe('MetahubAdapter', () => {
   });
 
   describe('approveForRentalPayment', () => {
-    const amount = convertToWei('10');
+    const amount = convertToWei('10', BASE_TOKEN_DECIMALS);
 
     it('should approve payment token to be spent by metahub', async () => {
       await renterMetahubAdapter.approveForRentalPayment(baseTokenReference, amount);
@@ -327,7 +328,7 @@ describe('MetahubAdapter', () => {
     });
 
     describe('when allowance has been set', () => {
-      const amount = convertToWei('10');
+      const amount = convertToWei('10', BASE_TOKEN_DECIMALS);
 
       beforeEach(async () => {
         await renterMetahubAdapter.approveForRentalPayment(baseTokenReference, amount);

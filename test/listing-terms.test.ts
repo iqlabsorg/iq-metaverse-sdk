@@ -7,8 +7,8 @@ import {
   IQSpace,
   ListingTermsInfo,
   ListingTermsRegistryAdapter,
-  makeListingTermsFixedRate,
-  makeListingTermsFixedRateWithReward,
+  makeFixedRateListingTermsFromUnconverted,
+  makeFixedRateWithRewardListingTermsFromUnconverted,
 } from '../src';
 import { IListingTermsRegistry } from '../src/contracts';
 import { findListingTermsIdByTransaction } from './helpers/listing-renting';
@@ -35,14 +35,14 @@ describe('ListingTermsRegistryAdapter', () => {
   let warperReference: AssetType;
 
   /** Constants */
-  const fixedTerms = makeListingTermsFixedRate(COMMON_BASE_RATE);
+  const fixedTerms = makeFixedRateListingTermsFromUnconverted(COMMON_BASE_RATE);
   const fixedTermsInfo: ListingTermsInfo = {
     id: COMMON_ID,
     ...fixedTerms,
   };
   const fixedTermsWithRewardInfo: ListingTermsInfo = {
     id: COMMON_ID,
-    ...makeListingTermsFixedRateWithReward(COMMON_BASE_RATE, COMMON_REWARD_RATE),
+    ...makeFixedRateWithRewardListingTermsFromUnconverted(COMMON_BASE_RATE, COMMON_REWARD_RATE),
   };
 
   beforeEach(async () => {

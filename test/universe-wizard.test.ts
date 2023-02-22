@@ -9,8 +9,8 @@ import {
   UniverseWizardAdapterV1,
   ERC721_WARPER_PRESET_IDS,
   makeWarperPresetInitData,
-  makeTaxTermsFixedRateFromRawPercent,
-  makeTaxTermsFixedRateWithReward,
+  makeFixedRateTaxTermsFromUnconverted,
+  makeFixedRateWithRewardTaxTermsFromUnconverted,
 } from '../src';
 import {
   ERC20Mock,
@@ -94,8 +94,8 @@ describe('UniverseWizardAdapterV1', () => {
     universeWizardAdapter = iqspace.universeWizardV1(toAccountId(universeWizard.address));
 
     universeParams = { name: 'Test Universe', paymentTokens: [toAccountId(baseToken.address)] };
-    warperTaxTerms = makeTaxTermsFixedRateFromRawPercent(COMMON_TAX_RATE);
-    warperTaxTermsWithReward = makeTaxTermsFixedRateWithReward(COMMON_TAX_RATE, COMMON_REWARD_RATE);
+    warperTaxTerms = makeFixedRateTaxTermsFromUnconverted(COMMON_TAX_RATE);
+    warperTaxTermsWithReward = makeFixedRateWithRewardTaxTermsFromUnconverted(COMMON_TAX_RATE, COMMON_REWARD_RATE);
     warperParams = {
       name: 'Warper',
       universeId: BigNumber.from(0),
