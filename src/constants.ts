@@ -1,4 +1,4 @@
-import { ASSET_CLASS_IDS } from '@iqprotocol/iq-space-protocol/src/protocol/asset/constants';
+import { ASSET_CLASS_IDS } from '@iqprotocol/iq-space-protocol-light/src/protocol/asset/constants';
 import { AssetNamespace, RentalStatus, RentalStatusEnum } from './types';
 
 export const assetClassToNamespaceMap: Map<string, AssetNamespace> = new Map([

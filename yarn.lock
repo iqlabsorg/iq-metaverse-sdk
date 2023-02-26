@@ -1032,19 +1032,19 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
-"@iqprotocol/iq-space-protocol-light@2.1.8-alpha.2":
-  version "2.1.8-alpha.2"
-  resolved "https://registry.yarnpkg.com/@iqprotocol/iq-space-protocol-light/-/iq-space-protocol-light-2.1.8-alpha.2.tgz#c1bf6cd17ba6eee138dabf2358cff171408ec52f"
-  integrity sha512-7QBXzpSUExG4iQzkknCdhPtD1Gb/lCj6+lwuBl+nnvTk0sbQBDGpB71/Dl0+zBiwKKEyIcFaR2Te0esBlfEhrw==
+"@iqprotocol/iq-space-protocol-light@2.1.8-alpha.6":
+  version "2.1.8-alpha.6"
+  resolved "https://registry.yarnpkg.com/@iqprotocol/iq-space-protocol-light/-/iq-space-protocol-light-2.1.8-alpha.6.tgz#d048e25c1efd146cfe64c90deac789dce2715600"
+  integrity sha512-HNVqprTUCnQXhLHaNWS80BupYXf13phbaWUem5Gs7h098vi0XZa6q6mIn7SnhROZx8tnjIo3wPCbA+t6FcsoGg==
   dependencies:
     "@typechain/ethers-v5" "^10.0.0"
     ethers "5.6.4"
     typechain "^8.0.0"
 
-"@iqprotocol/iq-space-protocol@2.1.8-alpha.2":
-  version "2.1.8-alpha.2"
-  resolved "https://registry.yarnpkg.com/@iqprotocol/iq-space-protocol/-/iq-space-protocol-2.1.8-alpha.2.tgz#20046c168fa0b77166b36be7f76197ba5d01c4cc"
-  integrity sha512-f85n7hp/TydVcQj1cJPgywIZjylyDLKz0v9DrY5g31Ao358KNQyFqRDiRZKkZvJbQxebsRHu+NMPJdgfwimBrw==
+"@iqprotocol/iq-space-protocol@2.1.8-alpha.6":
+  version "2.1.8-alpha.6"
+  resolved "https://registry.yarnpkg.com/@iqprotocol/iq-space-protocol/-/iq-space-protocol-2.1.8-alpha.6.tgz#590c3971d55a9ed093835435fd111cd9160502ae"
+  integrity sha512-OPsOLNCL07I/bQEbEQARSs8c2jdrFQbnERT7+So8rVa19GYVRttx93JIvfp4ZD6bYNr2utDwjEmtntKf3G2RnA==
   dependencies:
     "@openzeppelin/contracts" "^4.6.0"
     "@openzeppelin/contracts-upgradeable" "^4.6.0"

@@ -1,4 +1,4 @@
-import { CONTRACT_REGISTRY } from '@iqprotocol/iq-space-protocol/src/contracts-infra';
+import { CONTRACT_REGISTRY } from '@iqprotocol/iq-space-protocol-light/src/contracts-infra';
 import { AccountId, AssetType } from 'caip';
 import { BigNumber, BigNumberish, ContractTransaction } from 'ethers';
 import { Adapter } from '../adapter';

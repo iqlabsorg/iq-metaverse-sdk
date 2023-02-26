@@ -7,7 +7,7 @@ import { ITaxTermsRegistry, IWarperManager, WarperWizardV1 } from '../../contrac
 import {
   EMPTY_BYTES32_DATA_HEX,
   EMPTY_BYTES_DATA_HEX,
-} from '@iqprotocol/iq-space-protocol/src/utils/bytes-and-hashing';
+} from '@iqprotocol/iq-space-protocol-light/src/utils/bytes-and-hashing';
 
 export class WarperWizardAdapterV1 extends Adapter {
   private readonly contract: WarperWizardV1;
