@@ -9,6 +9,6 @@ module.exports = {
   },
   collectCoverageFrom: ['<rootDir>/src/**/*.ts'],
   testMatch: ['<rootDir>/test/**/*.test.ts'],
-  transformIgnorePatterns: [`/node_modules/(?!@iqprotocol/solidity-contracts-nft/deploy)`],
+  transformIgnorePatterns: [`/node_modules/(?!@iqprotocol/iq-space-protocol/deploy)`],
   coveragePathIgnorePatterns: ['<rootDir>/src/contracts'],
 };
