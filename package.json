@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "caip": "^1.1.0",
-    "@iqprotocol/iq-space-protocol-light": "2.1.8-alpha.7"
+    "@iqprotocol/iq-space-protocol-light": "2.1.8-alpha.9"
   },
   "devDependencies": {
     "@knodes/typedoc-plugin-monorepo-readmes": "^0.22.5",
@@ -90,7 +90,7 @@
     "typechain": "8.0.0",
     "typedoc": "0.22.17",
     "typescript": "^4.7.0",
-    "@iqprotocol/iq-space-protocol": "2.1.8-alpha.7"
+    "@iqprotocol/iq-space-protocol": "2.1.8-alpha.9"
   },
   "peerDependencies": {
     "ethers": "^5.6.0"
