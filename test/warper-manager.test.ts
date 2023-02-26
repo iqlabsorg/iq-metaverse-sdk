@@ -2,7 +2,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AssetType } from 'caip';
 import hre, { deployments, ethers } from 'hardhat';
 import { AddressTranslator, IQSpace, WarperManagerAdapter } from '../src';
-import { ERC721Mock, ERC721WarperController, IMetahub, IWarperController, IWarperManager } from '../src/contracts';
+import { ERC721Mock, ERC721WarperController, IMetahub, IWarperManager } from '../src/contracts';
 import { setupUniverseAndRegisteredWarper } from './helpers/setup';
 import { COMMON_ID, toAccountId } from './helpers/utils';
 
@@ -156,11 +156,11 @@ describe('WarperManagerAdapter', () => {
     let newController: ERC721WarperController;
 
     beforeEach(async () => {
-      newController = await hre.run('deploy:asset:warper:controller:erc721:v1', {
+      newController = (await hre.run('deploy:asset:warper:controller:erc721:v1', {
         unsafe: true,
         ignoreCache: true,
         isSerialDeployment: true,
-      });
+      })) as ERC721WarperController;
       await warperManagerAdapter.setWarperController([warperReference], toAccountId(newController.address));
     });
 

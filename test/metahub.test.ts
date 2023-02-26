@@ -1,3 +1,7 @@
+import {
+  BASE_TOKEN_DECIMALS,
+  convertToWei,
+} from '@iqprotocol/iq-space-protocol/src/utils/maths-and-conversions/basic-math-and-conversion';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AccountId, AssetType } from 'caip';
 import { BigNumber } from 'ethers';
@@ -9,10 +13,8 @@ import {
   MetahubAdapter,
   RentingEstimationParams,
   RentingManagerAdapter,
-  convertToWei,
   createAsset,
   Asset,
-  BASE_TOKEN_DECIMALS,
 } from '../src';
 import { ERC20Mock, ERC721Mock, IMetahub, IRentingManager, IWarperPresetFactory } from '../src/contracts';
 import { mintNFTs } from './helpers/asset';

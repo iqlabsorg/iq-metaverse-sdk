@@ -1,11 +1,11 @@
+import { EMPTY_BYTES_DATA_HEX } from '@iqprotocol/iq-space-protocol/src/utils/bytes-and-hashing';
 import {
   GlobalListingTermsRegisteredEventFilter,
   UniverseListingTermsRegisteredEventFilter,
   WarperListingTermsRegisteredEventFilter,
-} from '@iqprotocol/solidity-contracts-nft/typechain/contracts/listing/listing-terms-registry/IListingTermsRegistry';
+} from '@iqprotocol/iq-space-protocol/typechain/contracts/listing/listing-terms-registry/IListingTermsRegistry';
 import { BytesLike } from 'ethers';
 import { ethers } from 'hardhat';
-import { EMPTY_BYTES_DATA_HEX } from '../../src';
 import { IListingTermsRegistry } from '../../src/contracts';
 
 export const getTokenQuoteData = (): { tokenQuote: BytesLike; tokenQuoteSignature: BytesLike } => {
@@ -15,7 +15,7 @@ export const getTokenQuoteData = (): { tokenQuote: BytesLike; tokenQuoteSignatur
 export const findListingTermsIdByTransaction = async (
   transactionHash: string,
   scope: 'global' | 'universe' | 'warper',
-) => {
+): Promise<string | undefined> => {
   const listingTermsRegistry = (await ethers.getContract('ListingTermsRegistry')) as IListingTermsRegistry;
   const tx = await listingTermsRegistry.provider.getTransaction(transactionHash);
   if (!tx.blockHash) {
@@ -50,5 +50,6 @@ export const findListingTermsIdByTransaction = async (
     return undefined;
   }
 
-  return event.args.listingTermsId;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  return event.args.listingTermsId as string;
 };

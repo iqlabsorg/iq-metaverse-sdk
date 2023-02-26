@@ -1,4 +1,5 @@
-import { EMPTY_BYTES4_DATA_HEX, EMPTY_BYTES_DATA_HEX } from '@iqprotocol/solidity-contracts-nft';
+import { EMPTY_BYTES_DATA_HEX } from '@iqprotocol/iq-space-protocol-light/src/utils/bytes-and-hashing';
+import { EMPTY_BYTES4_DATA_HEX } from '@iqprotocol/iq-space-protocol/src/utils/bytes-and-hashing';
 import { IListingTermsRegistry } from './contracts';
 
 export const pick = <T extends object, K extends keyof T>(obj: T, names: readonly K[]): Pick<T, K> => {

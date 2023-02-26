@@ -1,4 +1,7 @@
-import { EMPTY_BYTES32_DATA_HEX, EMPTY_BYTES_DATA_HEX } from '@iqprotocol/solidity-contracts-nft';
+import {
+  EMPTY_BYTES32_DATA_HEX,
+  EMPTY_BYTES_DATA_HEX,
+} from '@iqprotocol/iq-space-protocol/src/utils/bytes-and-hashing';
 import { AccountId, AssetType } from 'caip';
 import { BytesLike, constants, ContractTransaction } from 'ethers';
 import { Adapter } from '../../adapter';

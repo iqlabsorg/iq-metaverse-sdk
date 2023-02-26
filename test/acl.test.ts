@@ -1,6 +1,7 @@
+import { ROLES_LIBRARY_IDS } from '@iqprotocol/iq-space-protocol/src/protocol/acl/constants';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { deployments, ethers } from 'hardhat';
-import { ACLAdapter, IQSpace, ROLES_LIBRARY_IDS } from '../src';
+import { ACLAdapter, IQSpace } from '../src';
 import { IACL } from '../src/contracts';
 import { toAccountId } from './helpers/utils';
 

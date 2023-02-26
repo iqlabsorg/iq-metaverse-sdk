@@ -60,7 +60,7 @@ export class WarperPresetFactoryAdapter extends Adapter {
   /**
    * Returns the list of all registered warper presets.
    */
-  async presets() {
+  async presets(): Promise<WarperPreset[]> {
     const presets = await this.contract.presets();
     return presets.map(x => this.normalizeWarperPreset(x));
   }

@@ -4,8 +4,8 @@ import { Asset, AssetNamespace } from '../types';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Assets } from '../contracts/contracts/metahub/core/IMetahub';
 import { AssetId, ChainId } from 'caip';
-import { ASSET_CLASS_IDS } from '@iqprotocol/solidity-contracts-nft';
 import { assetClassToNamespaceMap, namespaceToAssetClassMap } from '../constants';
+import { ASSET_CLASS_IDS } from '@iqprotocol/iq-space-protocol/src/protocol/asset/constants';
 
 export class AssetCoder {
   /**

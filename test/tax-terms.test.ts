@@ -1,16 +1,12 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { deployments, ethers } from 'hardhat';
-import {
-  AssetType,
-  IQSpace,
-  makeFixedRateTaxTermsFromUnconverted,
-  makeFixedRateWithRewardTaxTermsFromUnconverted,
-  TaxTermsRegistryAdapter,
-  TAX_STRATEGY_IDS,
-} from '../src';
+import { AssetType, IQSpace, TaxTermsRegistryAdapter } from '../src';
 import { ITaxTermsRegistry } from '../src/contracts';
 import { createWarper, setupForListing, setupUniverse, setupUniverseAndWarper } from './helpers/setup';
 import { COMMON_ID, COMMON_REWARD_RATE, COMMON_TAX_RATE, toAccountId } from './helpers/utils';
+import { TAX_STRATEGY_IDS } from '@iqprotocol/iq-space-protocol';
+import { makeFixedRateTaxTermsFromUnconverted } from '@iqprotocol/iq-space-protocol/src/protocol/tax/fixed-rate/helpers';
+import { makeFixedRateWithRewardTaxTermsFromUnconverted } from '@iqprotocol/iq-space-protocol/src/protocol/tax/fixed-rate-with-reward/helpers';
 
 /**
  * @group integration

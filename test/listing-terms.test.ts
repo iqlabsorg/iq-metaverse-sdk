@@ -1,19 +1,13 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { BigNumberish } from 'ethers';
 import { deployments, ethers } from 'hardhat';
-import {
-  AddressTranslator,
-  AssetType,
-  IQSpace,
-  ListingTermsInfo,
-  ListingTermsRegistryAdapter,
-  makeFixedRateListingTermsFromUnconverted,
-  makeFixedRateWithRewardListingTermsFromUnconverted,
-} from '../src';
+import { AddressTranslator, AssetType, IQSpace, ListingTermsInfo, ListingTermsRegistryAdapter } from '../src';
 import { IListingTermsRegistry } from '../src/contracts';
 import { findListingTermsIdByTransaction } from './helpers/listing-renting';
 import { createListing, setupForRenting, setupUniverseAndRegisteredWarper } from './helpers/setup';
 import { COMMON_BASE_RATE, COMMON_ID, COMMON_REWARD_RATE, toAccountId } from './helpers/utils';
+import { makeFixedRateListingTermsFromUnconverted } from '@iqprotocol/iq-space-protocol/src/protocol/listing/fixed-rate/helpers';
+import { makeFixedRateWithRewardListingTermsFromUnconverted } from '@iqprotocol/iq-space-protocol/src/protocol/listing/fixed-rate-with-reward/helpers';
 
 /**
  * @group integration

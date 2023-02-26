@@ -2,19 +2,16 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AssetType } from 'caip';
 import { BytesLike, ContractTransaction } from 'ethers';
 import { deployments, ethers } from 'hardhat';
-import {
-  ERC721_WARPER_PRESET_IDS,
-  IQSpace,
-  makeFixedRateTaxTermsFromUnconverted,
-  makeFixedRateWithRewardTaxTermsFromUnconverted,
-  makeWarperPresetInitData,
-  TAX_STRATEGY_IDS,
-  WarperWizardAdapterV1,
-} from '../src';
+import { IQSpace, WarperWizardAdapterV1 } from '../src';
 import { ERC721Mock, IMetahub, ITaxTermsRegistry, IWarperManager, IWarperWizardV1 } from '../src/contracts';
 import { setupUniverse, setupUniverseAndWarper } from './helpers/setup';
 import { COMMON_ID, COMMON_REWARD_RATE, COMMON_TAX_RATE, toAccountId } from './helpers/utils';
 import { findWarperByDeploymentTransaction } from './helpers/warper';
+import { TAX_STRATEGY_IDS } from '@iqprotocol/iq-space-protocol';
+import { makeFixedRateTaxTermsFromUnconverted } from '@iqprotocol/iq-space-protocol-light/src/protocol/tax/fixed-rate/helpers';
+import { makeWarperPresetInitData } from '@iqprotocol/iq-space-protocol/src/protocol/warper/helpers';
+import { makeFixedRateWithRewardTaxTermsFromUnconverted } from '@iqprotocol/iq-space-protocol/src/protocol/tax/fixed-rate-with-reward/helpers';
+import { ERC721_WARPER_PRESET_IDS } from '@iqprotocol/iq-space-protocol/src/protocol/warper/v1-controller/ERC721/constants';
 
 /**
  * @group integration
@@ -48,7 +45,7 @@ describe('WarperWizardAdapterV1', () => {
   const createWarperFromPresetAndRegister = async (
     taxTerms: ITaxTermsRegistry.TaxTermsStruct,
   ): Promise<ContractTransaction> => {
-    return await warperWizardAdapter.createWarperFromPresetAndRegister(
+    return warperWizardAdapter.createWarperFromPresetAndRegister(
       taxTerms,
       warperParams,
       ERC721_WARPER_PRESET_IDS.ERC721_CONFIGURABLE_PRESET,
@@ -155,12 +152,13 @@ describe('WarperWizardAdapterV1', () => {
       });
 
       it('should create and register a new warper with fixed rate tax', async () => {
-        const warperAddress = await findWarperByDeploymentTransaction(tx.hash);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const warperAddress = (await findWarperByDeploymentTransaction(tx.hash))!;
         const count = await warperManager.universeWarperCount(COMMON_ID);
-        const info = await warperManager.warperInfo(warperAddress!);
+        const info = await warperManager.warperInfo(warperAddress);
         const isFixedRateTax = await taxTermsRegistry.areRegisteredUniverseWarperTaxTerms(
           COMMON_ID,
-          warperAddress!,
+          warperAddress,
           TAX_STRATEGY_IDS.FIXED_RATE_TAX,
         );
 
@@ -176,12 +174,13 @@ describe('WarperWizardAdapterV1', () => {
       });
 
       it('should create and register a new warper with fixed rate and reward tax', async () => {
-        const warperAddress = await findWarperByDeploymentTransaction(tx.hash);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const warperAddress = (await findWarperByDeploymentTransaction(tx.hash))!;
         const count = await warperManager.universeWarperCount(COMMON_ID);
-        const info = await warperManager.warperInfo(warperAddress!);
+        const info = await warperManager.warperInfo(warperAddress);
         const isFixedRateWithRewardTax = await taxTermsRegistry.areRegisteredUniverseWarperTaxTerms(
           COMMON_ID,
-          warperAddress!,
+          warperAddress,
           TAX_STRATEGY_IDS.FIXED_RATE_TAX_WITH_REWARD,
         );
 

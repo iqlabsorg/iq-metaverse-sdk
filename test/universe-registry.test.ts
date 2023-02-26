@@ -85,8 +85,8 @@ describe('UniverseRegistryAdapter', () => {
     it('should return universe info', async () => {
       const info = await universeRegistryAdapter.universeInfo(COMMON_ID);
       expect(info).toBeDefined();
-      expect(info?.name).toBe(universeName);
-      expect(info?.paymentTokens).toMatchObject(universePaymentTokens);
+      expect(info.name).toBe(universeName);
+      expect(info.paymentTokens).toMatchObject(universePaymentTokens);
     });
   });
 

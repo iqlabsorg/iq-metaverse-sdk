@@ -1,6 +1,6 @@
 import { AccountId } from 'caip';
 import { BytesLike, ContractTransaction } from 'ethers';
-import { ListingConfiguratorPreset } from 'src/types';
+import { ListingConfiguratorPreset } from '../../types';
 import { Adapter } from '../../adapter';
 import { AddressTranslator } from '../../address-translator';
 import { ContractResolver } from '../../contract-resolver';

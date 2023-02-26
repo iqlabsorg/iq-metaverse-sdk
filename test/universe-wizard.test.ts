@@ -1,17 +1,7 @@
-import { ITaxTermsRegistry } from '@iqprotocol/solidity-contracts-nft/typechain';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { BigNumber, BytesLike, ContractTransaction } from 'ethers';
 import { deployments, ethers } from 'hardhat';
-import {
-  IQSpace,
-  TAX_STRATEGY_IDS,
-  UniverseParams,
-  UniverseWizardAdapterV1,
-  ERC721_WARPER_PRESET_IDS,
-  makeWarperPresetInitData,
-  makeFixedRateTaxTermsFromUnconverted,
-  makeFixedRateWithRewardTaxTermsFromUnconverted,
-} from '../src';
+import { IQSpace, UniverseParams, UniverseWizardAdapterV1 } from '../src';
 import {
   ERC20Mock,
   ERC721Mock,
@@ -19,11 +9,17 @@ import {
   IUniverseRegistry,
   IUniverseWizardV1,
   IWarperManager,
+  ITaxTermsRegistry,
 } from '../src/contracts';
 import { mintAndApproveNFTs } from './helpers/asset';
 import { createWarper } from './helpers/setup';
 import { COMMON_ID, COMMON_REWARD_RATE, COMMON_TAX_RATE, toAccountId } from './helpers/utils';
 import { findWarperByDeploymentTransaction } from './helpers/warper';
+import { TAX_STRATEGY_IDS } from '@iqprotocol/iq-space-protocol';
+import { ERC721_WARPER_PRESET_IDS } from '@iqprotocol/iq-space-protocol/src/protocol/warper/v1-controller/ERC721/constants';
+import { makeFixedRateTaxTermsFromUnconverted } from '@iqprotocol/iq-space-protocol-light/src/protocol/tax/fixed-rate/helpers';
+import { makeFixedRateWithRewardTaxTermsFromUnconverted } from '@iqprotocol/iq-space-protocol/src/protocol/tax/fixed-rate-with-reward/helpers';
+import { makeWarperPresetInitData } from '@iqprotocol/iq-space-protocol/src/protocol/warper/helpers';
 
 /**
  * @group integration
@@ -203,15 +199,16 @@ describe('UniverseWizardAdapterV1', () => {
 
     describe('with fixed rate and reward tax', () => {
       beforeEach(async () => {
-        warperAddress = await setupUniverseAndRegisterExistingWarper(warperTaxTermsWithReward);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        warperAddress = (await setupUniverseAndRegisterExistingWarper(warperTaxTermsWithReward))!;
       });
 
       it('should create a universe and register the existing warper to it with fixed rate and reward tax', async () => {
         const universeInfo = await universeRegistry.universe(COMMON_ID);
-        const warperInfo = await warperManager.warperInfo(warperAddress!);
+        const warperInfo = await warperManager.warperInfo(warperAddress);
         const isFixedRateWithRewardTax = await taxTermsRegistry.areRegisteredUniverseWarperTaxTerms(
           COMMON_ID,
-          warperAddress!,
+          warperAddress,
           TAX_STRATEGY_IDS.FIXED_RATE_TAX_WITH_REWARD,
         );
 

@@ -1,41 +1,24 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { deployments, ethers } from 'hardhat';
-import {
-  AssetListingParams,
-  AssetType,
-  calculateBaseRateInBaseTokenEthers,
-  createAsset,
-  IQSpace,
-  ListingParams,
-  ListingWizardAdapterV1,
-  LISTING_STRATEGY_IDS,
-  makeFixedRateListingTermsFromUnconverted,
-  makeFixedRateWithRewardListingTermsFromUnconverted,
-} from '../src';
-import { ERC721Mock, IListingManager, IListingTermsRegistry, IListingWizardV1, IMetahub } from '../src/contracts';
+import { AssetListingParams, AssetType, createAsset, IQSpace, ListingParams, ListingWizardAdapterV1 } from '../src';
+import { ERC721Mock, IListingManager, IListingTermsRegistry, IListingWizardV1 } from '../src/contracts';
 import { setupForListing } from './helpers/setup';
-import {
-  COMMON_BASE_RATE,
-  COMMON_ID,
-  COMMON_PRICE,
-  COMMON_REWARD_RATE,
-  SECONDS_IN_DAY,
-  toAccountId,
-} from './helpers/utils';
+import { COMMON_BASE_RATE, COMMON_ID, COMMON_REWARD_RATE, SECONDS_IN_DAY, toAccountId } from './helpers/utils';
+import { makeFixedRateListingTermsFromUnconverted } from '@iqprotocol/iq-space-protocol/src/protocol/listing/fixed-rate/helpers';
+import { makeFixedRateWithRewardListingTermsFromUnconverted } from '@iqprotocol/iq-space-protocol/src/protocol/listing/fixed-rate-with-reward/helpers';
+import { LISTING_STRATEGY_IDS } from '@iqprotocol/iq-space-protocol';
 
 /**
  * @group integration
  */
 describe('ListingWizardAdapterV1', () => {
   /** Signers */
-  let deployer: SignerWithAddress;
   let lister: SignerWithAddress;
 
   /** Contracts */
   let listingWizard: IListingWizardV1;
   let listingManager: IListingManager;
   let listingTermsRegistry: IListingTermsRegistry;
-  let metahub: IMetahub;
   let collection: ERC721Mock;
 
   /** SDK */
@@ -43,7 +26,6 @@ describe('ListingWizardAdapterV1', () => {
   let listingWizardAdapter: ListingWizardAdapterV1;
 
   /** Data Structs */
-  let pricePerSecondInEthers: string;
   let listingTerms: IListingTermsRegistry.ListingTermsStruct;
   let listingTermsWithReward: IListingTermsRegistry.ListingTermsStruct;
   let listingParams: ListingParams;
@@ -63,19 +45,16 @@ describe('ListingWizardAdapterV1', () => {
   beforeEach(async () => {
     await deployments.fixture();
 
-    deployer = await ethers.getNamedSigner('deployer');
     lister = await ethers.getNamedSigner('assetOwner');
 
     listingWizard = await ethers.getContract('ListingWizardV1');
     listingManager = await ethers.getContract('ListingManager');
     listingTermsRegistry = await ethers.getContract('ListingTermsRegistry');
-    metahub = await ethers.getContract('Metahub');
     collection = await ethers.getContract('ERC721Mock');
 
     iqspace = await IQSpace.init({ signer: lister });
     listingWizardAdapter = iqspace.listingWizardV1(toAccountId(listingWizard.address));
 
-    pricePerSecondInEthers = calculateBaseRateInBaseTokenEthers(COMMON_PRICE, SECONDS_IN_DAY);
     listingTerms = makeFixedRateListingTermsFromUnconverted(COMMON_BASE_RATE);
     listingTermsWithReward = makeFixedRateWithRewardListingTermsFromUnconverted(COMMON_BASE_RATE, COMMON_REWARD_RATE);
     listingParams = { lister: toAccountId(lister.address), configurator: toAccountId(ethers.constants.AddressZero) };
