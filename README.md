@@ -302,7 +302,7 @@ const asset = createAsset('erc721', originalAsset, '42')
 const approvalTx = await metahub.approveForListing(asset);
 await approvalTx.wait();
 
-// List the token
+// Create listing parameters
 const assetListingParams = {
   assets: [asset],
   params: {
@@ -318,11 +318,44 @@ const assetListingParams = {
 
 // calculate price per second (we are setting 100 ethers per day as a base rate)
 const pricePerSecondInEthers = calculateBaseRateInBaseTokenEthers('100', SECONDS_IN_DAY);
+
+// Create listing terms
 const listingTerms = { strategyId: LISTING_STRATEGY_IDS.FIXED_RATE, strategyData: '0x1a34b...' };
+
+// Create listing
 const tx = await listingWizard.createListingWithTerms({
   universeId,
   assetListingParams,
   listingTerms
+});
+console.log(`Tx ${tx.hash}`);
+```
+
+There is also a possibility to delegate listing creation to another signer (for example, a backend system).
+
+```ts
+import { prepareTypedDataActionEip712Signature } from '@iqprotocol/iq-space-sdk-js';
+
+// Prepare listing data.. (see previous step above)
+
+// Get delegated listing nonce for original lister
+const delegatedListingCurrentNonce = await listingWizard.getDelegatedListingCurrentNonce(listerAccountId);
+
+// Lister must provide a signature which allows for delegation.
+// Using IQ provided helper in this example for signature generation.
+// Listers client can use their own implementation for signature creation.
+const signature = await prepareTypedDataActionEip712Signature(
+  { nonce: delegatedListingCurrentNonce },
+  lister, // original lister (Signer object)
+  chainId.reference, // raw chain ID
+  listingWizardAddress, // raw address of ListingWizardV1 contract
+);
+
+const tx = await listingWizard.delegatedCreateListingWithTerms({
+  universeId,
+  assetListingParams,
+  listingTerms,
+  signature,
 });
 console.log(`Tx ${tx.hash}`);
 ```
