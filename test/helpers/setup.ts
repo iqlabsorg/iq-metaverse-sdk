@@ -1,3 +1,14 @@
+import {
+  ERC721_WARPER_PRESET_IDS,
+  makeERC721Asset,
+  makeFixedRateListingTermsFromUnconverted,
+  makeFixedRateTaxTermsFromUnconverted,
+  makeFixedRateWithRewardListingTermsFromUnconverted,
+  makeFixedRateWithRewardTaxTermsFromUnconverted,
+  makeListingParams,
+  makeUniverseParams,
+  makeWarperPresetInitData,
+} from '@iqprotocol/iq-space-protocol';
 import { AccountId, AssetType } from 'caip';
 import { BigNumber } from 'ethers';
 import { ethers } from 'hardhat';
@@ -17,15 +28,6 @@ import { grantWizardRolesToDeployer } from './acl';
 import { mintAndApproveNFTs } from './asset';
 import { COMMON_BASE_RATE, COMMON_ID, COMMON_REWARD_RATE, COMMON_TAX_RATE, SECONDS_IN_DAY, toAccountId } from './utils';
 import { findWarperByDeploymentTransaction } from './warper';
-import { makeUniverseParams } from '@iqprotocol/iq-space-protocol/src/protocol/universe/typechain-helpers';
-import { makeFixedRateWithRewardTaxTermsFromUnconverted } from '@iqprotocol/iq-space-protocol/src/protocol/tax/fixed-rate-with-reward/helpers';
-import { makeFixedRateTaxTermsFromUnconverted } from '@iqprotocol/iq-space-protocol/src/protocol/tax/fixed-rate/helpers';
-import { ERC721_WARPER_PRESET_IDS } from '@iqprotocol/iq-space-protocol/src/protocol/warper/v1-controller/ERC721/constants';
-import { makeWarperPresetInitData } from '@iqprotocol/iq-space-protocol/src/protocol/warper/helpers';
-import { makeERC721Asset } from '@iqprotocol/iq-space-protocol/src/protocol/asset/ERC721/typechain-helpers';
-import { makeListingParams } from '@iqprotocol/iq-space-protocol/src/protocol/listing/typechain-helpers';
-import { makeFixedRateWithRewardListingTermsFromUnconverted } from '@iqprotocol/iq-space-protocol/src/protocol/listing/fixed-rate-with-reward/helpers';
-import { makeFixedRateListingTermsFromUnconverted } from '@iqprotocol/iq-space-protocol/src/protocol/listing/fixed-rate/helpers';
 
 export type UniverseCreated = {
   universeCreationTxHash: string;

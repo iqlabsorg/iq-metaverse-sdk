@@ -1,7 +1,7 @@
+import { calculateBaseRateInBaseTokenEthers } from '@iqprotocol/iq-space-protocol';
 import { AccountId, AssetId, ChainId } from 'caip';
 import { BigNumber } from 'ethers';
 import { ethers } from 'hardhat';
-import { calculateBaseRateInBaseTokenEthers } from '@iqprotocol/iq-space-protocol/src/utils/maths-and-conversions/base-rate-conversion';
 
 export const toAccountId = (address: string): AccountId => {
   return new AccountId({ chainId: getChainId(), address });

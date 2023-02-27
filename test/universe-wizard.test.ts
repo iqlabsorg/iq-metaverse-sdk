@@ -1,3 +1,10 @@
+import {
+  ERC721_WARPER_PRESET_IDS,
+  makeFixedRateTaxTermsFromUnconverted,
+  makeFixedRateWithRewardTaxTermsFromUnconverted,
+  makeWarperPresetInitData,
+  TAX_STRATEGY_IDS,
+} from '@iqprotocol/iq-space-protocol';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { BigNumber, BytesLike, ContractTransaction } from 'ethers';
 import { deployments, ethers } from 'hardhat';
@@ -15,11 +22,6 @@ import { mintAndApproveNFTs } from './helpers/asset';
 import { createWarper } from './helpers/setup';
 import { COMMON_ID, COMMON_REWARD_RATE, COMMON_TAX_RATE, toAccountId } from './helpers/utils';
 import { findWarperByDeploymentTransaction } from './helpers/warper';
-import { TAX_STRATEGY_IDS } from '@iqprotocol/iq-space-protocol';
-import { ERC721_WARPER_PRESET_IDS } from '@iqprotocol/iq-space-protocol/src/protocol/warper/v1-controller/ERC721/constants';
-import { makeFixedRateTaxTermsFromUnconverted } from '@iqprotocol/iq-space-protocol-light/src/protocol/tax/fixed-rate/helpers';
-import { makeFixedRateWithRewardTaxTermsFromUnconverted } from '@iqprotocol/iq-space-protocol/src/protocol/tax/fixed-rate-with-reward/helpers';
-import { makeWarperPresetInitData } from '@iqprotocol/iq-space-protocol/src/protocol/warper/helpers';
 
 /**
  * @group integration

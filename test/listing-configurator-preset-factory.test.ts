@@ -1,4 +1,4 @@
-import { LISTING_CONFIGURATOR_PRESET_IDS } from '@iqprotocol/iq-space-protocol/src/constants';
+import { LISTING_CONFIGURATOR_PRESET_IDS } from '@iqprotocol/iq-space-protocol';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { Contract } from 'ethers';
 import { deployments, ethers } from 'hardhat';

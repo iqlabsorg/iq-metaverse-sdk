@@ -1,4 +1,4 @@
-import { EMPTY_BYTES_DATA_HEX } from '@iqprotocol/iq-space-protocol-light/src/utils/bytes-and-hashing';
+import { EMPTY_BYTES_DATA_HEX } from '@iqprotocol/iq-space-protocol-light';
 import { AccountId } from 'caip';
 import { BigNumber, BigNumberish, BytesLike, ContractTransaction } from 'ethers';
 import { Adapter } from '../adapter';

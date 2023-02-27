@@ -5,7 +5,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { Assets } from '../contracts/contracts/metahub/core/IMetahub';
 import { AssetId, ChainId } from 'caip';
 import { assetClassToNamespaceMap, namespaceToAssetClassMap } from '../constants';
-import { ASSET_CLASS_IDS } from '@iqprotocol/iq-space-protocol-light/src/protocol/asset/constants';
+import { ASSET_CLASS_IDS } from '@iqprotocol/iq-space-protocol-light';
 
 export class AssetCoder {
   /**

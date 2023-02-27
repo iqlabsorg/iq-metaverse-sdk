@@ -1,11 +1,11 @@
-import { EMPTY_BYTES_DATA_HEX } from '@iqprotocol/iq-space-protocol/src/utils/bytes-and-hashing';
-import {
-  GlobalListingTermsRegisteredEventFilter,
-  UniverseListingTermsRegisteredEventFilter,
-  WarperListingTermsRegisteredEventFilter,
-} from '@iqprotocol/iq-space-protocol/typechain/contracts/listing/listing-terms-registry/IListingTermsRegistry';
+import { EMPTY_BYTES_DATA_HEX } from '@iqprotocol/iq-space-protocol';
 import { BytesLike } from 'ethers';
 import { ethers } from 'hardhat';
+import {
+  GlobalListingTermsRegisteredEventFilter,
+  WarperListingTermsRegisteredEventFilter,
+  UniverseListingTermsRegisteredEventFilter,
+} from '../../src/contracts/contracts/listing/listing-terms-registry/IListingTermsRegistry';
 import { IListingTermsRegistry } from '../../src/contracts';
 
 export const getTokenQuoteData = (): { tokenQuote: BytesLike; tokenQuoteSignature: BytesLike } => {
@@ -51,5 +51,5 @@ export const findListingTermsIdByTransaction = async (
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  return event.args.listingTermsId as string;
+  return event.args.listingTermsId.toString();
 };

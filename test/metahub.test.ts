@@ -1,7 +1,4 @@
-import {
-  BASE_TOKEN_DECIMALS,
-  convertToWei,
-} from '@iqprotocol/iq-space-protocol/src/utils/maths-and-conversions/basic-math-and-conversion';
+import { BASE_TOKEN_DECIMALS, convertToWei } from '@iqprotocol/iq-space-protocol';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AccountId, AssetType } from 'caip';
 import { BigNumber } from 'ethers';

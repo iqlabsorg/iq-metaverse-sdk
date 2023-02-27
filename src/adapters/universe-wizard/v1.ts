@@ -1,7 +1,4 @@
-import {
-  EMPTY_BYTES32_DATA_HEX,
-  EMPTY_BYTES_DATA_HEX,
-} from '@iqprotocol/iq-space-protocol-light/src/utils/bytes-and-hashing';
+import { EMPTY_BYTES32_DATA_HEX, EMPTY_BYTES_DATA_HEX } from '@iqprotocol/iq-space-protocol-light';
 import { AccountId, AssetType } from 'caip';
 import { BytesLike, constants, ContractTransaction } from 'ethers';
 import { Adapter } from '../../adapter';

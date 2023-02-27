@@ -1,4 +1,4 @@
-import { ERC721_WARPER_PRESET_IDS } from '@iqprotocol/iq-space-protocol/src/protocol/warper/v1-controller/ERC721/constants';
+import { ERC721_WARPER_PRESET_IDS, makeERC721ConfigurablePresetInitData } from '@iqprotocol/iq-space-protocol';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AssetType } from 'caip';
 import { ContractTransaction } from 'ethers';
@@ -9,7 +9,6 @@ import { grantSupervisorRole } from './helpers/acl';
 import { setupUniverse } from './helpers/setup';
 import { toAccountId } from './helpers/utils';
 import { findWarperByDeploymentTransaction } from './helpers/warper';
-import { makeERC721ConfigurablePresetInitData } from '@iqprotocol/iq-space-protocol/src/protocol/warper/v1-controller/ERC721/preset-helpers';
 
 /**
  * @group integration

@@ -1,5 +1,4 @@
-import { LISTING_STRATEGY_IDS, TAX_STRATEGY_IDS } from '@iqprotocol/iq-space-protocol/src/constants';
-import { solidityIdBytes4 } from '@iqprotocol/iq-space-protocol/src/utils/bytes-and-hashing';
+import { LISTING_STRATEGY_IDS, solidityIdBytes4, TAX_STRATEGY_IDS } from '@iqprotocol/iq-space-protocol';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { deployments, ethers } from 'hardhat';
 import { IQSpace, ListingStrategyRegistryAdapter } from '../src';
