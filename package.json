@@ -1,6 +1,6 @@
 {
   "name": "@iqprotocol/iq-space-sdk-js",
-  "version": "0.1.0-alpha.24",
+  "version": "2.1.11",
   "bugs": "https://github.com/iqlabsorg/iq-space-sdk-js/issues",
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
     "test:coverage": "cross-env LOG_LEVEL=error jest --group=integration --runInBand --coverage",
     "typechain": "run-s typechain:clean typechain:generate",
     "typechain:clean": "rimraf src/contracts",
-    "typechain:generate": "cp -r ./node_modules/@iqprotocol/solidity-contracts-nft/contracts ./contracts && TS_NODE_TRANSPILE_ONLY=1 hardhat compile && rimraf ./contracts && rimraf ./artifacts && rimraf ./cache",
+    "typechain:generate": "cp -r ./node_modules/@iqprotocol/iq-space-protocol/contracts ./contracts && TS_NODE_TRANSPILE_ONLY=1 hardhat compile && rimraf ./contracts && rimraf ./artifacts && rimraf ./cache",
     "docs": "run-s docs:clean docs:generate",
     "docs:generate": "NODE_OPTIONS=--max_old_space_size=8192 typedoc --options typedoc.js --entryPointStrategy packages . --out docs && touch docs/.nojekyll",
     "docs:clean": "rimraf docs",
@@ -39,8 +39,8 @@
     "package.json": "sort-package-json"
   },
   "dependencies": {
-    "@iqprotocol/solidity-contracts-nft": "2.1.7-alpha.22",
-    "caip": "^1.1.0"
+    "caip": "^1.1.0",
+    "@iqprotocol/iq-space-protocol-light": "2.1.12"
   },
   "devDependencies": {
     "@knodes/typedoc-plugin-monorepo-readmes": "^0.22.5",
@@ -90,7 +90,7 @@
     "typechain": "8.0.0",
     "typedoc": "0.22.17",
     "typescript": "^4.7.0",
-    "winston": "^3.8.2"
+    "@iqprotocol/iq-space-protocol": "2.1.12"
   },
   "peerDependencies": {
     "ethers": "^5.6.0"

@@ -1,15 +1,11 @@
+import {
+  makeFixedRateListingTermsFromUnconverted,
+  makeFixedRateWithRewardListingTermsFromUnconverted,
+} from '@iqprotocol/iq-space-protocol';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { BigNumberish } from 'ethers';
 import { deployments, ethers } from 'hardhat';
-import {
-  AddressTranslator,
-  AssetType,
-  IQSpace,
-  ListingTermsInfo,
-  ListingTermsRegistryAdapter,
-  makeListingTermsFixedRate,
-  makeListingTermsFixedRateWithReward,
-} from '../src';
+import { AddressTranslator, AssetType, IQSpace, ListingTermsInfo, ListingTermsRegistryAdapter } from '../src';
 import { IListingTermsRegistry } from '../src/contracts';
 import { findListingTermsIdByTransaction } from './helpers/listing-renting';
 import { createListing, setupForRenting, setupUniverseAndRegisteredWarper } from './helpers/setup';
@@ -35,14 +31,14 @@ describe('ListingTermsRegistryAdapter', () => {
   let warperReference: AssetType;
 
   /** Constants */
-  const fixedTerms = makeListingTermsFixedRate(COMMON_BASE_RATE);
+  const fixedTerms = makeFixedRateListingTermsFromUnconverted(COMMON_BASE_RATE);
   const fixedTermsInfo: ListingTermsInfo = {
     id: COMMON_ID,
     ...fixedTerms,
   };
   const fixedTermsWithRewardInfo: ListingTermsInfo = {
     id: COMMON_ID,
-    ...makeListingTermsFixedRateWithReward(COMMON_BASE_RATE, COMMON_REWARD_RATE),
+    ...makeFixedRateWithRewardListingTermsFromUnconverted(COMMON_BASE_RATE, COMMON_REWARD_RATE),
   };
 
   beforeEach(async () => {

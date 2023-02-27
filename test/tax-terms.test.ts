@@ -1,13 +1,11 @@
+import {
+  makeFixedRateTaxTermsFromUnconverted,
+  makeFixedRateWithRewardTaxTermsFromUnconverted,
+  TAX_STRATEGY_IDS,
+} from '@iqprotocol/iq-space-protocol';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { deployments, ethers } from 'hardhat';
-import {
-  AssetType,
-  IQSpace,
-  makeTaxTermsFixedRateFromRawPercent,
-  makeTaxTermsFixedRateWithReward,
-  TaxTermsRegistryAdapter,
-  TAX_STRATEGY_IDS,
-} from '../src';
+import { AssetType, IQSpace, TaxTermsRegistryAdapter } from '../src';
 import { ITaxTermsRegistry } from '../src/contracts';
 import { createWarper, setupForListing, setupUniverse, setupUniverseAndWarper } from './helpers/setup';
 import { COMMON_ID, COMMON_REWARD_RATE, COMMON_TAX_RATE, toAccountId } from './helpers/utils';
@@ -30,8 +28,11 @@ describe('TaxTermsRegistryAdapter', () => {
   let warperReference: AssetType;
 
   /** Constants */
-  const taxTermsFixedRate: ITaxTermsRegistry.TaxTermsStruct = makeTaxTermsFixedRateFromRawPercent(COMMON_TAX_RATE);
-  const taxTermsFixedRateWithReward = makeTaxTermsFixedRateWithReward(COMMON_TAX_RATE, COMMON_REWARD_RATE);
+  const taxTermsFixedRate: ITaxTermsRegistry.TaxTermsStruct = makeFixedRateTaxTermsFromUnconverted(COMMON_TAX_RATE);
+  const taxTermsFixedRateWithReward = makeFixedRateWithRewardTaxTermsFromUnconverted(
+    COMMON_TAX_RATE,
+    COMMON_REWARD_RATE,
+  );
 
   beforeEach(async () => {
     await deployments.fixture();

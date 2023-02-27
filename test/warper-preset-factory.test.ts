@@ -1,14 +1,9 @@
+import { ERC721_WARPER_PRESET_IDS, makeERC721ConfigurablePresetInitData } from '@iqprotocol/iq-space-protocol';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AssetType } from 'caip';
 import { ContractTransaction } from 'ethers';
 import { deployments, ethers } from 'hardhat';
-import {
-  AddressTranslator,
-  IQSpace,
-  WarperPresetFactoryAdapter,
-  ERC721_WARPER_PRESET_IDS,
-  makeWarperPresetInitData,
-} from '../src';
+import { AddressTranslator, IQSpace, WarperPresetFactoryAdapter } from '../src';
 import { ERC721ConfigurablePreset, ERC721Mock, IMetahub, IWarperPresetFactory } from '../src/contracts';
 import { grantSupervisorRole } from './helpers/acl';
 import { setupUniverse } from './helpers/setup';
@@ -45,7 +40,7 @@ describe('WarperPresetFactoryAdapter', () => {
     collection = await ethers.getContract('ERC721Mock');
 
     const iqspace = await IQSpace.init({ signer: deployer });
-    const sIqspace = await await IQSpace.init({ signer: supervisor });
+    const sIqspace = await IQSpace.init({ signer: supervisor });
     warperPresetFactoryAdapter = iqspace.warperPresetFactory(toAccountId(warperPresetFactory.address));
     supervisorWarperPresetFactoryAdapter = sIqspace.warperPresetFactory(toAccountId(warperPresetFactory.address));
 
@@ -59,7 +54,7 @@ describe('WarperPresetFactoryAdapter', () => {
     beforeEach(async () => {
       tx = await warperPresetFactoryAdapter.deployPreset(
         ERC721_WARPER_PRESET_IDS.ERC721_CONFIGURABLE_PRESET,
-        makeWarperPresetInitData(collection.address, metahub.address),
+        makeERC721ConfigurablePresetInitData(collection.address, metahub.address),
       );
     });
 

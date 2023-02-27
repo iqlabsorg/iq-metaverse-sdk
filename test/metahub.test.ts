@@ -1,3 +1,4 @@
+import { BASE_TOKEN_DECIMALS, convertToWei } from '@iqprotocol/iq-space-protocol';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AccountId, AssetType } from 'caip';
 import { BigNumber } from 'ethers';
@@ -9,7 +10,6 @@ import {
   MetahubAdapter,
   RentingEstimationParams,
   RentingManagerAdapter,
-  convertToWei,
   createAsset,
   Asset,
 } from '../src';
@@ -113,7 +113,7 @@ describe('MetahubAdapter', () => {
     baseTokenReference = AddressTranslator.createAssetType(toAccountId(baseToken.address), 'erc20');
     asset = createAsset('erc721', toAccountId(collection.address), 1);
 
-    await baseToken.connect(deployer).mint(renter.address, convertToWei('1000'));
+    await baseToken.connect(deployer).mint(renter.address, convertToWei('1000', BASE_TOKEN_DECIMALS));
   });
 
   describe('getChainId', () => {
@@ -309,7 +309,7 @@ describe('MetahubAdapter', () => {
   });
 
   describe('approveForRentalPayment', () => {
-    const amount = convertToWei('10');
+    const amount = convertToWei('10', BASE_TOKEN_DECIMALS);
 
     it('should approve payment token to be spent by metahub', async () => {
       await renterMetahubAdapter.approveForRentalPayment(baseTokenReference, amount);
@@ -327,7 +327,7 @@ describe('MetahubAdapter', () => {
     });
 
     describe('when allowance has been set', () => {
-      const amount = convertToWei('10');
+      const amount = convertToWei('10', BASE_TOKEN_DECIMALS);
 
       beforeEach(async () => {
         await renterMetahubAdapter.approveForRentalPayment(baseTokenReference, amount);

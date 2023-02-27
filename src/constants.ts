@@ -1,4 +1,4 @@
-import { ASSET_CLASS_IDS } from '@iqprotocol/solidity-contracts-nft';
+import { ASSET_CLASS_IDS } from '@iqprotocol/iq-space-protocol-light';
 import { AssetNamespace, RentalStatus, RentalStatusEnum } from './types';
 
 export const assetClassToNamespaceMap: Map<string, AssetNamespace> = new Map([

@@ -2,7 +2,7 @@
  * @module iqspace
  */
 /** export constants from contracts */
-export * from '@iqprotocol/solidity-contracts-nft';
+export * from '@iqprotocol/iq-space-protocol-light';
 export { AccountId, AssetId, AssetType, ChainId } from 'caip';
 export {
   ACLAdapter,

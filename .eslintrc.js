@@ -51,12 +51,12 @@ module.exports = {
     'radix': 'error',
     'func-style': ['error', 'expression'],
     'max-depth': ['error', 3],
-    'multiline-ternary': ['error', 'never'],
+    'multiline-ternary': 'off',
     'no-lonely-if': 'error',
     'no-nested-ternary': 'error',
     'no-unneeded-ternary': 'error',
     'no-useless-computed-key': 'error',
-    "no-unused-vars": "off",
+    "no-unused-vars": 'off',
 
     // Typescript rules
     '@typescript-eslint/member-ordering': 'error',
@@ -94,6 +94,7 @@ module.exports = {
     '@typescript-eslint/no-unsafe-member-access': 'error',
     '@typescript-eslint/no-unsafe-return': 'error',
     '@typescript-eslint/no-unsafe-assignment': 'error',
+    '@typescript-eslint/no-unnecessary-type-assertion': 'off',
     '@typescript-eslint/explicit-function-return-type': [
       'error',
       {

@@ -1,4 +1,4 @@
-import { EMPTY_BYTES_DATA_HEX } from '@iqprotocol/solidity-contracts-nft';
+import { EMPTY_BYTES_DATA_HEX } from '@iqprotocol/iq-space-protocol-light';
 import { AccountId } from 'caip';
 import { BigNumber, BigNumberish, BytesLike, ContractTransaction } from 'ethers';
 import { Adapter } from '../adapter';
@@ -149,6 +149,6 @@ export class RentingManagerAdapter extends Adapter {
    * @private
    */
   private normalizeRentalStatus(status: number): RentalStatus {
-    return rentalStatusMap.get(status) || 'none';
+    return rentalStatusMap.get(status) ?? 'none';
   }
 }

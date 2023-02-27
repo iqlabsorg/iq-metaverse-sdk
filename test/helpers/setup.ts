@@ -1,18 +1,18 @@
+import {
+  ERC721_WARPER_PRESET_IDS,
+  makeERC721Asset,
+  makeFixedRateListingTermsFromUnconverted,
+  makeFixedRateTaxTermsFromUnconverted,
+  makeFixedRateWithRewardListingTermsFromUnconverted,
+  makeFixedRateWithRewardTaxTermsFromUnconverted,
+  makeListingParams,
+  makeUniverseParams,
+  makeWarperPresetInitData,
+} from '@iqprotocol/iq-space-protocol';
 import { AccountId, AssetType } from 'caip';
 import { BigNumber } from 'ethers';
 import { ethers } from 'hardhat';
-import {
-  AddressTranslator,
-  ERC721_WARPER_PRESET_IDS,
-  makeERC721Asset,
-  makeListingParams,
-  makeListingTermsFixedRate,
-  makeListingTermsFixedRateWithReward,
-  makeTaxTermsFixedRateFromRawPercent,
-  makeTaxTermsFixedRateWithReward,
-  makeUniverseParams,
-  makeWarperPresetInitData,
-} from '../../src';
+import { AddressTranslator } from '../../src';
 import {
   ERC721Mock,
   IListingManager,
@@ -67,8 +67,8 @@ const createUniverseAndWarperWithWizards = async (withReward: boolean): Promise<
 
   const universeParams = makeUniverseParams('Test Universe', [baseToken.address]);
   const universeWarperTaxTerms = withReward
-    ? makeTaxTermsFixedRateWithReward(COMMON_TAX_RATE, COMMON_REWARD_RATE)
-    : makeTaxTermsFixedRateFromRawPercent(COMMON_TAX_RATE);
+    ? makeFixedRateWithRewardTaxTermsFromUnconverted(COMMON_TAX_RATE, COMMON_REWARD_RATE)
+    : makeFixedRateTaxTermsFromUnconverted(COMMON_TAX_RATE);
   const warperParams = {
     name: 'Warper',
     universeId: BigNumber.from(0), // will be replaced on-chain with actual
@@ -136,8 +136,8 @@ const createListingWithTerms = async (
 
   const listingAssets = [makeERC721Asset(collection.address, 1)];
   const listingTerms = withReward
-    ? makeListingTermsFixedRateWithReward(COMMON_BASE_RATE, COMMON_REWARD_RATE)
-    : makeListingTermsFixedRate(COMMON_BASE_RATE);
+    ? makeFixedRateWithRewardListingTermsFromUnconverted(COMMON_BASE_RATE, COMMON_REWARD_RATE)
+    : makeFixedRateListingTermsFromUnconverted(COMMON_BASE_RATE);
   const listingParams = makeListingParams(lister.address);
   const tx = await listingWizard
     .connect(lister)
@@ -208,8 +208,8 @@ export const setupForListing = async (
 
   /** Set global tax terms */
   const globalTaxTerms = withReward
-    ? makeTaxTermsFixedRateWithReward(COMMON_TAX_RATE, COMMON_REWARD_RATE)
-    : makeTaxTermsFixedRateFromRawPercent(COMMON_TAX_RATE);
+    ? makeFixedRateWithRewardTaxTermsFromUnconverted(COMMON_TAX_RATE, COMMON_REWARD_RATE)
+    : makeFixedRateTaxTermsFromUnconverted(COMMON_TAX_RATE);
   await taxTermsRegistry.registerProtocolGlobalTaxTerms(globalTaxTerms);
 
   /** Create universe and warper */

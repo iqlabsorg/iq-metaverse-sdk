@@ -1,12 +1,7 @@
+import { LISTING_STRATEGY_IDS, solidityIdBytes4, TAX_STRATEGY_IDS } from '@iqprotocol/iq-space-protocol';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { deployments, ethers } from 'hardhat';
-import {
-  IQSpace,
-  ListingStrategyRegistryAdapter,
-  LISTING_STRATEGY_IDS,
-  solidityIdBytes4,
-  TAX_STRATEGY_IDS,
-} from '../src';
+import { IQSpace, ListingStrategyRegistryAdapter } from '../src';
 import { IFixedRateListingController, IFixedRateTaxController, IListingStrategyRegistry } from '../src/contracts';
 import { toAccountId } from './helpers/utils';
 

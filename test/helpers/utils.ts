@@ -1,4 +1,4 @@
-import { calculateBaseRateInBaseTokenEthers } from '@iqprotocol/solidity-contracts-nft';
+import { calculateBaseRateInBaseTokenEthers } from '@iqprotocol/iq-space-protocol';
 import { AccountId, AssetId, ChainId } from 'caip';
 import { BigNumber } from 'ethers';
 import { ethers } from 'hardhat';

@@ -1,6 +1,6 @@
 import { HardhatUserConfig } from 'hardhat/types';
 import 'hardhat-deploy';
-import '@iqprotocol/solidity-contracts-nft/tasks';
+import '@iqprotocol/iq-space-protocol/tasks';
 import '@openzeppelin/hardhat-upgrades';
 import '@nomiclabs/hardhat-ethers';
 import '@typechain/hardhat';
@@ -8,6 +8,12 @@ import '@typechain/hardhat';
 const config: HardhatUserConfig = {
   solidity: {
     version: '0.8.13',
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200,
+      },
+    },
   },
   namedAccounts: {
     deployer: 0,
@@ -21,8 +27,8 @@ const config: HardhatUserConfig = {
   external: {
     contracts: [
       {
-        artifacts: 'node_modules/@iqprotocol/solidity-contracts-nft/artifacts',
-        deploy: 'node_modules/@iqprotocol/solidity-contracts-nft/deploy',
+        artifacts: 'node_modules/@iqprotocol/iq-space-protocol/artifacts',
+        deploy: 'node_modules/@iqprotocol/iq-space-protocol/deploy',
       },
     ],
   },

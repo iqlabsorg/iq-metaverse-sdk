@@ -1,12 +1,8 @@
+import { LISTING_CONFIGURATOR_PRESET_IDS } from '@iqprotocol/iq-space-protocol';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { Contract } from 'ethers';
 import { deployments, ethers } from 'hardhat';
-import {
-  IQSpace,
-  ListingConfiguratorPreset,
-  ListingConfiguratorPresetFactoryAdapter,
-  LISTING_CONFIGURATOR_PRESET_IDS,
-} from '../src';
+import { IQSpace, ListingConfiguratorPreset, ListingConfiguratorPresetFactoryAdapter } from '../src';
 import { IListingConfiguratorPresetFactory } from '../src/contracts';
 import { toAccountId } from './helpers/utils';
 
