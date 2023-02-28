@@ -31,10 +31,12 @@
     "logs:clean": "rimraf logs && rimraf tslog.log",
     "deploy:clean": "rimraf hardhat.addresses.json && rimraf active-deployment",
     "test:clean": "rimraf coverage",
-    "clean": "run-s build:clean typechain:clean cache:clean docs:clean logs:clean deploy:clean test:clean"
+    "clean": "run-s build:clean typechain:clean cache:clean docs:clean logs:clean deploy:clean test:clean",
+    "lint": "eslint **/*.ts",
+    "lint:fix": "eslint --fix **/*.ts"
   },
   "lint-staged": {
-    "packages/**/*.ts": "yarn lint",
+    "**/*.ts": "yarn lint:fix",
     "package.json": "sort-package-json"
   },
   "dependencies": {

@@ -60,7 +60,8 @@ describe('ListingWizardAdapterV1', () => {
     const delegatedListingCurrentNonce = await listingWizardAdapter.getDelegatedListingCurrentNonce(
       toAccountId(lister.address),
     );
-    return await prepareTypedDataActionEip712Signature(
+
+    return prepareTypedDataActionEip712Signature(
       buildDelegatedListingDataV1(delegatedListingCurrentNonce),
       lister,
       getChainId().reference,

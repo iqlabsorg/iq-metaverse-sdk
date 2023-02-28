@@ -100,6 +100,8 @@ module.exports = {
       files: ['*.test.ts'],
       rules: {
         'sonarjs/no-duplicate-string': 'off',
+        'sonarjs/no-identical-functions': 'off',
+        '@typescript-eslint/no-non-null-assertion': 'off',
       },
     },
   ],
