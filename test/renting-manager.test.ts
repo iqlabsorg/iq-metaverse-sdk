@@ -1,6 +1,8 @@
 import { BASE_TOKEN_DECIMALS, convertToWei } from '@iqprotocol/iq-space-protocol';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AccountId, AssetType } from 'caip';
+import { expect } from 'chai';
+import { BigNumber } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import { AddressTranslator, Asset, createAsset, IQSpace, RentingEstimationParams, RentingManagerAdapter } from '../src';
 import { ERC20Mock, IMetahub, IRentingManager } from '../src/contracts';
@@ -84,8 +86,7 @@ describe('RentingManagerAdapter', () => {
   describe('estimateRent', () => {
     it('should estimate rent', async () => {
       const estimate = await rentingManagerAdapter.estimateRent(rentingEstimationParams);
-      expect(estimate).toBeDefined();
-      expect(estimate.total.toBigInt()).toBeGreaterThan(0n);
+      expect(estimate.total).to.be.greaterThan(BigNumber.from(0));
     });
   });
 
@@ -96,30 +97,28 @@ describe('RentingManagerAdapter', () => {
 
     it('should rent asset', async () => {
       const count = await rentingManager.userRentalCount(renter.address);
-      expect(count.toBigInt()).toBe(1n);
+      expect(count.toBigInt()).to.be.eq(1n);
     });
 
     describe('when asset is rented', () => {
       describe('userRentalCount', () => {
         it('should return users rental count', async () => {
           const count = await rentingManagerAdapter.userRentalCount(renterAccountId);
-          expect(count.toBigInt()).toBe(1n);
+          expect(count.toBigInt()).to.be.eq(1n);
         });
       });
 
       describe('rentalAgreement', () => {
         it('should return rental agreement', async () => {
           const agreement = await rentingManagerAdapter.rentalAgreement(COMMON_ID);
-          expect(agreement).toBeDefined();
-          expect(agreement.renter.toString()).toBe(renterAccountId.toString());
+          expect(agreement.renter.toString()).to.be.eq(renterAccountId.toString());
         });
       });
 
       describe('userRentalAgreements', () => {
         it('should return all rental agreements for user', async () => {
           const agrements = await rentingManagerAdapter.userRentalAgreements(renterAccountId, 0, 10);
-          expect(agrements).toBeDefined();
-          expect(agrements.length).toBe(1);
+          expect(agrements.length).to.be.eq(1);
         });
       });
 
@@ -127,7 +126,7 @@ describe('RentingManagerAdapter', () => {
         it('should return token amount from specific collection rented by renter', async () => {
           const agreement = await rentingManagerAdapter.rentalAgreement(COMMON_ID);
           const assetCount = await rentingManagerAdapter.collectionRentedValue(agreement.collectionId, renterAccountId);
-          expect(assetCount.toBigInt()).toBe(1n);
+          expect(assetCount.toBigInt()).to.be.eq(1n);
         });
       });
     });
@@ -137,7 +136,7 @@ describe('RentingManagerAdapter', () => {
     describe('when asset has never been rented', () => {
       it('should return rental status `none`', async () => {
         const status = await rentingManagerAdapter.assetRentalStatus(warpedAsset);
-        expect(status).toBe('none');
+        expect(status).to.be.eq('none');
       });
     });
 
@@ -149,7 +148,7 @@ describe('RentingManagerAdapter', () => {
 
       it('should return rental status `available`', async () => {
         const status = await rentingManagerAdapter.assetRentalStatus(warpedAsset);
-        expect(status).toBe('available');
+        expect(status).to.be.eq('available');
       });
     });
 
@@ -160,7 +159,7 @@ describe('RentingManagerAdapter', () => {
 
       it('should return rental status `rented`', async () => {
         const status = await rentingManagerAdapter.assetRentalStatus(warpedAsset);
-        expect(status).toBe('rented');
+        expect(status).to.be.eq('rented');
       });
     });
   });

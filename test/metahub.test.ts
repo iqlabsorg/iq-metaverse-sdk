@@ -1,17 +1,18 @@
 import { BASE_TOKEN_DECIMALS, convertToWei } from '@iqprotocol/iq-space-protocol';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AccountId, AssetType } from 'caip';
+import { expect } from 'chai';
 import { BigNumber } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import {
   AddressTranslator,
+  Asset,
   BaseToken,
+  createAsset,
   IQSpace,
   MetahubAdapter,
   RentingEstimationParams,
   RentingManagerAdapter,
-  createAsset,
-  Asset,
 } from '../src';
 import { ERC20Mock, ERC721Mock, IMetahub, IRentingManager, IWarperPresetFactory } from '../src/contracts';
 import { mintNFTs } from './helpers/asset';
@@ -118,7 +119,7 @@ describe('MetahubAdapter', () => {
 
   describe('getChainId', () => {
     it('returns correct chain ID', async () => {
-      await expect(metahubAdapter.getChainId()).resolves.toEqual(getChainId());
+      expect(await metahubAdapter.getChainId()).to.be.eql(getChainId());
     });
   });
 
@@ -137,14 +138,14 @@ describe('MetahubAdapter', () => {
 
     it('returns base token', async () => {
       const baseTokenInfo = await metahubAdapter.baseToken();
-      expect(baseTokenInfo).toMatchObject(baseTokenInfoRaw);
+      expect(baseTokenInfo).to.be.eql(baseTokenInfoRaw);
     });
   });
 
   describe('warperPresetFactory', () => {
     it('should return address of the warper preset factory contract', async () => {
       const factory = await metahubAdapter.warperPresetFactory();
-      expect(factory.address).toBe(warperPresetFactory.address);
+      expect(factory.address).to.be.eq(warperPresetFactory.address);
     });
   });
 
@@ -152,7 +153,7 @@ describe('MetahubAdapter', () => {
     describe('when there are no supported assets', () => {
       it('should return 0', async () => {
         const count = await metahubAdapter.supportedAssetCount();
-        expect(count.toBigInt()).toBe(0n);
+        expect(count.toBigInt()).to.be.eq(0n);
       });
     });
 
@@ -163,7 +164,7 @@ describe('MetahubAdapter', () => {
 
       it('should return the number of supported assets', async () => {
         const count = await metahubAdapter.supportedAssetCount();
-        expect(count.toBigInt()).toBe(1n);
+        expect(count.toBigInt()).to.be.eq(1n);
       });
     });
   });
@@ -172,7 +173,7 @@ describe('MetahubAdapter', () => {
     describe('when there are no supported assets', () => {
       it('should return an empty array', async () => {
         const assets = await metahubAdapter.supportedAssets(0, 10);
-        expect(assets.length).toBe(0);
+        expect(assets.length).to.be.eq(0);
       });
     });
 
@@ -183,7 +184,7 @@ describe('MetahubAdapter', () => {
 
       it('should return the list of supported assets', async () => {
         const assets = await metahubAdapter.supportedAssets(0, 10);
-        expect(assets[0]).toMatchObject(collectionReference);
+        expect(assets[0]).to.be.eql(collectionReference);
       });
     });
   });
@@ -197,7 +198,7 @@ describe('MetahubAdapter', () => {
       describe('when user has not accumulated anything', () => {
         it('should return 0', async () => {
           const balance = await metahubAdapter.balance(listerAccountId, baseTokenReference);
-          expect(balance.toBigInt()).toBe(0n);
+          expect(balance.toBigInt()).to.be.eq(0n);
         });
       });
 
@@ -208,7 +209,7 @@ describe('MetahubAdapter', () => {
 
         it('should return accumulated value', async () => {
           const balance = await metahubAdapter.balance(listerAccountId, baseTokenReference);
-          expect(balance.toBigInt()).toBeGreaterThan(0n);
+          expect(balance).to.be.greaterThan(BigNumber.from(0));
         });
       });
     });
@@ -217,7 +218,7 @@ describe('MetahubAdapter', () => {
       describe('when user has not accumulated anything', () => {
         it('should return an empty array', async () => {
           const balances = await metahubAdapter.balances(listerAccountId);
-          expect(balances.length).toBe(0);
+          expect(balances.length).to.be.eq(0);
         });
       });
 
@@ -229,8 +230,8 @@ describe('MetahubAdapter', () => {
         it('should return accumulated value', async () => {
           const balances = await metahubAdapter.balances(listerAccountId);
           const balance = balances[0];
-          expect(balance.amount.toBigInt()).toBeGreaterThan(0n);
-          expect(balance.token).toMatchObject(baseTokenReference);
+          expect(balance.amount).to.be.greaterThan(BigNumber.from(0));
+          expect(balance.token).to.be.eql(baseTokenReference);
         });
       });
     });
@@ -239,7 +240,7 @@ describe('MetahubAdapter', () => {
       describe('when universe has not accumulated anything', () => {
         it('should return 0', async () => {
           const balance = await metahubAdapter.universeBalance(COMMON_ID, baseTokenReference);
-          expect(balance.toBigInt()).toBe(0n);
+          expect(balance.toBigInt()).to.be.eq(0n);
         });
       });
 
@@ -250,7 +251,7 @@ describe('MetahubAdapter', () => {
 
         it('should return accumulated value', async () => {
           const balance = await metahubAdapter.universeBalance(COMMON_ID, baseTokenReference);
-          expect(balance.toBigInt()).toBeGreaterThan(0n);
+          expect(balance).to.be.greaterThan(BigNumber.from(0));
         });
       });
     });
@@ -259,7 +260,7 @@ describe('MetahubAdapter', () => {
       describe('when universe has not accumulated anything', () => {
         it('should return an empty array', async () => {
           const balances = await metahubAdapter.universeBalances(COMMON_ID);
-          expect(balances.length).toBe(0);
+          expect(balances.length).to.be.eq(0);
         });
       });
 
@@ -271,8 +272,7 @@ describe('MetahubAdapter', () => {
         it('should return accumulated value', async () => {
           const balances = await metahubAdapter.universeBalances(COMMON_ID);
           const balance = balances[0];
-          expect(balance.amount.toBigInt()).toBeGreaterThan(0n);
-          expect(balance.token).toMatchObject(baseTokenReference);
+          expect(balance.token).to.be.eql(baseTokenReference);
         });
       });
     });
@@ -288,7 +288,7 @@ describe('MetahubAdapter', () => {
       it('should withdraw user funds', async () => {
         await metahubAdapterLister.withdrawFunds(baseTokenReference, amount, strangerAccountId);
         const strangersBalance = await baseToken.connect(stranger).balanceOf(stranger.address);
-        expect(strangersBalance.toBigInt()).toBe(amount.toBigInt());
+        expect(strangersBalance.toBigInt()).to.be.eq(amount.toBigInt());
       });
     });
 
@@ -303,7 +303,7 @@ describe('MetahubAdapter', () => {
       it('should withdraw user funds', async () => {
         await metahubAdapter.withdrawUniverseFunds(COMMON_ID, baseTokenReference, amount, strangerAccountId);
         const strangersBalance = await baseToken.connect(stranger).balanceOf(stranger.address);
-        expect(strangersBalance.toBigInt()).toBe(amount.toBigInt());
+        expect(strangersBalance.toBigInt()).to.be.eq(amount.toBigInt());
       });
     });
   });
@@ -314,7 +314,7 @@ describe('MetahubAdapter', () => {
     it('should approve payment token to be spent by metahub', async () => {
       await renterMetahubAdapter.approveForRentalPayment(baseTokenReference, amount);
       const approvedAmount = await baseToken.allowance(renter.address, metahub.address);
-      expect(approvedAmount.toString()).toBe(amount.toString());
+      expect(approvedAmount.toString()).to.be.eq(amount.toString());
     });
   });
 
@@ -322,7 +322,7 @@ describe('MetahubAdapter', () => {
     describe('when no allowance set', () => {
       it('should return 0', async () => {
         const allowance = await metahubAdapter.paymentTokenAllowance(baseTokenReference, toAccountId(metahub.address));
-        expect(allowance.toBigInt()).toBe(0n);
+        expect(allowance.toBigInt()).to.be.eq(0n);
       });
     });
 
@@ -335,7 +335,7 @@ describe('MetahubAdapter', () => {
 
       it('should return the allowance amount', async () => {
         const allowance = await metahubAdapter.paymentTokenAllowance(baseTokenReference, toAccountId(renter.address));
-        expect(allowance.toString()).toBe(amount.toString());
+        expect(allowance.toString()).to.be.eq(amount.toString());
       });
     });
   });
@@ -347,7 +347,7 @@ describe('MetahubAdapter', () => {
 
     it('should approve metahub to take asset from a lister', async () => {
       await metahubAdapterLister.approveForListing(asset);
-      expect(await collection.getApproved(1)).toBe(metahub.address);
+      expect(await collection.getApproved(1)).to.be.eq(metahub.address);
     });
   });
 
@@ -359,7 +359,7 @@ describe('MetahubAdapter', () => {
     describe('if not approved', () => {
       it('should return false', async () => {
         const approved = await metahubAdapter.isApprovedForListing(asset);
-        expect(approved).toBe(false);
+        expect(approved).to.be.eq(false);
       });
     });
 
@@ -370,7 +370,7 @@ describe('MetahubAdapter', () => {
 
       it('should return true', async () => {
         const approved = await metahubAdapter.isApprovedForListing(asset);
-        expect(approved).toBe(true);
+        expect(approved).to.be.eq(true);
       });
     });
   });

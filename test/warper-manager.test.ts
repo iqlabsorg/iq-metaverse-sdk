@@ -1,5 +1,6 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AssetType } from 'caip';
+import { expect } from 'chai';
 import hre, { deployments, ethers } from 'hardhat';
 import { AddressTranslator, IQSpace, WarperManagerAdapter } from '../src';
 import { ERC721Mock, ERC721WarperController, IMetahub, IWarperManager } from '../src/contracts';
@@ -54,14 +55,14 @@ describe('WarperManagerAdapter', () => {
 
     it('should pause the warper', async () => {
       const info = await warperManager.warperInfo(warperReference.assetName.reference);
-      expect(info.paused).toBe(true);
+      expect(info.paused).to.be.eq(true);
     });
 
     describe('unpauseWarper', () => {
       it('should unpause the warper', async () => {
         await warperManagerAdapter.unpauseWarper(warperReference);
         const info = await warperManager.warperInfo(warperReference.assetName.reference);
-        expect(info.paused).toBe(false);
+        expect(info.paused).to.be.eq(false);
       });
     });
   });
@@ -69,16 +70,16 @@ describe('WarperManagerAdapter', () => {
   describe('universeWarperCount', () => {
     it('should return number of warpers registered in the universe', async () => {
       const count = await warperManagerAdapter.universeWarperCount(COMMON_ID);
-      expect(count.toBigInt()).toBe(1n);
+      expect(count.toBigInt()).to.be.eq(1n);
     });
   });
 
   describe('universeWarpers', () => {
     it('should return a list of warpers registered in the universe', async () => {
       const warpers = await warperManagerAdapter.universeWarpers(COMMON_ID, 0, 1);
-      expect(warpers.length).toBeGreaterThan(0);
-      expect(warpers[0].name).toBe(warperName);
-      expect(warpers[0].self).toMatchObject(warperReference);
+      expect(warpers.length).to.be.greaterThan(0);
+      expect(warpers[0].name).to.be.eq(warperName);
+      expect(warpers[0].self).to.be.eql(warperReference);
     });
   });
 
@@ -89,7 +90,7 @@ describe('WarperManagerAdapter', () => {
           COMMON_ID,
           AddressTranslator.createAssetType(toAccountId(random.address), 'erc721'),
         );
-        expect(count.toBigInt()).toBe(0n);
+        expect(count.toBigInt()).to.be.eq(0n);
       });
     });
 
@@ -99,7 +100,7 @@ describe('WarperManagerAdapter', () => {
           COMMON_ID,
           AddressTranslator.createAssetType(toAccountId(collection.address), 'erc721'),
         );
-        expect(count.toBigInt()).toBe(1n);
+        expect(count.toBigInt()).to.be.eq(1n);
       });
     });
   });
@@ -112,43 +113,43 @@ describe('WarperManagerAdapter', () => {
         0,
         1,
       );
-      expect(warpers.length).toBeGreaterThan(0);
-      expect(warpers[0].name).toBe(warperName);
-      expect(warpers[0].self).toMatchObject(warperReference);
+      expect(warpers.length).to.be.greaterThan(0);
+      expect(warpers[0].name).to.be.eq(warperName);
+      expect(warpers[0].self).to.be.eql(warperReference);
     });
   });
 
   describe('isWarperAdmin', () => {
     it('should return false if account is not warper admin', async () => {
       const isAdmin = await warperManagerAdapter.isWarperAdmin(warperReference, toAccountId(random.address));
-      expect(isAdmin).toBe(false);
+      expect(isAdmin).to.be.eq(false);
     });
 
     it('should return true if account is warper admin', async () => {
       const isAdmin = await warperManagerAdapter.isWarperAdmin(warperReference, toAccountId(deployer.address));
-      expect(isAdmin).toBe(true);
+      expect(isAdmin).to.be.eq(true);
     });
   });
 
   describe('warper', () => {
     it('should return info about warper', async () => {
       const warper = await warperManagerAdapter.warper(warperReference);
-      expect(warper.name).toBe(warperName);
-      expect(warper.self).toMatchObject(warperReference);
+      expect(warper.name).to.be.eq(warperName);
+      expect(warper.self).to.be.eql(warperReference);
     });
   });
 
   describe('metahub', () => {
     it('should return metahub account id', async () => {
       const metahubAccountId = await warperManagerAdapter.metahub();
-      expect(metahubAccountId.address).toBe(metahub.address);
+      expect(metahubAccountId.address).to.be.eq(metahub.address);
     });
   });
 
   describe('warperController', () => {
     it('should return warper controller account id', async () => {
       const warprControllerAccountId = await warperManagerAdapter.warperController(warperReference);
-      expect(warprControllerAccountId.address).toBe(warperController.address);
+      expect(warprControllerAccountId.address).to.be.eq(warperController.address);
     });
   });
 
@@ -166,7 +167,7 @@ describe('WarperManagerAdapter', () => {
 
     it('should set new controller for given warpers', async () => {
       const warprControllerAccountId = await warperManagerAdapter.warperController(warperReference);
-      expect(warprControllerAccountId.address).toBe(newController.address);
+      expect(warprControllerAccountId.address).to.be.eq(newController.address);
     });
   });
 });

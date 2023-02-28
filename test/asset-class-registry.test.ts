@@ -1,4 +1,5 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { expect } from 'chai';
 import { deployments, ethers } from 'hardhat';
 import { AssetClassRegistryAdapter, IQSpace } from '../src';
 import { ERC721AssetVault, ERC721WarperController, IAssetClassRegistry } from '../src/contracts';
@@ -35,7 +36,7 @@ describe('AssetClassRegistryAdapter', () => {
   describe('assetClassConfig', () => {
     it('should return asset class config', async () => {
       const config = await assetClassRegistryAdapter.assetClassConfig('erc721');
-      expect(config).toMatchObject({
+      expect(config).to.eql({
         vault: toAccountId(vault.address),
         controller: toAccountId(controller.address),
       });
@@ -45,13 +46,13 @@ describe('AssetClassRegistryAdapter', () => {
   describe('isRegisteredAssetClass', () => {
     describe('when not registered', () => {
       it('should return false', async () => {
-        expect(await assetClassRegistryAdapter.isRegisteredAssetClass('erc20')).toBe(false);
+        expect(await assetClassRegistryAdapter.isRegisteredAssetClass('erc20')).to.be.eq(false);
       });
     });
 
     describe('when is registered', () => {
       it('should return true', async () => {
-        expect(await assetClassRegistryAdapter.isRegisteredAssetClass('erc721')).toBe(true);
+        expect(await assetClassRegistryAdapter.isRegisteredAssetClass('erc721')).to.be.eq(true);
       });
     });
   });

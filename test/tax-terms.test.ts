@@ -4,6 +4,7 @@ import {
   TAX_STRATEGY_IDS,
 } from '@iqprotocol/iq-space-protocol';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { expect } from 'chai';
 import { deployments, ethers } from 'hardhat';
 import { AssetType, IQSpace, TaxTermsRegistryAdapter } from '../src';
 import { ITaxTermsRegistry } from '../src/contracts';
@@ -56,7 +57,7 @@ describe('TaxTermsRegistryAdapter', () => {
         COMMON_ID,
         TAX_STRATEGY_IDS.FIXED_RATE_TAX,
       );
-      expect(registered).toBe(true);
+      expect(registered).to.be.eq(true);
     });
   });
 
@@ -72,7 +73,7 @@ describe('TaxTermsRegistryAdapter', () => {
         COMMON_ID,
         TAX_STRATEGY_IDS.FIXED_RATE_TAX,
       );
-      expect(registered).toBe(false);
+      expect(registered).to.be.eq(false);
     });
   });
 
@@ -89,7 +90,7 @@ describe('TaxTermsRegistryAdapter', () => {
         warperReference.assetName.reference,
         TAX_STRATEGY_IDS.FIXED_RATE_TAX,
       );
-      expect(registered).toBe(true);
+      expect(registered).to.be.eq(true);
     });
   });
 
@@ -113,7 +114,7 @@ describe('TaxTermsRegistryAdapter', () => {
         warperReference.assetName.reference,
         TAX_STRATEGY_IDS.FIXED_RATE_TAX,
       );
-      expect(registered).toBe(false);
+      expect(registered).to.be.eq(false);
     });
   });
 
@@ -121,7 +122,7 @@ describe('TaxTermsRegistryAdapter', () => {
     it('should register protocol global tax terms', async () => {
       await taxTermsRegistryAdapter.registerProtocolGlobalTaxTerms(taxTermsFixedRate);
       const registered = await taxTermsRegistry.areRegisteredProtocolGlobalTaxTerms(TAX_STRATEGY_IDS.FIXED_RATE_TAX);
-      expect(registered).toBe(true);
+      expect(registered).to.be.eq(true);
     });
   });
 
@@ -133,7 +134,7 @@ describe('TaxTermsRegistryAdapter', () => {
     it('should remove protocol global tax terms', async () => {
       await taxTermsRegistryAdapter.removeProtocolGlobalTaxTerms(TAX_STRATEGY_IDS.FIXED_RATE_TAX);
       const registered = await taxTermsRegistry.areRegisteredProtocolGlobalTaxTerms(TAX_STRATEGY_IDS.FIXED_RATE_TAX);
-      expect(registered).toBe(false);
+      expect(registered).to.be.eq(false);
     });
   });
 
@@ -148,7 +149,7 @@ describe('TaxTermsRegistryAdapter', () => {
         COMMON_ID,
         TAX_STRATEGY_IDS.FIXED_RATE_TAX,
       );
-      expect(registered).toBe(true);
+      expect(registered).to.be.eq(true);
     });
   });
 
@@ -164,7 +165,7 @@ describe('TaxTermsRegistryAdapter', () => {
         COMMON_ID,
         TAX_STRATEGY_IDS.FIXED_RATE_TAX,
       );
-      expect(registered).toBe(false);
+      expect(registered).to.be.eq(false);
     });
   });
 
@@ -179,7 +180,7 @@ describe('TaxTermsRegistryAdapter', () => {
         warperReference.assetName.reference,
         TAX_STRATEGY_IDS.FIXED_RATE_TAX,
       );
-      expect(registered).toBe(true);
+      expect(registered).to.be.eq(true);
     });
   });
 
@@ -197,7 +198,7 @@ describe('TaxTermsRegistryAdapter', () => {
         warperReference.assetName.reference,
         TAX_STRATEGY_IDS.FIXED_RATE_TAX,
       );
-      expect(registered).toBe(false);
+      expect(registered).to.be.eq(false);
     });
   });
 
@@ -214,7 +215,7 @@ describe('TaxTermsRegistryAdapter', () => {
           warperReference,
           TAX_STRATEGY_IDS.FIXED_RATE_TAX,
         );
-        expect(registered).toBe(false);
+        expect(registered).to.be.eq(false);
       });
     });
 
@@ -231,7 +232,7 @@ describe('TaxTermsRegistryAdapter', () => {
           warperReference,
           TAX_STRATEGY_IDS.FIXED_RATE_TAX,
         );
-        expect(registered).toBe(true);
+        expect(registered).to.be.eq(true);
       });
     });
 
@@ -248,7 +249,7 @@ describe('TaxTermsRegistryAdapter', () => {
           warperReference,
           TAX_STRATEGY_IDS.FIXED_RATE_TAX_WITH_REWARD,
         );
-        expect(registered).toBe(true);
+        expect(registered).to.be.eq(true);
       });
     });
   });
@@ -264,7 +265,7 @@ describe('TaxTermsRegistryAdapter', () => {
           COMMON_ID,
           TAX_STRATEGY_IDS.FIXED_RATE_TAX,
         );
-        expect(registered).toBe(false);
+        expect(registered).to.be.eq(false);
       });
     });
 
@@ -278,7 +279,7 @@ describe('TaxTermsRegistryAdapter', () => {
           COMMON_ID,
           TAX_STRATEGY_IDS.FIXED_RATE_TAX,
         );
-        expect(registered).toBe(true);
+        expect(registered).to.be.eq(true);
       });
     });
 
@@ -292,7 +293,7 @@ describe('TaxTermsRegistryAdapter', () => {
           COMMON_ID,
           TAX_STRATEGY_IDS.FIXED_RATE_TAX_WITH_REWARD,
         );
-        expect(registered).toBe(true);
+        expect(registered).to.be.eq(true);
       });
     });
   });
@@ -307,7 +308,7 @@ describe('TaxTermsRegistryAdapter', () => {
         const registered = await taxTermsRegistryAdapter.areRegisteredProtocolGlobalTaxTerms(
           TAX_STRATEGY_IDS.FIXED_RATE_TAX,
         );
-        expect(registered).toBe(false);
+        expect(registered).to.be.eq(false);
       });
     });
 
@@ -320,7 +321,7 @@ describe('TaxTermsRegistryAdapter', () => {
         const registered = await taxTermsRegistryAdapter.areRegisteredProtocolGlobalTaxTerms(
           TAX_STRATEGY_IDS.FIXED_RATE_TAX,
         );
-        expect(registered).toBe(true);
+        expect(registered).to.be.eq(true);
       });
     });
 
@@ -333,7 +334,7 @@ describe('TaxTermsRegistryAdapter', () => {
         const registered = await taxTermsRegistryAdapter.areRegisteredProtocolGlobalTaxTerms(
           TAX_STRATEGY_IDS.FIXED_RATE_TAX_WITH_REWARD,
         );
-        expect(registered).toBe(true);
+        expect(registered).to.be.eq(true);
       });
     });
   });
@@ -349,7 +350,7 @@ describe('TaxTermsRegistryAdapter', () => {
           COMMON_ID,
           TAX_STRATEGY_IDS.FIXED_RATE_TAX,
         );
-        expect(registered).toBe(false);
+        expect(registered).to.be.eq(false);
       });
     });
 
@@ -363,7 +364,7 @@ describe('TaxTermsRegistryAdapter', () => {
           COMMON_ID,
           TAX_STRATEGY_IDS.FIXED_RATE_TAX,
         );
-        expect(registered).toBe(true);
+        expect(registered).to.be.eq(true);
       });
     });
 
@@ -379,7 +380,7 @@ describe('TaxTermsRegistryAdapter', () => {
           COMMON_ID,
           TAX_STRATEGY_IDS.FIXED_RATE_TAX_WITH_REWARD,
         );
-        expect(registered).toBe(true);
+        expect(registered).to.be.eq(true);
       });
     });
   });
@@ -396,7 +397,7 @@ describe('TaxTermsRegistryAdapter', () => {
           warperReference,
           TAX_STRATEGY_IDS.FIXED_RATE_TAX,
         );
-        expect(registered).toBe(false);
+        expect(registered).to.be.eq(false);
       });
     });
 
@@ -412,7 +413,7 @@ describe('TaxTermsRegistryAdapter', () => {
           warperReference,
           TAX_STRATEGY_IDS.FIXED_RATE_TAX,
         );
-        expect(registered).toBe(true);
+        expect(registered).to.be.eq(true);
       });
     });
 
@@ -428,7 +429,7 @@ describe('TaxTermsRegistryAdapter', () => {
           warperReference,
           TAX_STRATEGY_IDS.FIXED_RATE_TAX_WITH_REWARD,
         );
-        expect(registered).toBe(true);
+        expect(registered).to.be.eq(true);
       });
     });
   });
@@ -446,8 +447,8 @@ describe('TaxTermsRegistryAdapter', () => {
           warper: warperReference,
         });
 
-        expect(terms).toBeDefined();
-        expect(terms).toMatchObject(taxTermsFixedRate);
+        expect(terms.strategyId).to.be.eq(taxTermsFixedRate.strategyId);
+        expect(terms.strategyData).to.be.eq(taxTermsFixedRate.strategyData);
       });
     });
 
@@ -463,8 +464,8 @@ describe('TaxTermsRegistryAdapter', () => {
           warper: warperReference,
         });
 
-        expect(terms).toBeDefined();
-        expect(terms).toMatchObject(taxTermsFixedRateWithReward);
+        expect(terms.strategyId).to.be.eq(taxTermsFixedRateWithReward.strategyId);
+        expect(terms.strategyData).to.be.eq(taxTermsFixedRateWithReward.strategyData);
       });
     });
   });
@@ -482,8 +483,8 @@ describe('TaxTermsRegistryAdapter', () => {
           warper: warperReference,
         });
 
-        expect(terms).toBeDefined();
-        expect(terms).toMatchObject(taxTermsFixedRate);
+        expect(terms.strategyId).to.be.eq(taxTermsFixedRate.strategyId);
+        expect(terms.strategyData).to.be.eq(taxTermsFixedRate.strategyData);
       });
     });
 
@@ -499,8 +500,8 @@ describe('TaxTermsRegistryAdapter', () => {
           warper: warperReference,
         });
 
-        expect(terms).toBeDefined();
-        expect(terms).toMatchObject(taxTermsFixedRateWithReward);
+        expect(terms.strategyId).to.be.eq(taxTermsFixedRateWithReward.strategyId);
+        expect(terms.strategyData).to.be.eq(taxTermsFixedRateWithReward.strategyData);
       });
     });
   });

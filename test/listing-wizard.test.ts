@@ -6,6 +6,7 @@ import {
   prepareTypedDataActionEip712Signature,
 } from '@iqprotocol/iq-space-protocol';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { expect } from 'chai';
 import { BytesLike } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import { AssetListingParams, AssetType, createAsset, IQSpace, ListingParams, ListingWizardAdapterV1 } from '../src';
@@ -105,11 +106,11 @@ describe('ListingWizardAdapterV1', () => {
         const listing = await listingManager.listingInfo(COMMON_ID);
         const strategyId = await getTermsStrategyId();
 
-        expect(strategyId).toBe(LISTING_STRATEGY_IDS.FIXED_RATE);
-        expect(listing.lister).toBe(listingParams.lister.address);
-        expect(listing.configurator).toBe(listingParams.configurator.address);
-        expect(listing.maxLockPeriod).toBe(assetListingParams.maxLockPeriod);
-        expect(listing.immediatePayout).toBe(assetListingParams.immediatePayout);
+        expect(strategyId).to.be.eq(LISTING_STRATEGY_IDS.FIXED_RATE);
+        expect(listing.lister).to.be.eq(listingParams.lister.address);
+        expect(listing.configurator).to.be.eq(listingParams.configurator.address);
+        expect(listing.maxLockPeriod).to.be.eq(assetListingParams.maxLockPeriod);
+        expect(listing.immediatePayout).to.be.eq(assetListingParams.immediatePayout);
       });
     });
 
@@ -123,11 +124,11 @@ describe('ListingWizardAdapterV1', () => {
         const listing = await listingManager.listingInfo(COMMON_ID);
         const strategyId = await getTermsStrategyId();
 
-        expect(strategyId).toBe(LISTING_STRATEGY_IDS.FIXED_RATE_WITH_REWARD);
-        expect(listing.lister).toBe(listingParams.lister.address);
-        expect(listing.configurator).toBe(listingParams.configurator.address);
-        expect(listing.maxLockPeriod).toBe(assetListingParams.maxLockPeriod);
-        expect(listing.immediatePayout).toBe(assetListingParams.immediatePayout);
+        expect(strategyId).to.be.eq(LISTING_STRATEGY_IDS.FIXED_RATE_WITH_REWARD);
+        expect(listing.lister).to.be.eq(listingParams.lister.address);
+        expect(listing.configurator).to.be.eq(listingParams.configurator.address);
+        expect(listing.maxLockPeriod).to.be.eq(assetListingParams.maxLockPeriod);
+        expect(listing.immediatePayout).to.be.eq(assetListingParams.immediatePayout);
       });
     });
   });
@@ -148,11 +149,11 @@ describe('ListingWizardAdapterV1', () => {
         const listing = await listingManager.listingInfo(COMMON_ID);
         const strategyId = await getTermsStrategyId();
 
-        expect(strategyId).toBe(LISTING_STRATEGY_IDS.FIXED_RATE);
-        expect(listing.lister).toBe(listingParams.lister.address);
-        expect(listing.configurator).toBe(listingParams.configurator.address);
-        expect(listing.maxLockPeriod).toBe(assetListingParams.maxLockPeriod);
-        expect(listing.immediatePayout).toBe(assetListingParams.immediatePayout);
+        expect(strategyId).to.be.eq(LISTING_STRATEGY_IDS.FIXED_RATE);
+        expect(listing.lister).to.be.eq(listingParams.lister.address);
+        expect(listing.configurator).to.be.eq(listingParams.configurator.address);
+        expect(listing.maxLockPeriod).to.be.eq(assetListingParams.maxLockPeriod);
+        expect(listing.immediatePayout).to.be.eq(assetListingParams.immediatePayout);
       });
     });
 
@@ -171,11 +172,11 @@ describe('ListingWizardAdapterV1', () => {
         const listing = await listingManager.listingInfo(COMMON_ID);
         const strategyId = await getTermsStrategyId();
 
-        expect(strategyId).toBe(LISTING_STRATEGY_IDS.FIXED_RATE_WITH_REWARD);
-        expect(listing.lister).toBe(listingParams.lister.address);
-        expect(listing.configurator).toBe(listingParams.configurator.address);
-        expect(listing.maxLockPeriod).toBe(assetListingParams.maxLockPeriod);
-        expect(listing.immediatePayout).toBe(assetListingParams.immediatePayout);
+        expect(strategyId).to.be.eq(LISTING_STRATEGY_IDS.FIXED_RATE_WITH_REWARD);
+        expect(listing.lister).to.be.eq(listingParams.lister.address);
+        expect(listing.configurator).to.be.eq(listingParams.configurator.address);
+        expect(listing.maxLockPeriod).to.be.eq(assetListingParams.maxLockPeriod);
+        expect(listing.immediatePayout).to.be.eq(assetListingParams.immediatePayout);
       });
     });
   });

@@ -1,5 +1,6 @@
 import { LISTING_CONFIGURATOR_PRESET_IDS } from '@iqprotocol/iq-space-protocol';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { expect } from 'chai';
 import { Contract } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import { IQSpace, ListingConfiguratorPreset, ListingConfiguratorPresetFactoryAdapter } from '../src';
@@ -48,14 +49,14 @@ describe('ListingConfiguratorPresetFactoryAdapter', () => {
 
     it('should add preset', async () => {
       await presetFactoryAdapter.addPreset(presetId, toAccountId(generalGuildPreset.address));
-      expect((await presetFactory.presets()).length).toBe(1);
+      expect((await presetFactory.presets()).length).to.be.eq(1);
     });
   });
 
   describe('removePreset', () => {
     it('should remove preset', async () => {
       await presetFactoryAdapter.removePreset(presetId);
-      expect((await presetFactory.presets()).length).toBe(0);
+      expect((await presetFactory.presets()).length).to.be.eq(0);
     });
   });
 
@@ -66,14 +67,14 @@ describe('ListingConfiguratorPresetFactoryAdapter', () => {
 
     it('should enable preset', async () => {
       await presetFactoryAdapter.enablePreset(presetId);
-      expect(await presetFactory.presetEnabled(presetId)).toBe(true);
+      expect(await presetFactory.presetEnabled(presetId)).to.be.eq(true);
     });
   });
 
   describe('disablePreset', () => {
     it('should disable preset', async () => {
       await presetFactoryAdapter.disablePreset(presetId);
-      expect(await presetFactory.presetEnabled(presetId)).toBe(false);
+      expect(await presetFactory.presetEnabled(presetId)).to.be.eq(false);
     });
   });
 
@@ -84,28 +85,28 @@ describe('ListingConfiguratorPresetFactoryAdapter', () => {
       });
 
       it('should return false', async () => {
-        expect(await presetFactoryAdapter.presetEnabled(presetId)).toBe(false);
+        expect(await presetFactoryAdapter.presetEnabled(presetId)).to.be.eq(false);
       });
     });
 
     describe('when enabled', () => {
       it('should return true', async () => {
-        expect(await presetFactoryAdapter.presetEnabled(presetId)).toBe(true);
+        expect(await presetFactoryAdapter.presetEnabled(presetId)).to.be.eq(true);
       });
     });
   });
 
   describe('preset', () => {
     it('should return preset by id', async () => {
-      expect(await presetFactoryAdapter.preset(presetId)).toMatchObject(deployedPreset);
+      expect(await presetFactoryAdapter.preset(presetId)).to.be.eql(deployedPreset);
     });
   });
 
   describe('presets', () => {
     it('should return list of registered presets', async () => {
       const presets = await presetFactoryAdapter.presets();
-      expect(presets.length).toBe(1);
-      expect(presets[0]).toMatchObject(deployedPreset);
+      expect(presets.length).to.be.eq(1);
+      expect(presets[0]).to.be.eql(deployedPreset);
     });
   });
 });
