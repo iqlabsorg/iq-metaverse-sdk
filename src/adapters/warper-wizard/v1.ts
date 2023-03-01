@@ -1,10 +1,10 @@
 import { EMPTY_BYTES32_DATA_HEX, EMPTY_BYTES_DATA_HEX } from '@iqprotocol/iq-space-protocol-light';
+import { ITaxTermsRegistry, IWarperManager, WarperWizardV1 } from '@iqprotocol/iq-space-protocol-light/typechain';
 import { AccountId, AssetType } from 'caip';
 import { BytesLike, constants, ContractTransaction } from 'ethers';
 import { Adapter } from '../../adapter';
 import { AddressTranslator } from '../../address-translator';
 import { ContractResolver } from '../../contract-resolver';
-import { ITaxTermsRegistry, IWarperManager, WarperWizardV1 } from '../../contracts';
 
 export class WarperWizardAdapterV1 extends Adapter {
   private readonly contract: WarperWizardV1;

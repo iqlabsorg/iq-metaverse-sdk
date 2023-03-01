@@ -1,5 +1,3 @@
-import { ChainId } from 'caip';
-import { Signer } from 'ethers';
 import {
   ACL,
   ACL__factory,
@@ -53,7 +51,9 @@ import {
   WarperWizardV1,
   WarperWizardV1__factory,
   Warper__factory,
-} from './contracts';
+} from '@iqprotocol/iq-space-protocol-light/typechain';
+import { ChainId } from 'caip';
+import { Signer } from 'ethers';
 import { Address, ChainAware } from './types';
 
 export class ContractResolver implements ChainAware {

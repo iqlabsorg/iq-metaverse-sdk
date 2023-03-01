@@ -2,12 +2,12 @@ import {
   makeFixedRateListingTermsFromUnconverted,
   makeFixedRateWithRewardListingTermsFromUnconverted,
 } from '@iqprotocol/iq-space-protocol';
+import { IListingTermsRegistry } from '@iqprotocol/iq-space-protocol/typechain';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { BigNumberish } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import { AddressTranslator, AssetType, IQSpace, ListingTermsInfo, ListingTermsRegistryAdapter } from '../src';
-import { IListingTermsRegistry } from '../src/contracts';
 import { findListingTermsIdByTransaction } from './helpers/listing-renting';
 import { createListing, setupForRenting, setupUniverseAndRegisteredWarper } from './helpers/setup';
 import { COMMON_BASE_RATE, COMMON_ID, COMMON_REWARD_RATE, toAccountId } from './helpers/utils';
@@ -96,7 +96,9 @@ describe('ListingTermsRegistryAdapter', () => {
           5,
         );
         expect(infos.length).to.be.greaterThan(0);
-        expect(infos[0]).to.be.eql(fixedTermsInfo);
+        expect(infos[0].id).to.be.eq(fixedTermsInfo.id);
+        expect(infos[0].strategyId).to.be.eq(fixedTermsInfo.strategyId);
+        expect(infos[0].strategyData).to.be.eq(fixedTermsInfo.strategyData);
       });
     });
 
@@ -115,7 +117,7 @@ describe('ListingTermsRegistryAdapter', () => {
         const termsId = await listingTermsRegistryAdapter.findListingTermsIdByCreationTransaction(
           listingCreationTxHash,
         );
-        expect(termsId).to.be.eql(COMMON_ID);
+        expect(termsId).to.be.eq(COMMON_ID);
       });
     });
 

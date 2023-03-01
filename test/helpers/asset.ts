@@ -1,6 +1,6 @@
+import { ERC721Mock } from '@iqprotocol/iq-space-protocol/typechain';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ethers } from 'hardhat';
-import { ERC721Mock } from '../../src/contracts';
 
 export const mintAndApproveNFTs = async (
   collection: ERC721Mock,

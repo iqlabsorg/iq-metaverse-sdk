@@ -1,9 +1,9 @@
+import { IListingTermsRegistry, ListingTermsRegistry } from '@iqprotocol/iq-space-protocol-light/typechain';
 import { AccountId, AssetType } from 'caip';
 import { BigNumber, BigNumberish, ContractTransaction } from 'ethers';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
-import { IListingTermsRegistry, ListingTermsRegistry } from '../contracts';
 import { ListingTermsInfo, ListingTermsInfoWithParams, ListingTermsQueryParams } from '../types';
 
 export class ListingTermsRegistryAdapter extends Adapter {

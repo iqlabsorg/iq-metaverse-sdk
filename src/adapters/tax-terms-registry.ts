@@ -1,9 +1,9 @@
+import { ITaxTermsRegistry, TaxTermsRegistry } from '@iqprotocol/iq-space-protocol-light/typechain';
 import { AccountId, AssetType } from 'caip';
 import { BigNumberish, BytesLike, ContractTransaction } from 'ethers';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
-import { ITaxTermsRegistry, TaxTermsRegistry } from '../contracts';
 import { TaxTermsQueryParams } from '../types';
 
 export class TaxTermsRegistryAdapter extends Adapter {

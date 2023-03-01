@@ -1,9 +1,9 @@
+import { IUniverseRegistry, IUniverseWizardV1 } from '@iqprotocol/iq-space-protocol/typechain';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AccountId } from 'caip';
 import { expect } from 'chai';
 import { deployments, ethers } from 'hardhat';
 import { IQSpace, UniverseRegistryAdapter } from '../src';
-import { IUniverseRegistry, IUniverseWizardV1 } from '../src/contracts';
 import { setupUniverse } from './helpers/setup';
 import { COMMON_ID, toAccountId } from './helpers/utils';
 

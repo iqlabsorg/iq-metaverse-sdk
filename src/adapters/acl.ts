@@ -1,9 +1,9 @@
+import { ACL } from '@iqprotocol/iq-space-protocol-light/typechain';
 import { AccountId } from 'caip';
 import { ContractTransaction } from 'ethers';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
-import { ACL } from '../contracts';
 
 export class ACLAdapter extends Adapter {
   private readonly contract: ACL;

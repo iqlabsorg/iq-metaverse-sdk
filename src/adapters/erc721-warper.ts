@@ -1,8 +1,12 @@
+import {
+  ERC721Warper,
+  IAvailabilityPeriodMechanics__factory,
+  IRentalPeriodMechanics__factory,
+} from '@iqprotocol/iq-space-protocol-light/typechain';
 import { AssetType } from 'caip';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
-import { ERC721Warper, IAvailabilityPeriodMechanics__factory, IRentalPeriodMechanics__factory } from '../contracts';
 import { WarperRentingConstraints } from '../types';
 
 export class ERC721WarperAdapter extends Adapter {

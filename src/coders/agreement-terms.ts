@@ -1,5 +1,5 @@
+import { Rentings } from '@iqprotocol/iq-space-protocol-light/typechain/contracts/metahub/core/IMetahub';
 import { AddressTranslator } from '../address-translator';
-import { Rentings } from '../contracts/contracts/metahub/core/IMetahub';
 import { AgreementTerms } from '../types';
 
 export class AgreementTermsCoder {

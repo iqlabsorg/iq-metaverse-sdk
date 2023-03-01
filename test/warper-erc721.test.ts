@@ -1,9 +1,9 @@
+import { ERC721ConfigurablePreset__factory } from '@iqprotocol/iq-space-protocol/typechain';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AssetType } from 'caip';
 import { expect } from 'chai';
 import { deployments, ethers } from 'hardhat';
-import { IQSpace, ERC721WarperAdapter } from '../src';
-import { ERC721ConfigurablePreset__factory } from '../src/contracts';
+import { ERC721WarperAdapter, IQSpace } from '../src';
 import { setupUniverseAndRegisteredWarper } from './helpers/setup';
 
 /**

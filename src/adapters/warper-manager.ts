@@ -1,10 +1,10 @@
+import { WarperManager } from '@iqprotocol/iq-space-protocol-light/typechain';
+import { Warpers } from '@iqprotocol/iq-space-protocol-light/typechain/contracts/warper/IWarperController';
 import { AccountId, AssetType } from 'caip';
 import { BigNumber, BigNumberish, ContractTransaction } from 'ethers';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
-import { WarperManager } from '../contracts';
-import { Warpers } from '../contracts/contracts/warper/IWarperController';
 import { Address, RegisteredWarper } from '../types';
 import { pick } from '../utils';
 

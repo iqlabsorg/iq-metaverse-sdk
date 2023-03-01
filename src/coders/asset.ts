@@ -1,11 +1,11 @@
 /* eslint-disable sonarjs/no-small-switch */
-import { defaultAbiCoder } from 'ethers/lib/utils';
-import { Asset, AssetNamespace } from '../types';
 import { BigNumber } from '@ethersproject/bignumber';
-import { Assets } from '../contracts/contracts/metahub/core/IMetahub';
-import { AssetId, ChainId } from 'caip';
-import { assetClassToNamespaceMap, namespaceToAssetClassMap } from '../constants';
 import { ASSET_CLASS_IDS } from '@iqprotocol/iq-space-protocol-light';
+import { Assets } from '@iqprotocol/iq-space-protocol-light/typechain/contracts/metahub/core/IMetahub';
+import { AssetId, ChainId } from 'caip';
+import { defaultAbiCoder } from 'ethers/lib/utils';
+import { assetClassToNamespaceMap, namespaceToAssetClassMap } from '../constants';
+import { Asset, AssetNamespace } from '../types';
 
 export class AssetCoder {
   /**

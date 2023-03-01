@@ -1,9 +1,9 @@
+import { TaxStrategyRegistry } from '@iqprotocol/iq-space-protocol-light/typechain';
 import { AccountId } from 'caip';
 import { BytesLike, ContractTransaction } from 'ethers';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
-import { TaxStrategyRegistry } from '../contracts';
 import { TaxStrategyConfig } from '../types';
 
 export class TaxStrategyRegistryAdapter extends Adapter {

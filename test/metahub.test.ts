@@ -1,4 +1,11 @@
 import { BASE_TOKEN_DECIMALS, convertToWei } from '@iqprotocol/iq-space-protocol';
+import {
+  ERC20Mock,
+  ERC721Mock,
+  IMetahub,
+  IRentingManager,
+  IWarperPresetFactory,
+} from '@iqprotocol/iq-space-protocol/typechain';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AccountId, AssetType } from 'caip';
 import { expect } from 'chai';
@@ -14,7 +21,6 @@ import {
   RentingEstimationParams,
   RentingManagerAdapter,
 } from '../src';
-import { ERC20Mock, ERC721Mock, IMetahub, IRentingManager, IWarperPresetFactory } from '../src/contracts';
 import { mintNFTs } from './helpers/asset';
 import { setupForRenting, setupUniverseAndRegisteredWarper } from './helpers/setup';
 import { COMMON_ID, getChainId, SECONDS_IN_HOUR, toAccountId, waitBlockchainTime } from './helpers/utils';

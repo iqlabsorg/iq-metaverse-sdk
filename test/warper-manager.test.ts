@@ -1,9 +1,9 @@
+import { ERC721Mock, ERC721WarperController, IMetahub, IWarperManager } from '@iqprotocol/iq-space-protocol/typechain';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AssetType } from 'caip';
 import { expect } from 'chai';
 import hre, { deployments, ethers } from 'hardhat';
 import { AddressTranslator, IQSpace, WarperManagerAdapter } from '../src';
-import { ERC721Mock, ERC721WarperController, IMetahub, IWarperManager } from '../src/contracts';
 import { setupUniverseAndRegisteredWarper } from './helpers/setup';
 import { COMMON_ID, toAccountId } from './helpers/utils';
 

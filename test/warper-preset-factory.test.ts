@@ -1,11 +1,16 @@
 import { ERC721_WARPER_PRESET_IDS, makeERC721ConfigurablePresetInitData } from '@iqprotocol/iq-space-protocol';
+import {
+  ERC721ConfigurablePreset,
+  ERC721Mock,
+  IMetahub,
+  IWarperPresetFactory,
+} from '@iqprotocol/iq-space-protocol/typechain';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AssetType } from 'caip';
 import { expect } from 'chai';
 import { ContractTransaction } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import { AddressTranslator, IQSpace, WarperPresetFactoryAdapter } from '../src';
-import { ERC721ConfigurablePreset, ERC721Mock, IMetahub, IWarperPresetFactory } from '../src/contracts';
 import { grantSupervisorRole } from './helpers/acl';
 import { setupUniverse } from './helpers/setup';
 import { toAccountId } from './helpers/utils';

@@ -1,9 +1,9 @@
+import { AssetClassRegistry } from '@iqprotocol/iq-space-protocol-light/typechain';
 import { AccountId } from 'caip';
 import { ContractTransaction } from 'ethers';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
-import { AssetClassRegistry } from '../contracts';
 import { AssetClassConfig, AssetNamespace } from '../types';
 
 export class AssetClassRegistryAdapter extends Adapter {

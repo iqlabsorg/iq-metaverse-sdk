@@ -1,12 +1,12 @@
 import { EMPTY_BYTES_DATA_HEX } from '@iqprotocol/iq-space-protocol';
-import { BytesLike } from 'ethers';
-import { ethers } from 'hardhat';
+import { IListingTermsRegistry } from '@iqprotocol/iq-space-protocol/typechain';
 import {
   GlobalListingTermsRegisteredEventFilter,
-  WarperListingTermsRegisteredEventFilter,
   UniverseListingTermsRegisteredEventFilter,
-} from '../../src/contracts/contracts/listing/listing-terms-registry/IListingTermsRegistry';
-import { IListingTermsRegistry } from '../../src/contracts';
+  WarperListingTermsRegisteredEventFilter,
+} from '@iqprotocol/iq-space-protocol/typechain/contracts/listing/listing-terms-registry/IListingTermsRegistry';
+import { BytesLike } from 'ethers';
+import { ethers } from 'hardhat';
 
 export const getTokenQuoteData = (): { tokenQuote: BytesLike; tokenQuoteSignature: BytesLike } => {
   return { tokenQuote: EMPTY_BYTES_DATA_HEX, tokenQuoteSignature: EMPTY_BYTES_DATA_HEX };

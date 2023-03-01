@@ -16,14 +16,11 @@
     "dist"
   ],
   "scripts": {
-    "build": "yarn typechain && NODE_OPTIONS=--max-old-space-size=5120 rollup -c",
+    "build": "NODE_OPTIONS=--max-old-space-size=5120 rollup -c",
     "build:clean": "rimraf dist",
     "prepublish": "NODE_ENV=production yarn build",
     "start": "rollup -cw",
     "test": "cross-env LOG_LEVEL=error TS_NODE_IGNORE=\"/node_modules/(?!@iqprotocol/iq-space-protocol/deploy)/\" ts-mocha test/**/*.test.ts",
-    "typechain": "run-s typechain:clean typechain:generate",
-    "typechain:clean": "rimraf src/contracts",
-    "typechain:generate": "cp -r ./node_modules/@iqprotocol/iq-space-protocol/contracts ./contracts && TS_NODE_TRANSPILE_ONLY=1 hardhat compile && rimraf ./contracts && rimraf ./artifacts && rimraf ./cache",
     "docs": "run-s docs:clean docs:generate",
     "docs:generate": "NODE_OPTIONS=--max_old_space_size=8192 typedoc --options typedoc.js --entryPointStrategy packages . --out docs && touch docs/.nojekyll",
     "docs:clean": "rimraf docs",

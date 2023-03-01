@@ -1,10 +1,10 @@
 import { CONTRACT_REGISTRY } from '@iqprotocol/iq-space-protocol-light';
+import { Metahub } from '@iqprotocol/iq-space-protocol-light/typechain';
 import { AccountId, AssetType } from 'caip';
 import { BigNumber, BigNumberish, ContractTransaction } from 'ethers';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
-import { Metahub } from '../contracts';
 import { AccountBalance, Asset, BaseToken } from '../types';
 
 export class MetahubAdapter extends Adapter {

@@ -1,9 +1,9 @@
+import { IListingManager } from '@iqprotocol/iq-space-protocol/typechain';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AssetType } from 'caip';
 import { expect } from 'chai';
 import { deployments, ethers } from 'hardhat';
-import { ListingManagerAdapter, IQSpace } from '../src';
-import { IListingManager } from '../src/contracts';
+import { IQSpace, ListingManagerAdapter } from '../src';
 import { setupForRenting } from './helpers/setup';
 import { COMMON_ID, toAccountId } from './helpers/utils';
 
@@ -155,7 +155,7 @@ describe('ListingManagerAdapter', () => {
   describe('findListingIdByCreationTransaction', () => {
     it('should return created listing id from transaction hash', async () => {
       const listingId = await listingManagerAdapter.findListingIdByCreationTransaction(listingCreationTxHash);
-      expect(listingId).to.be.eql(COMMON_ID);
+      expect(listingId).to.be.eq(COMMON_ID);
     });
   });
 

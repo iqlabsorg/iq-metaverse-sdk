@@ -1,11 +1,11 @@
 import { BASE_TOKEN_DECIMALS, convertToWei } from '@iqprotocol/iq-space-protocol';
+import { ERC20Mock, IMetahub, IRentingManager } from '@iqprotocol/iq-space-protocol/typechain';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AccountId, AssetType } from 'caip';
 import { expect } from 'chai';
 import { BigNumber } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import { AddressTranslator, Asset, createAsset, IQSpace, RentingEstimationParams, RentingManagerAdapter } from '../src';
-import { ERC20Mock, IMetahub, IRentingManager } from '../src/contracts';
 import { setupForRenting } from './helpers/setup';
 import { COMMON_ID, SECONDS_IN_HOUR, toAccountId, waitBlockchainTime } from './helpers/utils';
 

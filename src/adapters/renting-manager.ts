@@ -1,12 +1,12 @@
 import { EMPTY_BYTES_DATA_HEX } from '@iqprotocol/iq-space-protocol-light';
+import { RentingManager } from '@iqprotocol/iq-space-protocol-light/typechain';
+import { Rentings } from '@iqprotocol/iq-space-protocol-light/typechain/contracts/metahub/core/IMetahub';
 import { AccountId } from 'caip';
 import { BigNumber, BigNumberish, BytesLike, ContractTransaction } from 'ethers';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { rentalStatusMap } from '../constants';
 import { ContractResolver } from '../contract-resolver';
-import { RentingManager } from '../contracts';
-import { Rentings } from '../contracts/contracts/metahub/core/IMetahub';
 import { Asset, RentalAgreement, RentalFees, RentalStatus, RentingEstimationParams, RentingParams } from '../types';
 import { createEmptyListingTerms, pick } from '../utils';
 

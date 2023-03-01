@@ -5,12 +5,17 @@ import {
   makeFixedRateWithRewardListingTermsFromUnconverted,
   prepareTypedDataActionEip712Signature,
 } from '@iqprotocol/iq-space-protocol';
+import {
+  ERC721Mock,
+  IListingManager,
+  IListingTermsRegistry,
+  IListingWizardV1,
+} from '@iqprotocol/iq-space-protocol/typechain';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { BytesLike } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import { AssetListingParams, AssetType, createAsset, IQSpace, ListingParams, ListingWizardAdapterV1 } from '../src';
-import { ERC721Mock, IListingManager, IListingTermsRegistry, IListingWizardV1 } from '../src/contracts';
 import { setupForListing } from './helpers/setup';
 import {
   COMMON_BASE_RATE,
