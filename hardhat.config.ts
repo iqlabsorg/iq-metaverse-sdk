@@ -29,7 +29,7 @@ const config: HardhatUserConfig = {
     contracts: [
       {
         artifacts: 'node_modules/@iqprotocol/iq-space-protocol/artifacts',
-        deploy: 'test/deploy',
+        deploy: 'node_modules/@iqprotocol/iq-space-protocol/deploy',
       },
     ],
   },
