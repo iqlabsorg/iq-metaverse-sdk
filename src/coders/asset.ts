@@ -1,9 +1,7 @@
 /* eslint-disable sonarjs/no-small-switch */
-import { BigNumber } from '@ethersproject/bignumber';
-import { ASSET_CLASS_IDS } from '@iqprotocol/iq-space-protocol-light';
+import { ASSET_CLASS_IDS, decodeERC721Asset, makeERC721Asset } from '@iqprotocol/iq-space-protocol-light';
 import { Assets } from '@iqprotocol/iq-space-protocol-light/typechain/contracts/metahub/core/IMetahub';
 import { AssetId, ChainId } from 'caip';
-import { defaultAbiCoder } from 'ethers/lib/utils';
 import { assetClassToNamespaceMap, namespaceToAssetClassMap } from '../constants';
 import { Asset, AssetNamespace } from '../types';
 
@@ -12,16 +10,10 @@ export class AssetCoder {
    * Encodes asset structure.
    * @param asset Asset.
    */
-  static encode({ id, value }: Asset): Assets.AssetStruct {
+  static encode({ id }: Asset): Assets.AssetStruct {
     switch (id.assetName.namespace) {
       case 'erc721': {
-        return {
-          id: {
-            class: ASSET_CLASS_IDS.ERC721,
-            data: defaultAbiCoder.encode(['address', 'uint256'], [id.assetName.reference, id.tokenId]),
-          },
-          value,
-        };
+        return makeERC721Asset(id.assetName.reference, id.tokenId);
       }
 
       default: {
@@ -35,16 +27,16 @@ export class AssetCoder {
    * @param params Asset structure.
    * @param chainId Chain ID.
    */
-  static decode({ id, value }: Assets.AssetStructOutput, chainId: ChainId): Asset {
-    switch (id.class) {
+  static decode(asset: Assets.AssetStructOutput, chainId: ChainId): Asset {
+    switch (asset.id.class) {
       case ASSET_CLASS_IDS.ERC721: {
-        const [address, tokenId] = defaultAbiCoder.decode(['address', 'uint256'], id.data) as [string, BigNumber];
+        const { originalCollectionAddress: address, assetId: tokenId, assetValue: value } = decodeERC721Asset(asset);
         return {
           value,
           id: new AssetId({
             chainId,
             assetName: {
-              namespace: AssetCoder.decodeAssetClass(id.class),
+              namespace: AssetCoder.decodeAssetClass(asset.id.class),
               reference: address,
             },
             tokenId: tokenId.toString(),
