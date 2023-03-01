@@ -24,7 +24,6 @@ pids
 
 # Coverage directory used by tools like istanbul
 **/coverage
-**/jest-coverage
 **/reports
 **/.nyc_output
 

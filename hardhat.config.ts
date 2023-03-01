@@ -1,9 +1,10 @@
-import { HardhatUserConfig } from 'hardhat/types';
-import 'hardhat-deploy';
 import '@iqprotocol/iq-space-protocol/tasks';
-import '@openzeppelin/hardhat-upgrades';
+import '@nomicfoundation/hardhat-chai-matchers';
 import '@nomiclabs/hardhat-ethers';
+import '@openzeppelin/hardhat-upgrades';
 import '@typechain/hardhat';
+import 'hardhat-deploy';
+import { HardhatUserConfig } from 'hardhat/types';
 
 const config: HardhatUserConfig = {
   solidity: {

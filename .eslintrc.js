@@ -5,22 +5,19 @@ module.exports = {
     project: 'tsconfig.json',
     sourceType: 'module',
   },
-  plugins: [
-    '@typescript-eslint/eslint-plugin'
-  ],
+  plugins: ['@typescript-eslint/eslint-plugin'],
   extends: [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended",
+    'eslint:recommended',
+    'plugin:@typescript-eslint/eslint-recommended',
+    'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/recommended-requiring-type-checking',
     'plugin:sonarjs/recommended',
     'plugin:import/recommended',
     'plugin:import/typescript',
-    'plugin:prettier/recommended'
+    'plugin:prettier/recommended',
   ],
   env: {
     node: true,
-    jest: true,
   },
   rules: {
     // eslint:recommended additional rules & best practices
@@ -29,10 +26,10 @@ module.exports = {
     'no-unsafe-optional-chaining': 'error',
     'require-atomic-updates': 'error',
     'consistent-return': 'error',
-    'curly': 'error',
+    curly: 'error',
     'default-case': 'error',
     'dot-notation': 'error',
-    'eqeqeq': 'error',
+    eqeqeq: 'error',
     'grouped-accessor-pairs': 'error',
     'guard-for-in': 'error',
     'no-else-return': 'error',
@@ -48,7 +45,7 @@ module.exports = {
     'no-useless-concat': 'error',
     'prefer-promise-reject-errors': 'error',
     'prefer-regex-literals': 'error',
-    'radix': 'error',
+    radix: 'error',
     'func-style': ['error', 'expression'],
     'max-depth': ['error', 3],
     'multiline-ternary': 'off',
@@ -56,7 +53,7 @@ module.exports = {
     'no-nested-ternary': 'error',
     'no-unneeded-ternary': 'error',
     'no-useless-computed-key': 'error',
-    "no-unused-vars": 'off',
+    'no-unused-vars': 'off',
 
     // Typescript rules
     '@typescript-eslint/member-ordering': 'error',
@@ -79,14 +76,8 @@ module.exports = {
     '@typescript-eslint/prefer-optional-chain': 'error',
     '@typescript-eslint/prefer-readonly': 'error',
     '@typescript-eslint/promise-function-async': 'error',
-    '@typescript-eslint/restrict-plus-operands': [
-      'error',
-      { checkCompoundAssignments: true },
-    ],
-    '@typescript-eslint/restrict-template-expressions': [
-      'error',
-      { allowAny: true },
-    ],
+    '@typescript-eslint/restrict-plus-operands': ['error', { checkCompoundAssignments: true }],
+    '@typescript-eslint/restrict-template-expressions': ['error', { allowAny: true }],
     '@typescript-eslint/switch-exhaustiveness-check': 'error',
     '@typescript-eslint/unified-signatures': 'error',
     '@typescript-eslint/return-await': 'error',
@@ -102,13 +93,15 @@ module.exports = {
         allowTypedFunctionExpressions: true,
       },
     ],
-    '@typescript-eslint/no-empty-function': ['error', {allow: ['private-constructors']}],
+    '@typescript-eslint/no-empty-function': ['error', { allow: ['private-constructors'] }],
   },
-  'overrides': [
+  overrides: [
     {
-      'files': ['*.test.ts'],
-      'rules': {
+      files: ['*.test.ts'],
+      rules: {
         'sonarjs/no-duplicate-string': 'off',
+        'sonarjs/no-identical-functions': 'off',
+        '@typescript-eslint/no-non-null-assertion': 'off',
       },
     },
   ],

@@ -1,4 +1,5 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { expect } from 'chai';
 import { Contract } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import { ERC721AssetVaultAdapter, IQSpace } from '../src';
@@ -34,14 +35,14 @@ describe('ERC721AssetVaultAdapter', () => {
   describe('switchToRecoveryMode', () => {
     it('should switch to recovery mode', async () => {
       await assetVaultAdapter.switchToRecoveryMode();
-      expect(await assetVault.isRecovery()).toBe(true);
+      expect(await assetVault.isRecovery()).to.be.eq(true);
     });
   });
 
   describe('isRecovery', () => {
     describe('when not in recovery mode', () => {
       it('should return false', async () => {
-        expect(await assetVaultAdapter.isRecovery()).toBe(false);
+        expect(await assetVaultAdapter.isRecovery()).to.be.eq(false);
       });
     });
 
@@ -51,20 +52,20 @@ describe('ERC721AssetVaultAdapter', () => {
       });
 
       it('should return true', async () => {
-        expect(await assetVaultAdapter.isRecovery()).toBe(true);
+        expect(await assetVaultAdapter.isRecovery()).to.be.eq(true);
       });
     });
   });
 
   describe('assetClass', () => {
     it('should return asset class', async () => {
-      expect(await assetVaultAdapter.assetClass()).toBe('erc721');
+      expect(await assetVaultAdapter.assetClass()).to.be.eq('erc721');
     });
   });
 
   describe('metahub', () => {
     it('should return metahub account id', async () => {
-      expect(await assetVaultAdapter.metahub()).toMatchObject(toAccountId(metahub.address));
+      expect(await assetVaultAdapter.metahub()).to.be.eql(toAccountId(metahub.address));
     });
   });
 });

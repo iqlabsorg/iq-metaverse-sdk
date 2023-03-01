@@ -1,5 +1,6 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AssetType } from 'caip';
+import { expect } from 'chai';
 import { deployments, ethers } from 'hardhat';
 import { IQSpace, ERC721WarperAdapter } from '../src';
 import { ERC721ConfigurablePreset__factory } from '../src/contracts';
@@ -59,10 +60,10 @@ describe('ERC721WarperAdapter', () => {
 
     it('should return warpers renting constraints', async () => {
       const { availabilityPeriod, rentalPeriod } = await warperAdapter.rentingConstraints();
-      expect(availabilityPeriod?.start).toBe(start);
-      expect(availabilityPeriod?.end).toBe(end);
-      expect(rentalPeriod?.min).toBe(start);
-      expect(rentalPeriod?.max).toBe(end);
+      expect(availabilityPeriod?.start).to.be.eq(start);
+      expect(availabilityPeriod?.end).to.be.eq(end);
+      expect(rentalPeriod?.min).to.be.eq(start);
+      expect(rentalPeriod?.max).to.be.eq(end);
     });
   });
 });

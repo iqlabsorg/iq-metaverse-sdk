@@ -3,6 +3,7 @@ import {
   makeFixedRateWithRewardListingTermsFromUnconverted,
 } from '@iqprotocol/iq-space-protocol';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { expect } from 'chai';
 import { BigNumberish } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import { AddressTranslator, AssetType, IQSpace, ListingTermsInfo, ListingTermsRegistryAdapter } from '../src';
@@ -66,7 +67,7 @@ describe('ListingTermsRegistryAdapter', () => {
       it('should return listing terms with fixed rate tax', async () => {
         const terms = await listingTermsRegistryAdapter.listingTerms(COMMON_ID);
 
-        expect(terms).toMatchObject(fixedTermsInfo);
+        expect(terms).to.be.eql(fixedTermsInfo);
       });
     });
 
@@ -77,7 +78,7 @@ describe('ListingTermsRegistryAdapter', () => {
 
       it('should return listing terms with fixed rate and reward tax', async () => {
         const terms = await listingTermsRegistryAdapter.listingTerms(COMMON_ID);
-        expect(terms).toMatchObject(fixedTermsWithRewardInfo);
+        expect(terms).to.be.eql(fixedTermsWithRewardInfo);
       });
     });
   });
@@ -94,8 +95,8 @@ describe('ListingTermsRegistryAdapter', () => {
           0,
           5,
         );
-        expect(infos.length).toBeGreaterThan(0);
-        expect(infos[0]).toMatchObject(fixedTermsInfo);
+        expect(infos.length).to.be.greaterThan(0);
+        expect(infos[0]).to.be.eql(fixedTermsInfo);
       });
     });
 
@@ -103,11 +104,9 @@ describe('ListingTermsRegistryAdapter', () => {
       it('should return listing terms with additional parameters', async () => {
         const termsWithParams = await listingTermsRegistryAdapter.listingTermsWithParams(COMMON_ID);
 
-        expect(termsWithParams).toMatchObject({
-          ...fixedTermsInfo,
-          universeId: COMMON_ID,
-          listingId: COMMON_ID,
-        });
+        expect(termsWithParams).to.include(fixedTermsInfo);
+        expect(termsWithParams.universeId).to.be.eq(COMMON_ID);
+        expect(termsWithParams.listingId).to.be.eq(COMMON_ID);
       });
     });
 
@@ -116,15 +115,14 @@ describe('ListingTermsRegistryAdapter', () => {
         const termsId = await listingTermsRegistryAdapter.findListingTermsIdByCreationTransaction(
           listingCreationTxHash,
         );
-        expect(termsId).toBeDefined();
-        expect(termsId).toMatchObject(COMMON_ID);
+        expect(termsId).to.be.eql(COMMON_ID);
       });
     });
 
     describe('findListingTermsByCreationTransaction', () => {
       it('should return created listing info from transaction hash', async () => {
         const terms = await listingTermsRegistryAdapter.findListingTermsByCreationTransaction(listingCreationTxHash);
-        expect(terms).toMatchObject(fixedTermsInfo);
+        expect(terms).to.be.eql(fixedTermsInfo);
       });
     });
   });
@@ -146,14 +144,14 @@ describe('ListingTermsRegistryAdapter', () => {
 
       describe('registerGlobalListingTerms', () => {
         it('should register global listing terms', async () => {
-          expect(await listingTermsRegistry.areRegisteredListingTerms(listingTermsId)).toBe(true);
+          expect(await listingTermsRegistry.areRegisteredListingTerms(listingTermsId)).to.be.eq(true);
         });
       });
 
       describe('removeGlobalListingTerms', () => {
         it('should remove global listing terms', async () => {
           await deployerListingTermsRegistryAdapter.removeGlobalListingTerms(COMMON_ID, listingTermsId);
-          expect(await listingTermsRegistry.areRegisteredListingTerms(listingTermsId)).toBe(false);
+          expect(await listingTermsRegistry.areRegisteredListingTerms(listingTermsId)).to.be.eq(false);
         });
       });
     });
@@ -170,14 +168,14 @@ describe('ListingTermsRegistryAdapter', () => {
 
       describe('registerUniverseListingTerms', () => {
         it('should register universe listing terms', async () => {
-          expect(await listingTermsRegistry.areRegisteredListingTerms(listingTermsId)).toBe(true);
+          expect(await listingTermsRegistry.areRegisteredListingTerms(listingTermsId)).to.be.eq(true);
         });
       });
 
       describe('removeGlobalListingTerms', () => {
         it('should remove universe listing terms', async () => {
           await deployerListingTermsRegistryAdapter.removeUniverseListingTerms(COMMON_ID, COMMON_ID, listingTermsId);
-          expect(await listingTermsRegistry.areRegisteredListingTerms(listingTermsId)).toBe(false);
+          expect(await listingTermsRegistry.areRegisteredListingTerms(listingTermsId)).to.be.eq(false);
         });
       });
     });
@@ -194,7 +192,7 @@ describe('ListingTermsRegistryAdapter', () => {
 
       describe('registerWarperListingTerms', () => {
         it('should register warper listing terms', async () => {
-          expect(await listingTermsRegistry.areRegisteredListingTerms(listingTermsId)).toBe(true);
+          expect(await listingTermsRegistry.areRegisteredListingTerms(listingTermsId)).to.be.eq(true);
         });
       });
 
@@ -205,7 +203,7 @@ describe('ListingTermsRegistryAdapter', () => {
             warperReference,
             listingTermsId,
           );
-          expect(await listingTermsRegistry.areRegisteredListingTerms(listingTermsId)).toBe(false);
+          expect(await listingTermsRegistry.areRegisteredListingTerms(listingTermsId)).to.be.eq(false);
         });
       });
     });
@@ -214,7 +212,7 @@ describe('ListingTermsRegistryAdapter', () => {
   describe('areRegisteredListingTerms', () => {
     describe('when not registered', () => {
       it('should return false', async () => {
-        expect(await listingTermsRegistryAdapter.areRegisteredListingTerms(99)).toBe(false);
+        expect(await listingTermsRegistryAdapter.areRegisteredListingTerms(99)).to.be.eq(false);
       });
     });
 
@@ -224,7 +222,7 @@ describe('ListingTermsRegistryAdapter', () => {
       });
 
       it('should return true', async () => {
-        expect(await listingTermsRegistryAdapter.areRegisteredListingTerms(COMMON_ID)).toBe(true);
+        expect(await listingTermsRegistryAdapter.areRegisteredListingTerms(COMMON_ID)).to.be.eq(true);
       });
     });
   });
@@ -238,7 +236,7 @@ describe('ListingTermsRegistryAdapter', () => {
             universeId: COMMON_ID,
             warper: AddressTranslator.createAssetType(toAccountId(ethers.constants.AddressZero), 'erc721'),
           }),
-        ).toBe(false);
+        ).to.be.eq(false);
       });
     });
 
@@ -254,7 +252,7 @@ describe('ListingTermsRegistryAdapter', () => {
             universeId: COMMON_ID,
             warper: warperReference,
           }),
-        ).toBe(true);
+        ).to.be.eq(true);
       });
     });
   });

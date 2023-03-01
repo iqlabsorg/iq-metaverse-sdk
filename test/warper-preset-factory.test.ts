@@ -1,6 +1,7 @@
 import { ERC721_WARPER_PRESET_IDS, makeERC721ConfigurablePresetInitData } from '@iqprotocol/iq-space-protocol';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AssetType } from 'caip';
+import { expect } from 'chai';
 import { ContractTransaction } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import { AddressTranslator, IQSpace, WarperPresetFactoryAdapter } from '../src';
@@ -60,8 +61,7 @@ describe('WarperPresetFactoryAdapter', () => {
 
     it('should deploy warper from a preset', async () => {
       const warper = await findWarperByDeploymentTransaction(tx.hash);
-      expect(warper).toBeDefined();
-      expect(warper?.length).toBeGreaterThan(0);
+      expect(warper?.length).to.be.greaterThan(0);
     });
 
     describe('findWarperByDeploymentTransaction', () => {
@@ -74,8 +74,7 @@ describe('WarperPresetFactoryAdapter', () => {
 
       it('should return warper reference from deployment transaction', async () => {
         const warperReference = await warperPresetFactoryAdapter.findWarperByDeploymentTransaction(tx.hash);
-        expect(warperReference).toBeDefined();
-        expect(warperReference).toMatchObject(reference);
+        expect(warperReference).to.be.eql(reference);
       });
     });
   });
@@ -83,9 +82,9 @@ describe('WarperPresetFactoryAdapter', () => {
   describe('preset', () => {
     it('it should return warper preset info', async () => {
       const preset = await warperPresetFactoryAdapter.preset(ERC721_WARPER_PRESET_IDS.ERC721_CONFIGURABLE_PRESET);
-      expect(preset.id).toBe(ERC721_WARPER_PRESET_IDS.ERC721_CONFIGURABLE_PRESET);
-      expect(preset.implementation.address).toBe(warperPreset.address);
-      expect(preset.enabled).toBe(true);
+      expect(preset.id).to.be.eq(ERC721_WARPER_PRESET_IDS.ERC721_CONFIGURABLE_PRESET);
+      expect(preset.implementation.address).to.be.eq(warperPreset.address);
+      expect(preset.enabled).to.be.eq(true);
     });
   });
 
@@ -93,9 +92,9 @@ describe('WarperPresetFactoryAdapter', () => {
     it('it should return list of warper presets', async () => {
       const presets = await warperPresetFactoryAdapter.presets();
       const preset = presets[0];
-      expect(preset.id).toBe(ERC721_WARPER_PRESET_IDS.ERC721_CONFIGURABLE_PRESET);
-      expect(preset.implementation.address).toBe(warperPreset.address);
-      expect(preset.enabled).toBe(true);
+      expect(preset.id).to.be.eq(ERC721_WARPER_PRESET_IDS.ERC721_CONFIGURABLE_PRESET);
+      expect(preset.implementation.address).to.be.eq(warperPreset.address);
+      expect(preset.enabled).to.be.eq(true);
     });
   });
 
@@ -106,14 +105,18 @@ describe('WarperPresetFactoryAdapter', () => {
 
     it('should enable the warper preset', async () => {
       await supervisorWarperPresetFactoryAdapter.enablePreset(ERC721_WARPER_PRESET_IDS.ERC721_CONFIGURABLE_PRESET);
-      expect(await warperPresetFactory.presetEnabled(ERC721_WARPER_PRESET_IDS.ERC721_CONFIGURABLE_PRESET)).toBe(true);
+      expect(await warperPresetFactory.presetEnabled(ERC721_WARPER_PRESET_IDS.ERC721_CONFIGURABLE_PRESET)).to.be.eq(
+        true,
+      );
     });
   });
 
   describe('disablePreset', () => {
     it('should disable the warper preset', async () => {
       await supervisorWarperPresetFactoryAdapter.disablePreset(ERC721_WARPER_PRESET_IDS.ERC721_CONFIGURABLE_PRESET);
-      expect(await warperPresetFactory.presetEnabled(ERC721_WARPER_PRESET_IDS.ERC721_CONFIGURABLE_PRESET)).toBe(false);
+      expect(await warperPresetFactory.presetEnabled(ERC721_WARPER_PRESET_IDS.ERC721_CONFIGURABLE_PRESET)).to.be.eq(
+        false,
+      );
     });
   });
 
@@ -129,7 +132,7 @@ describe('WarperPresetFactoryAdapter', () => {
         const enabled = await warperPresetFactoryAdapter.presetEnabled(
           ERC721_WARPER_PRESET_IDS.ERC721_CONFIGURABLE_PRESET,
         );
-        expect(enabled).toBe(false);
+        expect(enabled).to.be.eq(false);
       });
     });
 
@@ -138,7 +141,7 @@ describe('WarperPresetFactoryAdapter', () => {
         const enabled = await warperPresetFactoryAdapter.presetEnabled(
           ERC721_WARPER_PRESET_IDS.ERC721_CONFIGURABLE_PRESET,
         );
-        expect(enabled).toBe(true);
+        expect(enabled).to.be.eq(true);
       });
     });
   });
@@ -154,7 +157,7 @@ describe('WarperPresetFactoryAdapter', () => {
         toAccountId(warperPreset.address),
       );
       const preset = await warperPresetFactory.preset(ERC721_WARPER_PRESET_IDS.ERC721_CONFIGURABLE_PRESET);
-      expect(preset.implementation).toBe(warperPreset.address);
+      expect(preset.implementation).to.be.eq(warperPreset.address);
     });
   });
 
@@ -162,7 +165,7 @@ describe('WarperPresetFactoryAdapter', () => {
     it('should remove the preset', async () => {
       await supervisorWarperPresetFactoryAdapter.removePreset(ERC721_WARPER_PRESET_IDS.ERC721_CONFIGURABLE_PRESET);
       const presets = await warperPresetFactory.presets();
-      expect(presets.length).toBe(0);
+      expect(presets.length).to.be.eq(0);
     });
   });
 });

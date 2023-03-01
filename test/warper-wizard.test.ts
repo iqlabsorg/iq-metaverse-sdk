@@ -7,6 +7,7 @@ import {
 } from '@iqprotocol/iq-space-protocol';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AssetType } from 'caip';
+import { expect } from 'chai';
 import { BytesLike, ContractTransaction } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import { IQSpace, WarperWizardAdapterV1 } from '../src';
@@ -100,9 +101,11 @@ describe('WarperWizardAdapterV1', () => {
           TAX_STRATEGY_IDS.FIXED_RATE_TAX,
         );
 
-        expect(isFixedRateTax).toBe(true);
-        expect(count.toBigInt()).toBe(1n);
-        expect(info).toMatchObject(warperParams);
+        expect(isFixedRateTax).to.be.eq(true);
+        expect(count.toBigInt()).to.be.eq(1n);
+        expect(info.name).to.be.eq(warperParams.name);
+        expect(info.universeId).to.be.eq(warperParams.universeId);
+        expect(info.paused).to.be.eq(warperParams.paused);
       });
     });
 
@@ -121,9 +124,11 @@ describe('WarperWizardAdapterV1', () => {
           TAX_STRATEGY_IDS.FIXED_RATE_TAX_WITH_REWARD,
         );
 
-        expect(isFixedRateWithRewardTax).toBe(true);
-        expect(count.toBigInt()).toBe(1n);
-        expect(info).toMatchObject(warperParams);
+        expect(isFixedRateWithRewardTax).to.be.eq(true);
+        expect(count.toBigInt()).to.be.eq(1n);
+        expect(info.name).to.be.eq(warperParams.name);
+        expect(info.universeId).to.be.eq(warperParams.universeId);
+        expect(info.paused).to.be.eq(warperParams.paused);
       });
     });
   });
@@ -137,7 +142,7 @@ describe('WarperWizardAdapterV1', () => {
 
     it('should deregister warper from universe', async () => {
       const count = await warperManager.universeWarperCount(COMMON_ID);
-      expect(count.toBigInt()).toBe(0n);
+      expect(count.toBigInt()).to.be.eq(0n);
     });
   });
 
@@ -164,9 +169,11 @@ describe('WarperWizardAdapterV1', () => {
           TAX_STRATEGY_IDS.FIXED_RATE_TAX,
         );
 
-        expect(isFixedRateTax).toBe(true);
-        expect(count.toBigInt()).toBe(1n);
-        expect(info).toMatchObject(warperParams);
+        expect(isFixedRateTax).to.be.eq(true);
+        expect(count.toBigInt()).to.be.eq(1n);
+        expect(info.name).to.be.eq(warperParams.name);
+        expect(info.universeId).to.be.eq(warperParams.universeId);
+        expect(info.paused).to.be.eq(warperParams.paused);
       });
     });
 
@@ -186,9 +193,11 @@ describe('WarperWizardAdapterV1', () => {
           TAX_STRATEGY_IDS.FIXED_RATE_TAX_WITH_REWARD,
         );
 
-        expect(isFixedRateWithRewardTax).toBe(true);
-        expect(count.toBigInt()).toBe(1n);
-        expect(info).toMatchObject(warperParams);
+        expect(isFixedRateWithRewardTax).to.be.eq(true);
+        expect(count.toBigInt()).to.be.eq(1n);
+        expect(info.name).to.be.eq(warperParams.name);
+        expect(info.universeId).to.be.eq(warperParams.universeId);
+        expect(info.paused).to.be.eq(warperParams.paused);
       });
     });
   });

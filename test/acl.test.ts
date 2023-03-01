@@ -1,5 +1,6 @@
 import { ROLES_LIBRARY_IDS } from '@iqprotocol/iq-space-protocol';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { expect } from 'chai';
 import { deployments, ethers } from 'hardhat';
 import { ACLAdapter, IQSpace } from '../src';
 import { IACL } from '../src/contracts';
@@ -49,42 +50,42 @@ describe('ACLAdapter', () => {
   describe('adminRole', () => {
     it('should return admin role bytes', async () => {
       const bytes = await aclAdapter.adminRole();
-      expect(bytes).toBe(adminRole);
+      expect(bytes).to.be.eq(adminRole);
     });
   });
 
   describe('supervisorRole', () => {
     it('should return supervisor role bytes', async () => {
       const bytes = await aclAdapter.supervisorRole();
-      expect(bytes).toBe(supervisorRole);
+      expect(bytes).to.be.eq(supervisorRole);
     });
   });
 
   describe('listingWizardRole', () => {
     it('should return listing wizard role bytes', async () => {
       const bytes = await aclAdapter.listingWizardRole();
-      expect(bytes).toBe(listingWizardRole);
+      expect(bytes).to.be.eq(listingWizardRole);
     });
   });
 
   describe('universeWizardRole', () => {
     it('should return universe wizard role bytes', async () => {
       const bytes = await aclAdapter.universeWizardRole();
-      expect(bytes).toBe(universeWizardRole);
+      expect(bytes).to.be.eq(universeWizardRole);
     });
   });
 
   describe('tokenQuoteSignerRole', () => {
     it('should return token quote signer role bytes', async () => {
       const bytes = await aclAdapter.tokenQuoteSignerRole();
-      expect(bytes).toBe(tokenQuoteSignerRole);
+      expect(bytes).to.be.eq(tokenQuoteSignerRole);
     });
   });
 
   describe('grantRole', () => {
     it('should grant role', async () => {
       await aclAdapter.grantRole(ROLES_LIBRARY_IDS.SUPERVISOR_ROLE, toAccountId(random.address));
-      expect(await acl.hasRole(ROLES_LIBRARY_IDS.SUPERVISOR_ROLE, random.address)).toBe(true);
+      expect(await acl.hasRole(ROLES_LIBRARY_IDS.SUPERVISOR_ROLE, random.address)).to.be.eq(true);
     });
   });
 
@@ -95,7 +96,7 @@ describe('ACLAdapter', () => {
 
     it('should revoke role', async () => {
       await aclAdapter.revokeRole(ROLES_LIBRARY_IDS.SUPERVISOR_ROLE, toAccountId(random.address));
-      expect(await acl.hasRole(ROLES_LIBRARY_IDS.SUPERVISOR_ROLE, random.address)).toBe(false);
+      expect(await acl.hasRole(ROLES_LIBRARY_IDS.SUPERVISOR_ROLE, random.address)).to.be.eq(false);
     });
   });
 
@@ -106,14 +107,14 @@ describe('ACLAdapter', () => {
 
     it('should renounce role', async () => {
       await aclAdapter.renounceRole(ROLES_LIBRARY_IDS.LISTING_WIZARD_ROLE);
-      expect(await acl.hasRole(ROLES_LIBRARY_IDS.LISTING_WIZARD_ROLE, deployer.address)).toBe(false);
+      expect(await acl.hasRole(ROLES_LIBRARY_IDS.LISTING_WIZARD_ROLE, deployer.address)).to.be.eq(false);
     });
   });
 
   describe('hasRole', () => {
     describe('when user does not have role', () => {
       it('should return false', async () => {
-        expect(await aclAdapter.hasRole(ROLES_LIBRARY_IDS.LISTING_WIZARD_ROLE, toAccountId(deployer.address))).toBe(
+        expect(await aclAdapter.hasRole(ROLES_LIBRARY_IDS.LISTING_WIZARD_ROLE, toAccountId(deployer.address))).to.be.eq(
           false,
         );
       });
@@ -125,7 +126,7 @@ describe('ACLAdapter', () => {
       });
 
       it('should return true', async () => {
-        expect(await aclAdapter.hasRole(ROLES_LIBRARY_IDS.LISTING_WIZARD_ROLE, toAccountId(deployer.address))).toBe(
+        expect(await aclAdapter.hasRole(ROLES_LIBRARY_IDS.LISTING_WIZARD_ROLE, toAccountId(deployer.address))).to.be.eq(
           true,
         );
       });
@@ -134,7 +135,7 @@ describe('ACLAdapter', () => {
 
   describe('getRoleAdmin', () => {
     it('should return role admin', async () => {
-      expect(await aclAdapter.getRoleAdmin(ROLES_LIBRARY_IDS.ADMIN_ROLE)).toBe(ROLES_LIBRARY_IDS.ADMIN_ROLE);
+      expect(await aclAdapter.getRoleAdmin(ROLES_LIBRARY_IDS.ADMIN_ROLE)).to.be.eq(ROLES_LIBRARY_IDS.ADMIN_ROLE);
     });
   });
 
@@ -145,7 +146,7 @@ describe('ACLAdapter', () => {
 
     it('should return role members', async () => {
       const members = await aclAdapter.getRoleMembers(ROLES_LIBRARY_IDS.ADMIN_ROLE);
-      expect(members).toMatchObject([toAccountId(deployer.address), toAccountId(admin.address)]);
+      expect(members).to.be.eql([toAccountId(deployer.address), toAccountId(admin.address)]);
     });
   });
 });

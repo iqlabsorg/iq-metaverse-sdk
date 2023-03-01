@@ -66,7 +66,7 @@ export class AddressTranslator {
    * @param namespace Asset namespace.
    * @param tokenId Asset token ID.
    */
-  static createAssetId(accountId: AccountId, namespace: AssetNamespace, tokenId: string) {
+  static createAssetId(accountId: AccountId, namespace: AssetNamespace, tokenId: string): AssetId {
     return new AssetId({
       chainId: accountId.chainId,
       assetName: {

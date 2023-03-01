@@ -1,5 +1,6 @@
 import { solidityIdBytes4, TAX_STRATEGY_IDS } from '@iqprotocol/iq-space-protocol';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { expect } from 'chai';
 import { deployments, ethers } from 'hardhat';
 import { IQSpace, TaxStrategyRegistryAdapter } from '../src';
 import { IFixedRateTaxController, ITaxStrategyRegistry } from '../src/contracts';
@@ -33,7 +34,7 @@ describe('TaxStrategyRegistryAdapter', () => {
 
   describe('taxController', () => {
     it('should return tax strategy controller', async () => {
-      expect(await taxStrategyRegistryAdapter.taxController(TAX_STRATEGY_IDS.FIXED_RATE_TAX)).toMatchObject(
+      expect(await taxStrategyRegistryAdapter.taxController(TAX_STRATEGY_IDS.FIXED_RATE_TAX)).to.be.eql(
         toAccountId(taxController.address),
       );
     });
@@ -41,7 +42,7 @@ describe('TaxStrategyRegistryAdapter', () => {
 
   describe('taxStrategy', () => {
     it('should return tax strategy configuration', async () => {
-      expect(await taxStrategyRegistryAdapter.taxStrategy(TAX_STRATEGY_IDS.FIXED_RATE_TAX)).toMatchObject({
+      expect(await taxStrategyRegistryAdapter.taxStrategy(TAX_STRATEGY_IDS.FIXED_RATE_TAX)).to.be.eql({
         controller: toAccountId(taxController.address),
       });
     });
@@ -50,13 +51,15 @@ describe('TaxStrategyRegistryAdapter', () => {
   describe('isRegisteredListingStrategy', () => {
     describe('when strategy is not registered', () => {
       it('should return false', async () => {
-        expect(await taxStrategyRegistryAdapter.isRegisteredTaxStrategy(solidityIdBytes4('gibberish'))).toBe(false);
+        expect(await taxStrategyRegistryAdapter.isRegisteredTaxStrategy(solidityIdBytes4('gibberish'))).to.be.eq(false);
       });
     });
 
     describe('when strategy is registered', () => {
       it('should return true', async () => {
-        expect(await taxStrategyRegistryAdapter.isRegisteredTaxStrategy(TAX_STRATEGY_IDS.FIXED_RATE_TAX)).toBe(true);
+        expect(await taxStrategyRegistryAdapter.isRegisteredTaxStrategy(TAX_STRATEGY_IDS.FIXED_RATE_TAX)).to.be.eq(
+          true,
+        );
       });
     });
   });

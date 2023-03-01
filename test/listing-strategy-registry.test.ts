@@ -1,5 +1,6 @@
 import { LISTING_STRATEGY_IDS, solidityIdBytes4, TAX_STRATEGY_IDS } from '@iqprotocol/iq-space-protocol';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { expect } from 'chai';
 import { deployments, ethers } from 'hardhat';
 import { IQSpace, ListingStrategyRegistryAdapter } from '../src';
 import { IFixedRateListingController, IFixedRateTaxController, IListingStrategyRegistry } from '../src/contracts';
@@ -35,7 +36,7 @@ describe('ListingStrategyRegistryAdapter', () => {
 
   describe('listingController', () => {
     it('should return listing strategy controller', async () => {
-      expect(await listingStrategyRegistryAdapter.listingController(LISTING_STRATEGY_IDS.FIXED_RATE)).toMatchObject(
+      expect(await listingStrategyRegistryAdapter.listingController(LISTING_STRATEGY_IDS.FIXED_RATE)).to.be.eql(
         toAccountId(controller.address),
       );
     });
@@ -43,7 +44,7 @@ describe('ListingStrategyRegistryAdapter', () => {
 
   describe('listingTaxId', () => {
     it('should return tax strategy id for listing strategy', async () => {
-      expect(await listingStrategyRegistryAdapter.listingTaxId(LISTING_STRATEGY_IDS.FIXED_RATE)).toBe(
+      expect(await listingStrategyRegistryAdapter.listingTaxId(LISTING_STRATEGY_IDS.FIXED_RATE)).to.be.eq(
         TAX_STRATEGY_IDS.FIXED_RATE_TAX,
       );
     });
@@ -51,7 +52,7 @@ describe('ListingStrategyRegistryAdapter', () => {
 
   describe('listingStrategy', () => {
     it('should return listing strategy configuration', async () => {
-      expect(await listingStrategyRegistryAdapter.listingStrategy(LISTING_STRATEGY_IDS.FIXED_RATE)).toMatchObject({
+      expect(await listingStrategyRegistryAdapter.listingStrategy(LISTING_STRATEGY_IDS.FIXED_RATE)).to.be.eql({
         controller: toAccountId(controller.address),
         taxStrategyId: TAX_STRATEGY_IDS.FIXED_RATE_TAX,
       });
@@ -60,7 +61,7 @@ describe('ListingStrategyRegistryAdapter', () => {
 
   describe('listingTaxController', () => {
     it('should return tax controller account ID for listing strategy', async () => {
-      expect(await listingStrategyRegistryAdapter.listingTaxController(LISTING_STRATEGY_IDS.FIXED_RATE)).toMatchObject(
+      expect(await listingStrategyRegistryAdapter.listingTaxController(LISTING_STRATEGY_IDS.FIXED_RATE)).to.be.eql(
         toAccountId(taxController.address),
       );
     });
@@ -69,17 +70,17 @@ describe('ListingStrategyRegistryAdapter', () => {
   describe('isRegisteredListingStrategy', () => {
     describe('when strategy is not registered', () => {
       it('should return false', async () => {
-        expect(await listingStrategyRegistryAdapter.isRegisteredListingStrategy(solidityIdBytes4('gibberish'))).toBe(
-          false,
-        );
+        expect(
+          await listingStrategyRegistryAdapter.isRegisteredListingStrategy(solidityIdBytes4('gibberish')),
+        ).to.be.eq(false);
       });
     });
 
     describe('when strategy is registered', () => {
       it('should return true', async () => {
-        expect(await listingStrategyRegistryAdapter.isRegisteredListingStrategy(LISTING_STRATEGY_IDS.FIXED_RATE)).toBe(
-          true,
-        );
+        expect(
+          await listingStrategyRegistryAdapter.isRegisteredListingStrategy(LISTING_STRATEGY_IDS.FIXED_RATE),
+        ).to.be.eq(true);
       });
     });
   });

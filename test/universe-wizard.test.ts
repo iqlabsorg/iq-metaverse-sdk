@@ -6,6 +6,7 @@ import {
   TAX_STRATEGY_IDS,
 } from '@iqprotocol/iq-space-protocol';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { expect } from 'chai';
 import { BigNumber, BytesLike, ContractTransaction } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import { IQSpace, UniverseParams, UniverseWizardAdapterV1 } from '../src';
@@ -13,10 +14,10 @@ import {
   ERC20Mock,
   ERC721Mock,
   IMetahub,
+  ITaxTermsRegistry,
   IUniverseRegistry,
   IUniverseWizardV1,
   IWarperManager,
-  ITaxTermsRegistry,
 } from '../src/contracts';
 import { mintAndApproveNFTs } from './helpers/asset';
 import { createWarper } from './helpers/setup';
@@ -109,10 +110,8 @@ describe('UniverseWizardAdapterV1', () => {
 
     it('should create universe', async () => {
       const universeInfo = await universeRegistry.universe(COMMON_ID);
-      expect(universeInfo).toMatchObject({
-        name: universeParams.name,
-        paymentTokens: universeParams.paymentTokens.map(x => x.address),
-      });
+      expect(universeInfo.name).to.be.eq(universeParams.name);
+      expect(universeInfo.paymentTokens).to.include.members(universeParams.paymentTokens.map(x => x.address));
     });
   });
 
@@ -138,12 +137,13 @@ describe('UniverseWizardAdapterV1', () => {
           TAX_STRATEGY_IDS.FIXED_RATE_TAX,
         );
 
-        expect(isFixedRateTax).toBe(true);
-        expect(universeInfo).toMatchObject({
-          name: universeParams.name,
-          paymentTokens: universeParams.paymentTokens.map(x => x.address),
-        });
-        expect(warperInfo).toMatchObject({ ...warperParams, universeId: COMMON_ID });
+        expect(isFixedRateTax).to.be.eq(true);
+        expect(universeInfo.name).to.be.eq(universeParams.name);
+        expect(universeInfo.paymentTokens).to.include.members(universeParams.paymentTokens.map(x => x.address));
+        expect(warperInfo.name).to.be.eq(warperParams.name);
+        expect(warperInfo.universeId).to.be.eq(COMMON_ID);
+        expect(warperInfo.paused).to.be.eq(warperParams.paused);
+        expect(warperInfo.universeId).to.be.eq(COMMON_ID);
       });
     });
 
@@ -162,12 +162,13 @@ describe('UniverseWizardAdapterV1', () => {
           TAX_STRATEGY_IDS.FIXED_RATE_TAX_WITH_REWARD,
         );
 
-        expect(isFixedRateWithRewardTax).toBe(true);
-        expect(universeInfo).toMatchObject({
-          name: universeParams.name,
-          paymentTokens: universeParams.paymentTokens.map(x => x.address),
-        });
-        expect(warperInfo).toMatchObject({ ...warperParams, universeId: COMMON_ID });
+        expect(isFixedRateWithRewardTax).to.be.eq(true);
+        expect(universeInfo.name).to.be.eq(universeParams.name);
+        expect(universeInfo.paymentTokens).to.include.members(universeParams.paymentTokens.map(x => x.address));
+        expect(warperInfo.name).to.be.eq(warperParams.name);
+        expect(warperInfo.universeId).to.be.eq(COMMON_ID);
+        expect(warperInfo.paused).to.be.eq(warperParams.paused);
+        expect(warperInfo.universeId).to.be.eq(COMMON_ID);
       });
     });
   });
@@ -189,13 +190,14 @@ describe('UniverseWizardAdapterV1', () => {
           TAX_STRATEGY_IDS.FIXED_RATE_TAX,
         );
 
-        expect(isFixedRateTax).toBe(true);
+        expect(isFixedRateTax).to.be.eq(true);
 
-        expect(universeInfo).toMatchObject({
-          name: universeParams.name,
-          paymentTokens: universeParams.paymentTokens.map(x => x.address),
-        });
-        expect(warperInfo).toMatchObject({ universeId: COMMON_ID });
+        expect(universeInfo.name).to.be.eq(universeParams.name);
+        expect(universeInfo.paymentTokens).to.include.members(universeParams.paymentTokens.map(x => x.address));
+        expect(warperInfo.name).to.be.eq(warperParams.name);
+        expect(warperInfo.universeId).to.be.eq(COMMON_ID);
+        expect(warperInfo.paused).to.be.eq(warperParams.paused);
+        expect(warperInfo.universeId).to.be.eq(COMMON_ID);
       });
     });
 
@@ -214,12 +216,13 @@ describe('UniverseWizardAdapterV1', () => {
           TAX_STRATEGY_IDS.FIXED_RATE_TAX_WITH_REWARD,
         );
 
-        expect(isFixedRateWithRewardTax).toBe(true);
-        expect(universeInfo).toMatchObject({
-          name: universeParams.name,
-          paymentTokens: universeParams.paymentTokens.map(x => x.address),
-        });
-        expect(warperInfo).toMatchObject({ universeId: COMMON_ID });
+        expect(isFixedRateWithRewardTax).to.be.eq(true);
+        expect(universeInfo.name).to.be.eq(universeParams.name);
+        expect(universeInfo.paymentTokens).to.include.members(universeParams.paymentTokens.map(x => x.address));
+        expect(warperInfo.name).to.be.eq(warperParams.name);
+        expect(warperInfo.universeId).to.be.eq(COMMON_ID);
+        expect(warperInfo.paused).to.be.eq(warperParams.paused);
+        expect(warperInfo.universeId).to.be.eq(COMMON_ID);
       });
     });
   });
