@@ -1,9 +1,9 @@
+import { ListingStrategyRegistry } from '@iqprotocol/iq-space-protocol-light/typechain';
 import { AccountId } from 'caip';
 import { BytesLike, ContractTransaction } from 'ethers';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
-import { ListingStrategyRegistry } from '../contracts';
 import { ListingStrategyConfig } from '../types';
 
 export class ListingStrategyRegistryAdapter extends Adapter {

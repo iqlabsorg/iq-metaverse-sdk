@@ -1,9 +1,9 @@
 import { ROLES_LIBRARY_IDS } from '@iqprotocol/iq-space-protocol';
+import { IACL } from '@iqprotocol/iq-space-protocol/typechain';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { deployments, ethers } from 'hardhat';
 import { ACLAdapter, IQSpace } from '../src';
-import { IACL } from '../src/contracts';
 import { toAccountId } from './helpers/utils';
 
 /**
@@ -146,7 +146,7 @@ describe('ACLAdapter', () => {
 
     it('should return role members', async () => {
       const members = await aclAdapter.getRoleMembers(ROLES_LIBRARY_IDS.ADMIN_ROLE);
-      expect(members).to.be.eql([toAccountId(deployer.address), toAccountId(admin.address)]);
+      expect(members).to.be.deep.equal([toAccountId(deployer.address), toAccountId(admin.address)]);
     });
   });
 });

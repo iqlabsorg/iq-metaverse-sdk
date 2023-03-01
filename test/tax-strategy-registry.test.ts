@@ -1,9 +1,9 @@
 import { solidityIdBytes4, TAX_STRATEGY_IDS } from '@iqprotocol/iq-space-protocol';
+import { IFixedRateTaxController, ITaxStrategyRegistry } from '@iqprotocol/iq-space-protocol/typechain';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { deployments, ethers } from 'hardhat';
 import { IQSpace, TaxStrategyRegistryAdapter } from '../src';
-import { IFixedRateTaxController, ITaxStrategyRegistry } from '../src/contracts';
 import { toAccountId } from './helpers/utils';
 
 /**
@@ -34,7 +34,7 @@ describe('TaxStrategyRegistryAdapter', () => {
 
   describe('taxController', () => {
     it('should return tax strategy controller', async () => {
-      expect(await taxStrategyRegistryAdapter.taxController(TAX_STRATEGY_IDS.FIXED_RATE_TAX)).to.be.eql(
+      expect(await taxStrategyRegistryAdapter.taxController(TAX_STRATEGY_IDS.FIXED_RATE_TAX)).to.be.deep.equal(
         toAccountId(taxController.address),
       );
     });
@@ -42,7 +42,7 @@ describe('TaxStrategyRegistryAdapter', () => {
 
   describe('taxStrategy', () => {
     it('should return tax strategy configuration', async () => {
-      expect(await taxStrategyRegistryAdapter.taxStrategy(TAX_STRATEGY_IDS.FIXED_RATE_TAX)).to.be.eql({
+      expect(await taxStrategyRegistryAdapter.taxStrategy(TAX_STRATEGY_IDS.FIXED_RATE_TAX)).to.be.deep.equal({
         controller: toAccountId(taxController.address),
       });
     });

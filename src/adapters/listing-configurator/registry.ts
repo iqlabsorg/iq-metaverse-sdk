@@ -1,9 +1,9 @@
+import { ListingConfiguratorRegistry } from '@iqprotocol/iq-space-protocol-light/typechain';
 import { AccountId } from 'caip';
 import { ContractTransaction } from 'ethers';
 import { Adapter } from '../../adapter';
 import { AddressTranslator } from '../../address-translator';
 import { ContractResolver } from '../../contract-resolver';
-import { ListingConfiguratorRegistry } from '../../contracts';
 
 export class ListingConfiguratorRegistryAdapter extends Adapter {
   private readonly contract: ListingConfiguratorRegistry;

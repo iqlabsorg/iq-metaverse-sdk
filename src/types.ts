@@ -1,9 +1,11 @@
 import { BigNumberish } from '@ethersproject/bignumber';
+import { IListingTermsRegistry, ITokenQuote } from '@iqprotocol/iq-space-protocol-light/typechain';
+import { Listings } from '@iqprotocol/iq-space-protocol-light/typechain/contracts/listing/listing-configurator/AbstractListingConfigurator';
+import { Accounts } from '@iqprotocol/iq-space-protocol-light/typechain/contracts/metahub/core/IMetahub';
+import { Rentings } from '@iqprotocol/iq-space-protocol-light/typechain/contracts/renting/renting-manager/IRentingManager';
+import { Warpers } from '@iqprotocol/iq-space-protocol-light/typechain/contracts/warper/IWarperController';
 import { AccountId, AssetId, AssetType, ChainId } from 'caip';
 import { BigNumber, BytesLike, Overrides as BaseOverrides, Signer } from 'ethers';
-import { IListingTermsRegistry } from './contracts';
-import { Accounts, ITokenQuote, Listings, Rentings } from './contracts/contracts/metahub/core/IMetahub';
-import { Warpers } from './contracts/contracts/warper/IWarperController';
 
 export type Address = string;
 

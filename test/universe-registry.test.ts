@@ -1,9 +1,9 @@
+import { IUniverseRegistry, IUniverseWizardV1 } from '@iqprotocol/iq-space-protocol/typechain';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AccountId } from 'caip';
 import { expect } from 'chai';
 import { deployments, ethers } from 'hardhat';
 import { IQSpace, UniverseRegistryAdapter } from '../src';
-import { IUniverseRegistry, IUniverseWizardV1 } from '../src/contracts';
 import { setupUniverse } from './helpers/setup';
 import { COMMON_ID, toAccountId } from './helpers/utils';
 
@@ -46,9 +46,7 @@ describe('UniverseRegistryAdapter', () => {
   describe('findUniverseByCreationTransaction', () => {
     it('should return universe creation data (info)', async () => {
       const data = await universeRegistryAdapter.findUniverseByCreationTransaction(universeCreationTxHash);
-      expect(data?.name).to.be.eq(universeName);
-      expect(data?.paymentTokens).to.be.eql(universePaymentTokens);
-      expect(data?.id.toBigInt()).to.be.eq(COMMON_ID.toBigInt());
+      expect(data).to.be.deep.equal({ name: universeName, paymentTokens: universePaymentTokens, id: COMMON_ID });
     });
   });
 
@@ -85,7 +83,7 @@ describe('UniverseRegistryAdapter', () => {
     it('should return universe info', async () => {
       const info = await universeRegistryAdapter.universeInfo(COMMON_ID);
       expect(info.name).to.be.eq(universeName);
-      expect(info.paymentTokens).to.be.eql(universePaymentTokens);
+      expect(info.paymentTokens).to.be.deep.equal(universePaymentTokens);
     });
   });
 

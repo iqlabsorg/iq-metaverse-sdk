@@ -1,10 +1,15 @@
 import { EMPTY_BYTES32_DATA_HEX, EMPTY_BYTES_DATA_HEX } from '@iqprotocol/iq-space-protocol-light';
+import {
+  ITaxTermsRegistry,
+  IUniverseRegistry,
+  IWarperManager,
+  UniverseWizardV1,
+} from '@iqprotocol/iq-space-protocol-light/typechain';
 import { AccountId, AssetType } from 'caip';
 import { BytesLike, constants, ContractTransaction } from 'ethers';
 import { Adapter } from '../../adapter';
 import { AddressTranslator } from '../../address-translator';
 import { ContractResolver } from '../../contract-resolver';
-import { ITaxTermsRegistry, IUniverseRegistry, IWarperManager, UniverseWizardV1 } from '../../contracts';
 import { UniverseParams } from '../../types';
 
 export class UniverseWizardAdapterV1 extends Adapter {

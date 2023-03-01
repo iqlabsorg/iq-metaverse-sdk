@@ -36,7 +36,6 @@ pids
 artifacts/
 cache/
 contracts/
-src/contracts
 
 addresses.json
 hardhat.addresses.json

@@ -40,10 +40,6 @@ const config: HardhatUserConfig = {
       saveDeployments: false,
     },
   },
-  typechain: {
-    outDir: 'src/contracts',
-    target: 'ethers-v5',
-  },
 };
 
 export default config;

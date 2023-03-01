@@ -5,11 +5,6 @@ import {
   makeWarperPresetInitData,
   TAX_STRATEGY_IDS,
 } from '@iqprotocol/iq-space-protocol';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { expect } from 'chai';
-import { BigNumber, BytesLike, ContractTransaction } from 'ethers';
-import { deployments, ethers } from 'hardhat';
-import { IQSpace, UniverseParams, UniverseWizardAdapterV1 } from '../src';
 import {
   ERC20Mock,
   ERC721Mock,
@@ -18,7 +13,12 @@ import {
   IUniverseRegistry,
   IUniverseWizardV1,
   IWarperManager,
-} from '../src/contracts';
+} from '@iqprotocol/iq-space-protocol/typechain';
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { expect } from 'chai';
+import { BigNumber, BytesLike, ContractTransaction } from 'ethers';
+import { deployments, ethers } from 'hardhat';
+import { IQSpace, UniverseParams, UniverseWizardAdapterV1 } from '../src';
 import { mintAndApproveNFTs } from './helpers/asset';
 import { createWarper } from './helpers/setup';
 import { COMMON_ID, COMMON_REWARD_RATE, COMMON_TAX_RATE, toAccountId } from './helpers/utils';

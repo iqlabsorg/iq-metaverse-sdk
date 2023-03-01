@@ -1,9 +1,9 @@
+import { IListingManager } from '@iqprotocol/iq-space-protocol/typechain';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AssetType } from 'caip';
 import { expect } from 'chai';
 import { deployments, ethers } from 'hardhat';
-import { ListingManagerAdapter, IQSpace } from '../src';
-import { IListingManager } from '../src/contracts';
+import { IQSpace, ListingManagerAdapter } from '../src';
 import { setupForRenting } from './helpers/setup';
 import { COMMON_ID, toAccountId } from './helpers/utils';
 
@@ -93,7 +93,7 @@ describe('ListingManagerAdapter', () => {
   describe('listing', () => {
     it('should return listing info', async () => {
       const listingInfo = await listingManagerAdapter.listing(COMMON_ID);
-      expect(listingInfo.id).to.be.eql(COMMON_ID);
+      expect(listingInfo.id).to.be.deep.equal(COMMON_ID);
       expect(listingInfo.lister.address).to.be.eq(lister.address);
     });
   });
@@ -109,7 +109,7 @@ describe('ListingManagerAdapter', () => {
     it('should return a list of listings', async () => {
       const listing = await listingManagerAdapter.listing(COMMON_ID);
       const listings = await listingManagerAdapter.listings(0, 1);
-      expect(listings[0]).to.be.eql(listing);
+      expect(listings[0]).to.be.deep.equal(listing);
     });
   });
 
@@ -133,7 +133,7 @@ describe('ListingManagerAdapter', () => {
     it('should return a list of user listings', async () => {
       const listing = await listingManagerAdapter.listing(COMMON_ID);
       const listings = await listingManagerAdapter.userListings(toAccountId(lister.address), 0, 1);
-      expect(listings[0]).to.be.eql(listing);
+      expect(listings[0]).to.be.deep.equal(listing);
     });
   });
 
@@ -148,21 +148,21 @@ describe('ListingManagerAdapter', () => {
     it('should return a list of asset type listings', async () => {
       const listing = await listingManagerAdapter.listing(COMMON_ID);
       const listings = await listingManagerAdapter.assetListings(collectionReference, 0, 1);
-      expect(listings[0]).to.be.eql(listing);
+      expect(listings[0]).to.be.deep.equal(listing);
     });
   });
 
   describe('findListingIdByCreationTransaction', () => {
     it('should return created listing id from transaction hash', async () => {
       const listingId = await listingManagerAdapter.findListingIdByCreationTransaction(listingCreationTxHash);
-      expect(listingId).to.be.eql(COMMON_ID);
+      expect(listingId).to.be.eq(COMMON_ID);
     });
   });
 
   describe('findListingByCreationTransaction', () => {
     it('should return created listing info from transaction hash', async () => {
       const listing = await listingManagerAdapter.findListingByCreationTransaction(listingCreationTxHash);
-      expect(listing?.id).to.be.eql(COMMON_ID);
+      expect(listing?.id).to.be.deep.equal(COMMON_ID);
       expect(listing?.lister.address).to.be.eq(lister.address);
     });
   });

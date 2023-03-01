@@ -1,5 +1,5 @@
 import { EMPTY_BYTES4_DATA_HEX, EMPTY_BYTES_DATA_HEX } from '@iqprotocol/iq-space-protocol-light';
-import { IListingTermsRegistry } from './contracts';
+import { IListingTermsRegistry } from '@iqprotocol/iq-space-protocol-light/typechain';
 
 export const pick = <T extends object, K extends keyof T>(obj: T, names: readonly K[]): Pick<T, K> => {
   const result = {} as Pick<T, K>;

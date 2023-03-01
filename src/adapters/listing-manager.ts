@@ -1,10 +1,10 @@
+import { ListingManager } from '@iqprotocol/iq-space-protocol-light/typechain';
+import { Listings } from '@iqprotocol/iq-space-protocol-light/typechain/contracts/metahub/core/IMetahub';
 import { AccountId, AssetType } from 'caip';
 import { BigNumber, BigNumberish, ContractTransaction } from 'ethers';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
-import { ListingManager } from '../contracts';
-import { Listings } from '../contracts/contracts/metahub/core/IMetahub';
 import { Listing } from '../types';
 import { pick } from '../utils';
 

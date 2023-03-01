@@ -2,12 +2,12 @@ import {
   makeFixedRateListingTermsFromUnconverted,
   makeFixedRateWithRewardListingTermsFromUnconverted,
 } from '@iqprotocol/iq-space-protocol';
+import { IListingTermsRegistry } from '@iqprotocol/iq-space-protocol/typechain';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { BigNumberish } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import { AddressTranslator, AssetType, IQSpace, ListingTermsInfo, ListingTermsRegistryAdapter } from '../src';
-import { IListingTermsRegistry } from '../src/contracts';
 import { findListingTermsIdByTransaction } from './helpers/listing-renting';
 import { createListing, setupForRenting, setupUniverseAndRegisteredWarper } from './helpers/setup';
 import { COMMON_BASE_RATE, COMMON_ID, COMMON_REWARD_RATE, toAccountId } from './helpers/utils';
@@ -67,7 +67,7 @@ describe('ListingTermsRegistryAdapter', () => {
       it('should return listing terms with fixed rate tax', async () => {
         const terms = await listingTermsRegistryAdapter.listingTerms(COMMON_ID);
 
-        expect(terms).to.be.eql(fixedTermsInfo);
+        expect(terms).to.be.deep.equal(fixedTermsInfo);
       });
     });
 
@@ -78,7 +78,7 @@ describe('ListingTermsRegistryAdapter', () => {
 
       it('should return listing terms with fixed rate and reward tax', async () => {
         const terms = await listingTermsRegistryAdapter.listingTerms(COMMON_ID);
-        expect(terms).to.be.eql(fixedTermsWithRewardInfo);
+        expect(terms).to.be.deep.equal(fixedTermsWithRewardInfo);
       });
     });
   });
@@ -96,7 +96,7 @@ describe('ListingTermsRegistryAdapter', () => {
           5,
         );
         expect(infos.length).to.be.greaterThan(0);
-        expect(infos[0]).to.be.eql(fixedTermsInfo);
+        expect(infos[0]).to.be.deep.equal(fixedTermsInfo);
       });
     });
 
@@ -115,14 +115,14 @@ describe('ListingTermsRegistryAdapter', () => {
         const termsId = await listingTermsRegistryAdapter.findListingTermsIdByCreationTransaction(
           listingCreationTxHash,
         );
-        expect(termsId).to.be.eql(COMMON_ID);
+        expect(termsId).to.be.eq(COMMON_ID);
       });
     });
 
     describe('findListingTermsByCreationTransaction', () => {
       it('should return created listing info from transaction hash', async () => {
         const terms = await listingTermsRegistryAdapter.findListingTermsByCreationTransaction(listingCreationTxHash);
-        expect(terms).to.be.eql(fixedTermsInfo);
+        expect(terms).to.be.deep.equal(fixedTermsInfo);
       });
     });
   });

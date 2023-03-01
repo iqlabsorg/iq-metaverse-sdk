@@ -1,5 +1,5 @@
+import { IWarperPresetFactory } from '@iqprotocol/iq-space-protocol/typechain';
 import { ethers } from 'hardhat';
-import { IWarperPresetFactory } from '../../src/contracts';
 
 export const findWarperByDeploymentTransaction = async (transactionHash: string): Promise<string | undefined> => {
   const warperPresetFactory = (await ethers.getContract('WarperPresetFactory')) as IWarperPresetFactory;

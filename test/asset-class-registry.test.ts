@@ -1,8 +1,8 @@
+import { ERC721AssetVault, ERC721WarperController, IAssetClassRegistry } from '@iqprotocol/iq-space-protocol/typechain';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { deployments, ethers } from 'hardhat';
 import { AssetClassRegistryAdapter, IQSpace } from '../src';
-import { ERC721AssetVault, ERC721WarperController, IAssetClassRegistry } from '../src/contracts';
 import { toAccountId } from './helpers/utils';
 
 /**

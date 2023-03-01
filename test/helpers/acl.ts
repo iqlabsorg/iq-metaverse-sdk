@@ -1,6 +1,6 @@
 import { ROLES_LIBRARY_IDS } from '@iqprotocol/iq-space-protocol';
+import { IACL } from '@iqprotocol/iq-space-protocol/typechain';
 import { ethers } from 'hardhat';
-import { IACL } from '../../src/contracts';
 
 export const grantWizardRolesToDeployer = async (): Promise<void> => {
   const deployer = await ethers.getNamedSigner('deployer');

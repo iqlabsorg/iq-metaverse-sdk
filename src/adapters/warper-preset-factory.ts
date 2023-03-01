@@ -1,9 +1,9 @@
+import { IWarperPresetFactory, WarperPresetFactory } from '@iqprotocol/iq-space-protocol-light/typechain';
 import { AccountId, AssetType } from 'caip';
 import { BytesLike, ContractTransaction } from 'ethers';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
-import { IWarperPresetFactory, WarperPresetFactory } from '../contracts';
 import { WarperPreset } from '../types';
 
 export class WarperPresetFactoryAdapter extends Adapter {

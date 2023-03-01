@@ -1,10 +1,13 @@
+import {
+  IListingConfiguratorPresetFactory,
+  ListingConfiguratorPresetFactory,
+} from '@iqprotocol/iq-space-protocol-light/typechain';
 import { AccountId } from 'caip';
 import { BytesLike, ContractTransaction } from 'ethers';
-import { ListingConfiguratorPreset } from '../../types';
 import { Adapter } from '../../adapter';
 import { AddressTranslator } from '../../address-translator';
 import { ContractResolver } from '../../contract-resolver';
-import { IListingConfiguratorPresetFactory, ListingConfiguratorPresetFactory } from '../../contracts';
+import { ListingConfiguratorPreset } from '../../types';
 
 export class ListingConfiguratorPresetFactoryAdapter extends Adapter {
   private readonly contract: ListingConfiguratorPresetFactory;

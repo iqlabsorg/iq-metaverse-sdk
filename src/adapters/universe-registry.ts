@@ -1,9 +1,9 @@
+import { UniverseRegistry } from '@iqprotocol/iq-space-protocol-light/typechain';
 import { AccountId, AssetType } from 'caip';
 import { BigNumber, BigNumberish, ContractTransaction } from 'ethers';
 import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { ContractResolver } from '../contract-resolver';
-import { UniverseRegistry } from '../contracts';
 import { UniverseInfo } from '../types';
 
 export class UniverseRegistryAdapter extends Adapter {

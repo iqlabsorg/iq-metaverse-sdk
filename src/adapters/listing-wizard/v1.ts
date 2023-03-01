@@ -1,11 +1,11 @@
+import { IListingTermsRegistry, ListingWizardV1 } from '@iqprotocol/iq-space-protocol-light/typechain';
+import { Listings } from '@iqprotocol/iq-space-protocol-light/typechain/contracts/listing/listing-manager/ListingManager';
+import { Assets } from '@iqprotocol/iq-space-protocol-light/typechain/contracts/metahub/core/IMetahub';
 import { AccountId } from 'caip';
 import { BigNumber, BigNumberish, BytesLike, ContractTransaction } from 'ethers';
 import { Adapter } from '../../adapter';
 import { AddressTranslator } from '../../address-translator';
 import { ContractResolver } from '../../contract-resolver';
-import { IListingTermsRegistry, ListingWizardV1 } from '../../contracts';
-import { Listings } from '../../contracts/contracts/listing/listing-manager/ListingManager';
-import { Assets } from '../../contracts/contracts/metahub/core/IMetahub';
 import { AssetListingParams } from '../../types';
 
 export class ListingWizardAdapterV1 extends Adapter {

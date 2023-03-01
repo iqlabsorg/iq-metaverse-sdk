@@ -27,6 +27,7 @@ export {
 } from './adapters';
 export { AddressTranslator } from './address-translator';
 export { createAsset } from './asset';
+export { AgreementTermsCoder, AssetCoder } from './coders';
 export { IQSpace } from './iqspace';
 export type {
   AccountBalance,

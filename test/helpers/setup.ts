@@ -9,10 +9,6 @@ import {
   makeUniverseParams,
   makeWarperPresetInitData,
 } from '@iqprotocol/iq-space-protocol';
-import { AccountId, AssetType } from 'caip';
-import { BigNumber } from 'ethers';
-import { ethers } from 'hardhat';
-import { AddressTranslator } from '../../src';
 import {
   ERC721Mock,
   IListingManager,
@@ -23,7 +19,11 @@ import {
   IUniverseWizardV1,
   IWarperManager,
   IWarperPresetFactory,
-} from '../../src/contracts';
+} from '@iqprotocol/iq-space-protocol/typechain';
+import { AccountId, AssetType } from 'caip';
+import { BigNumber } from 'ethers';
+import { ethers } from 'hardhat';
+import { AddressTranslator } from '../../src';
 import { grantWizardRolesToDeployer } from './acl';
 import { mintAndApproveNFTs } from './asset';
 import { COMMON_BASE_RATE, COMMON_ID, COMMON_REWARD_RATE, COMMON_TAX_RATE, SECONDS_IN_DAY, toAccountId } from './utils';

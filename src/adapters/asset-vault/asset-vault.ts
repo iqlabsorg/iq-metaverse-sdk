@@ -1,10 +1,10 @@
+import { AssetVault } from '@iqprotocol/iq-space-protocol-light/typechain';
 import { AccountId } from 'caip';
 import { BigNumberish, ContractTransaction } from 'ethers';
 import { AssetNamespace } from 'src/types';
 import { Adapter } from '../../adapter';
 import { AddressTranslator } from '../../address-translator';
 import { ContractResolver } from '../../contract-resolver';
-import { AssetVault } from '../../contracts';
 
 export abstract class AssetVaultAdapter extends Adapter {
   private readonly _contract: AssetVault;

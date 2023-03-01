@@ -3,11 +3,11 @@ import {
   makeFixedRateWithRewardTaxTermsFromUnconverted,
   TAX_STRATEGY_IDS,
 } from '@iqprotocol/iq-space-protocol';
+import { ITaxTermsRegistry } from '@iqprotocol/iq-space-protocol/typechain';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { deployments, ethers } from 'hardhat';
 import { AssetType, IQSpace, TaxTermsRegistryAdapter } from '../src';
-import { ITaxTermsRegistry } from '../src/contracts';
 import { createWarper, setupForListing, setupUniverse, setupUniverseAndWarper } from './helpers/setup';
 import { COMMON_ID, COMMON_REWARD_RATE, COMMON_TAX_RATE, toAccountId } from './helpers/utils';
 

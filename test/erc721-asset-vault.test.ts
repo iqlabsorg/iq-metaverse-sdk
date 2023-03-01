@@ -1,9 +1,9 @@
+import { IERC721AssetVault } from '@iqprotocol/iq-space-protocol/typechain';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { Contract } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import { ERC721AssetVaultAdapter, IQSpace } from '../src';
-import { IERC721AssetVault } from '../src/contracts';
 import { toAccountId } from './helpers/utils';
 
 /**
@@ -65,7 +65,7 @@ describe('ERC721AssetVaultAdapter', () => {
 
   describe('metahub', () => {
     it('should return metahub account id', async () => {
-      expect(await assetVaultAdapter.metahub()).to.be.eql(toAccountId(metahub.address));
+      expect(await assetVaultAdapter.metahub()).to.be.deep.equal(toAccountId(metahub.address));
     });
   });
 });
