@@ -67,7 +67,7 @@ describe('ListingTermsRegistryAdapter', () => {
       it('should return listing terms with fixed rate tax', async () => {
         const terms = await listingTermsRegistryAdapter.listingTerms(COMMON_ID);
 
-        expect(terms).to.be.eql(fixedTermsInfo);
+        expect(terms).to.be.deep.equal(fixedTermsInfo);
       });
     });
 
@@ -78,7 +78,7 @@ describe('ListingTermsRegistryAdapter', () => {
 
       it('should return listing terms with fixed rate and reward tax', async () => {
         const terms = await listingTermsRegistryAdapter.listingTerms(COMMON_ID);
-        expect(terms).to.be.eql(fixedTermsWithRewardInfo);
+        expect(terms).to.be.deep.equal(fixedTermsWithRewardInfo);
       });
     });
   });
@@ -96,9 +96,7 @@ describe('ListingTermsRegistryAdapter', () => {
           5,
         );
         expect(infos.length).to.be.greaterThan(0);
-        expect(infos[0].id).to.be.eq(fixedTermsInfo.id);
-        expect(infos[0].strategyId).to.be.eq(fixedTermsInfo.strategyId);
-        expect(infos[0].strategyData).to.be.eq(fixedTermsInfo.strategyData);
+        expect(infos[0]).to.be.deep.equal(fixedTermsInfo);
       });
     });
 
@@ -124,7 +122,7 @@ describe('ListingTermsRegistryAdapter', () => {
     describe('findListingTermsByCreationTransaction', () => {
       it('should return created listing info from transaction hash', async () => {
         const terms = await listingTermsRegistryAdapter.findListingTermsByCreationTransaction(listingCreationTxHash);
-        expect(terms).to.be.eql(fixedTermsInfo);
+        expect(terms).to.be.deep.equal(fixedTermsInfo);
       });
     });
   });

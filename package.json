@@ -29,7 +29,7 @@
     "deploy:clean": "rimraf hardhat.addresses.json && rimraf active-deployment",
     "coverage": "nyc yarn test",
     "coverage:clean": "rimraf coverage && rimraf .nyc_output",
-    "clean": "run-s build:clean typechain:clean cache:clean docs:clean logs:clean deploy:clean coverage:clean",
+    "clean": "run-s build:clean cache:clean docs:clean logs:clean deploy:clean coverage:clean",
     "lint": "eslint **/*.ts",
     "lint:fix": "eslint --fix **/*.ts"
   },

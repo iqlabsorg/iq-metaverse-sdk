@@ -125,7 +125,7 @@ describe('MetahubAdapter', () => {
 
   describe('getChainId', () => {
     it('returns correct chain ID', async () => {
-      expect(await metahubAdapter.getChainId()).to.be.eql(getChainId());
+      expect(await metahubAdapter.getChainId()).to.be.deep.equal(getChainId());
     });
   });
 
@@ -144,7 +144,7 @@ describe('MetahubAdapter', () => {
 
     it('returns base token', async () => {
       const baseTokenInfo = await metahubAdapter.baseToken();
-      expect(baseTokenInfo).to.be.eql(baseTokenInfoRaw);
+      expect(baseTokenInfo).to.be.deep.equal(baseTokenInfoRaw);
     });
   });
 
@@ -190,7 +190,7 @@ describe('MetahubAdapter', () => {
 
       it('should return the list of supported assets', async () => {
         const assets = await metahubAdapter.supportedAssets(0, 10);
-        expect(assets[0]).to.be.eql(collectionReference);
+        expect(assets[0]).to.be.deep.equal(collectionReference);
       });
     });
   });
@@ -237,7 +237,7 @@ describe('MetahubAdapter', () => {
           const balances = await metahubAdapter.balances(listerAccountId);
           const balance = balances[0];
           expect(balance.amount).to.be.greaterThan(BigNumber.from(0));
-          expect(balance.token).to.be.eql(baseTokenReference);
+          expect(balance.token).to.be.deep.equal(baseTokenReference);
         });
       });
     });
@@ -278,7 +278,7 @@ describe('MetahubAdapter', () => {
         it('should return accumulated value', async () => {
           const balances = await metahubAdapter.universeBalances(COMMON_ID);
           const balance = balances[0];
-          expect(balance.token).to.be.eql(baseTokenReference);
+          expect(balance.token).to.be.deep.equal(baseTokenReference);
         });
       });
     });

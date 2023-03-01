@@ -98,7 +98,7 @@ describe('ListingConfiguratorPresetFactoryAdapter', () => {
 
   describe('preset', () => {
     it('should return preset by id', async () => {
-      expect(await presetFactoryAdapter.preset(presetId)).to.be.eql(deployedPreset);
+      expect(await presetFactoryAdapter.preset(presetId)).to.be.deep.equal(deployedPreset);
     });
   });
 
@@ -106,7 +106,7 @@ describe('ListingConfiguratorPresetFactoryAdapter', () => {
     it('should return list of registered presets', async () => {
       const presets = await presetFactoryAdapter.presets();
       expect(presets.length).to.be.eq(1);
-      expect(presets[0]).to.be.eql(deployedPreset);
+      expect(presets[0]).to.be.deep.equal(deployedPreset);
     });
   });
 });

@@ -40,7 +40,7 @@ describe('ListingStrategyRegistryAdapter', () => {
 
   describe('listingController', () => {
     it('should return listing strategy controller', async () => {
-      expect(await listingStrategyRegistryAdapter.listingController(LISTING_STRATEGY_IDS.FIXED_RATE)).to.be.eql(
+      expect(await listingStrategyRegistryAdapter.listingController(LISTING_STRATEGY_IDS.FIXED_RATE)).to.be.deep.equal(
         toAccountId(controller.address),
       );
     });
@@ -56,7 +56,7 @@ describe('ListingStrategyRegistryAdapter', () => {
 
   describe('listingStrategy', () => {
     it('should return listing strategy configuration', async () => {
-      expect(await listingStrategyRegistryAdapter.listingStrategy(LISTING_STRATEGY_IDS.FIXED_RATE)).to.be.eql({
+      expect(await listingStrategyRegistryAdapter.listingStrategy(LISTING_STRATEGY_IDS.FIXED_RATE)).to.be.deep.equal({
         controller: toAccountId(controller.address),
         taxStrategyId: TAX_STRATEGY_IDS.FIXED_RATE_TAX,
       });
@@ -65,9 +65,9 @@ describe('ListingStrategyRegistryAdapter', () => {
 
   describe('listingTaxController', () => {
     it('should return tax controller account ID for listing strategy', async () => {
-      expect(await listingStrategyRegistryAdapter.listingTaxController(LISTING_STRATEGY_IDS.FIXED_RATE)).to.be.eql(
-        toAccountId(taxController.address),
-      );
+      expect(
+        await listingStrategyRegistryAdapter.listingTaxController(LISTING_STRATEGY_IDS.FIXED_RATE),
+      ).to.be.deep.equal(toAccountId(taxController.address));
     });
   });
 

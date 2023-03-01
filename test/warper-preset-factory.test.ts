@@ -79,7 +79,7 @@ describe('WarperPresetFactoryAdapter', () => {
 
       it('should return warper reference from deployment transaction', async () => {
         const warperReference = await warperPresetFactoryAdapter.findWarperByDeploymentTransaction(tx.hash);
-        expect(warperReference).to.be.eql(reference);
+        expect(warperReference).to.be.deep.equal(reference);
       });
     });
   });

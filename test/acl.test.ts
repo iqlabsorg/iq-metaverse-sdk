@@ -146,7 +146,7 @@ describe('ACLAdapter', () => {
 
     it('should return role members', async () => {
       const members = await aclAdapter.getRoleMembers(ROLES_LIBRARY_IDS.ADMIN_ROLE);
-      expect(members).to.be.eql([toAccountId(deployer.address), toAccountId(admin.address)]);
+      expect(members).to.be.deep.equal([toAccountId(deployer.address), toAccountId(admin.address)]);
     });
   });
 });

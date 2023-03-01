@@ -79,7 +79,7 @@ describe('WarperManagerAdapter', () => {
       const warpers = await warperManagerAdapter.universeWarpers(COMMON_ID, 0, 1);
       expect(warpers.length).to.be.greaterThan(0);
       expect(warpers[0].name).to.be.eq(warperName);
-      expect(warpers[0].self).to.be.eql(warperReference);
+      expect(warpers[0].self).to.be.deep.equal(warperReference);
     });
   });
 
@@ -115,7 +115,7 @@ describe('WarperManagerAdapter', () => {
       );
       expect(warpers.length).to.be.greaterThan(0);
       expect(warpers[0].name).to.be.eq(warperName);
-      expect(warpers[0].self).to.be.eql(warperReference);
+      expect(warpers[0].self).to.be.deep.equal(warperReference);
     });
   });
 
@@ -135,7 +135,7 @@ describe('WarperManagerAdapter', () => {
     it('should return info about warper', async () => {
       const warper = await warperManagerAdapter.warper(warperReference);
       expect(warper.name).to.be.eq(warperName);
-      expect(warper.self).to.be.eql(warperReference);
+      expect(warper.self).to.be.deep.equal(warperReference);
     });
   });
 

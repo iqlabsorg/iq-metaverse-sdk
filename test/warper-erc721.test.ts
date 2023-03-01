@@ -20,24 +20,27 @@ describe('ERC721WarperAdapter', () => {
   /** Data Structs */
   let warperReference: AssetType;
 
-  const start = Math.round(Date.now() / 1000);
-  const end = Math.round(Date.now() / 1000 + 60 * 30);
+  const period = {
+    start: Math.round(Date.now() / 1000),
+    end: Math.round(Date.now() / 1000 + 60 * 30),
+  };
+  const rPeriod = { min: period.start, max: period.end };
 
   const setConstraints = async (): Promise<void> => {
     await ERC721ConfigurablePreset__factory.connect(
       warperReference.assetName.reference,
       deployer,
-    ).__setAvailabilityPeriodStart(start);
+    ).__setAvailabilityPeriodStart(period.start);
     await ERC721ConfigurablePreset__factory.connect(warperReference.assetName.reference, deployer).__setMinRentalPeriod(
-      start,
+      period.start,
     );
 
     await ERC721ConfigurablePreset__factory.connect(
       warperReference.assetName.reference,
       deployer,
-    ).__setAvailabilityPeriodEnd(end);
+    ).__setAvailabilityPeriodEnd(period.end);
     await ERC721ConfigurablePreset__factory.connect(warperReference.assetName.reference, deployer).__setMaxRentalPeriod(
-      end,
+      period.end,
     );
   };
 
@@ -60,10 +63,8 @@ describe('ERC721WarperAdapter', () => {
 
     it('should return warpers renting constraints', async () => {
       const { availabilityPeriod, rentalPeriod } = await warperAdapter.rentingConstraints();
-      expect(availabilityPeriod?.start).to.be.eq(start);
-      expect(availabilityPeriod?.end).to.be.eq(end);
-      expect(rentalPeriod?.min).to.be.eq(start);
-      expect(rentalPeriod?.max).to.be.eq(end);
+      expect(availabilityPeriod).to.be.deep.equal(period);
+      expect(rentalPeriod).to.be.deep.equal(rPeriod);
     });
   });
 });

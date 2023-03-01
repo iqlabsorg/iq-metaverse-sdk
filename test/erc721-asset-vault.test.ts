@@ -65,7 +65,7 @@ describe('ERC721AssetVaultAdapter', () => {
 
   describe('metahub', () => {
     it('should return metahub account id', async () => {
-      expect(await assetVaultAdapter.metahub()).to.be.eql(toAccountId(metahub.address));
+      expect(await assetVaultAdapter.metahub()).to.be.deep.equal(toAccountId(metahub.address));
     });
   });
 });

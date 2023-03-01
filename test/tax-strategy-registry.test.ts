@@ -34,7 +34,7 @@ describe('TaxStrategyRegistryAdapter', () => {
 
   describe('taxController', () => {
     it('should return tax strategy controller', async () => {
-      expect(await taxStrategyRegistryAdapter.taxController(TAX_STRATEGY_IDS.FIXED_RATE_TAX)).to.be.eql(
+      expect(await taxStrategyRegistryAdapter.taxController(TAX_STRATEGY_IDS.FIXED_RATE_TAX)).to.be.deep.equal(
         toAccountId(taxController.address),
       );
     });
@@ -42,7 +42,7 @@ describe('TaxStrategyRegistryAdapter', () => {
 
   describe('taxStrategy', () => {
     it('should return tax strategy configuration', async () => {
-      expect(await taxStrategyRegistryAdapter.taxStrategy(TAX_STRATEGY_IDS.FIXED_RATE_TAX)).to.be.eql({
+      expect(await taxStrategyRegistryAdapter.taxStrategy(TAX_STRATEGY_IDS.FIXED_RATE_TAX)).to.be.deep.equal({
         controller: toAccountId(taxController.address),
       });
     });
