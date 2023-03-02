@@ -41,6 +41,7 @@ export const buildConfig = ({ pkg }) => {
       },
     ],
     plugins: buildPluginsSection(),
+    external: ['@iqprotocol/iq-space-protocol-light/typechain'],
   };
 };
 
