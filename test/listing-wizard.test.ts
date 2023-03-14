@@ -1,9 +1,10 @@
 import {
   buildDelegatedListingDataV1,
+  buildDelegatedListingPrimaryTypeV1,
   LISTING_STRATEGY_IDS,
   makeFixedRateListingTermsFromUnconverted,
   makeFixedRateWithRewardListingTermsFromUnconverted,
-  prepareTypedDataActionEip712Signature,
+  prepareTypedDataActionEip712SignatureV1,
 } from '@iqprotocol/iq-space-protocol';
 import {
   ERC721Mock,
@@ -66,12 +67,15 @@ describe('ListingWizardAdapterV1', () => {
       toAccountId(lister.address),
     );
 
-    return prepareTypedDataActionEip712Signature(
+    const data = await prepareTypedDataActionEip712SignatureV1(
       buildDelegatedListingDataV1(delegatedListingCurrentNonce),
+      buildDelegatedListingPrimaryTypeV1(),
       lister,
       getChainId().reference,
       listingWizard.address,
     );
+
+    return data.signatureEncodedForProtocol;
   };
 
   beforeEach(async () => {

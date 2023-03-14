@@ -928,20 +928,20 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
-"@iqprotocol/iq-space-protocol-light@2.1.13":
-  version "2.1.13"
-  resolved "https://registry.yarnpkg.com/@iqprotocol/iq-space-protocol-light/-/iq-space-protocol-light-2.1.13.tgz#cfbb3434201369e7e81363c2f32dcc29e00397f7"
-  integrity sha512-RGCEhvOMyKGEar8uSfUCeDrTL4wCwk7FyixOIRJjwUAShvWht+kWg3aGzNoxgOOoX3GjZVn1cABIyPKGd7MNgw==
+"@iqprotocol/iq-space-protocol-light@2.1.16":
+  version "2.1.16"
+  resolved "https://registry.yarnpkg.com/@iqprotocol/iq-space-protocol-light/-/iq-space-protocol-light-2.1.16.tgz#2ae0e0f7d93828a7d503c0c67e9ad9b99010413f"
+  integrity sha512-tySNCZx5+GSCn5S4DdP5FWQdbi72AseMzcMZRwzl7H8j8Cl2qmzrnMBEc4Aam1XPmCNc3jJgFNmr0mqryBKsEA==
   dependencies:
     "@nomiclabs/hardhat-ethers" "npm:hardhat-deploy-ethers@latest"
     "@typechain/ethers-v5" "^10.0.0"
     ethers "5.6.4"
     typechain "^8.0.0"
 
-"@iqprotocol/iq-space-protocol@2.1.13":
-  version "2.1.13"
-  resolved "https://registry.yarnpkg.com/@iqprotocol/iq-space-protocol/-/iq-space-protocol-2.1.13.tgz#62b2e1833501cfd65697e0c1fd3825e4998beaef"
-  integrity sha512-yRDRuHPFdgM4wY7Tu88Sh4uczz8OmvmvdkgapUt8hQbwZNXZCPCdvl1DUSgJTl4bE/p7OMS1INvNoFGVeV70TA==
+"@iqprotocol/iq-space-protocol@2.1.16":
+  version "2.1.16"
+  resolved "https://registry.yarnpkg.com/@iqprotocol/iq-space-protocol/-/iq-space-protocol-2.1.16.tgz#1394c1a864611e333b484ecdf8c2734e372f9a65"
+  integrity sha512-Lg57R/5WqqtAuFXwGH8WdEdFebamtcgOX25aNmKInrey9gAIpAvDTgCf1GF0u+ewZE+xrmE4Sxgyyj/V+MxiKA==
   dependencies:
     "@openzeppelin/contracts" "^4.6.0"
     "@openzeppelin/contracts-upgradeable" "^4.6.0"

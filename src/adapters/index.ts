@@ -9,6 +9,7 @@ export * from './listing-terms-registry';
 export * from './listing-wizard';
 export * from './metahub';
 export * from './renting-manager';
+export * from './renting-wizard';
 export * from './tax-strategy-registry';
 export * from './tax-terms-registry';
 export * from './universe-registry';

@@ -17,6 +17,7 @@ export {
   ListingWizardAdapterV1,
   MetahubAdapter,
   RentingManagerAdapter,
+  RentingWizardAdapterV1,
   TaxStrategyRegistryAdapter,
   TaxTermsRegistryAdapter,
   UniverseRegistryAdapter,
