@@ -97,7 +97,7 @@ export class ListingWizardAdapterV1 extends Adapter {
   }
 
   /**
-   * Create delegated listing ECDSA signature ABI encoded (v,r,s)(uint8, bytes32, bytes32).
+   * Create delegated listing ABI encoded (v,r,s)(uint8, bytes32, bytes32) typed data signature (EIP712).
    * Caller should be the actual lister.
    * @param nonce Nonce (optional).
    */
@@ -120,7 +120,7 @@ export class ListingWizardAdapterV1 extends Adapter {
   }
 
   /**
-   * Create extended delegated listing ECDSA signature ABI encoded (v,r,s)(uint8, bytes32, bytes32).
+   * Create extended delegated listing ABI encoded (v,r,s)(uint8, bytes32, bytes32) typed data signature (EIP712).
    * Caller should be the actual lister.
    * @param dataToSign Data to sign.
    */
@@ -157,7 +157,7 @@ export class ListingWizardAdapterV1 extends Adapter {
 
   /**
    * Verify delegated listing signature.
-   * @param signature Encoded ECDSA signature.
+   * @param signature Typed data signature (EIP712).
    * @returns True if signature is valid.
    */
   async verifyDelegatedListingSignature(signature: BytesLike, nonce?: BigNumber): Promise<boolean> {
@@ -178,7 +178,7 @@ export class ListingWizardAdapterV1 extends Adapter {
   /**
    * Verify extended delegated listing signature.
    * @param signatureData Signature data.
-   * @param signature Encoded ECDSA signature.
+   * @param signature Typed data signature (EIP712).
    * @returns True if signature is valid.
    */
   async verifyExtendedDelegatedListingSignature(
