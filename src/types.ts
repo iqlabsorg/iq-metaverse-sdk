@@ -23,6 +23,11 @@ export type DelegatedSignature = {
   s: string;
 };
 
+export type DelegatedSignatureWithNonce = {
+  delegatedSignature: DelegatedSignature;
+  nonce: BigNumber;
+};
+
 export type Overrides = BaseOverrides & { from?: string | Promise<string> };
 
 export type IQSpaceParams = {
@@ -191,4 +196,12 @@ export type ListingConfiguratorPreset = {
 
 export type TaxStrategyConfig = {
   controller: AccountId;
+};
+
+export type ListingExtendedDelegatedSignatureData = {
+  universeId: BigNumberish;
+  assetListingParams: AssetListingParams;
+  listingTerms: IListingTermsRegistry.ListingTermsStruct;
+  salt: string;
+  delegatedSignatureWithNonce?: DelegatedSignatureWithNonce;
 };
