@@ -1,3 +1,8 @@
+import {
+  buildDelegatedListingDataV1,
+  buildDelegatedListingPrimaryTypeV1,
+  prepareTypedDataActionEip712SignatureV1,
+} from '@iqprotocol/iq-space-protocol-light';
 import { IListingTermsRegistry, ListingWizardV1 } from '@iqprotocol/iq-space-protocol-light/typechain';
 import { Listings } from '@iqprotocol/iq-space-protocol-light/typechain/contracts/listing/listing-manager/ListingManager';
 import { Assets } from '@iqprotocol/iq-space-protocol-light/typechain/contracts/metahub/core/IMetahub';
@@ -6,7 +11,8 @@ import { BigNumber, BigNumberish, BytesLike, ContractTransaction } from 'ethers'
 import { Adapter } from '../../adapter';
 import { AddressTranslator } from '../../address-translator';
 import { ContractResolver } from '../../contract-resolver';
-import { AssetListingParams } from '../../types';
+import { AssetListingParams, DelegatedSignature } from '../../types';
+import { TypedDataSigner } from '@ethersproject/abstract-signer';
 
 export class ListingWizardAdapterV1 extends Adapter {
   private readonly contract: ListingWizardV1;
@@ -80,6 +86,22 @@ export class ListingWizardAdapterV1 extends Adapter {
    */
   async DOMAIN_SEPARATOR(): Promise<string> {
     return this.contract.DOMAIN_SEPARATOR();
+  }
+
+  /**
+   * Create delegated listing ECDSA signature ABI encoded (v,r,s)(uint8, bytes32, bytes32).
+   * Caller should be the actual lister.
+   */
+  async createDelegatedListingSignature(): Promise<DelegatedSignature> {
+    const signerData = await this.signerData();
+    const delegatedListingCurrentNonce = await this.getDelegatedListingCurrentNonce(signerData.accountId);
+    return prepareTypedDataActionEip712SignatureV1(
+      buildDelegatedListingDataV1(delegatedListingCurrentNonce),
+      buildDelegatedListingPrimaryTypeV1(),
+      signerData.signer as unknown as TypedDataSigner,
+      signerData.accountId.chainId.reference,
+      this.contract.address,
+    );
   }
 
   private prepareListingParams(assetListingParams: AssetListingParams): {

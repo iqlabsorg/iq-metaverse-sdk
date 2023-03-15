@@ -9,6 +9,20 @@ import { BigNumber, BytesLike, Overrides as BaseOverrides, Signer } from 'ethers
 
 export type Address = string;
 
+export type SignerData = {
+  signer: Signer;
+  address: string;
+  accountId: AccountId;
+};
+
+export type DelegatedSignature = {
+  signature: string;
+  signatureEncodedForProtocol: BytesLike;
+  v: number;
+  r: string;
+  s: string;
+};
+
 export type Overrides = BaseOverrides & { from?: string | Promise<string> };
 
 export type IQSpaceParams = {

@@ -66,8 +66,8 @@ export class ContractResolver implements ChainAware {
     return new ChainId({ namespace: 'eip155', reference: reference.toString() });
   }
 
-  async signerAddress(): Promise<Address> {
-    return this.signer.getAddress();
+  getSigner(): Signer {
+    return this.signer;
   }
 
   resolveACL(address: Address): ACL {

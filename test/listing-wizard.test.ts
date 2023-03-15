@@ -63,18 +63,7 @@ describe('ListingWizardAdapterV1', () => {
   };
 
   const getDelegatedListingSignature = async (): Promise<BytesLike> => {
-    const delegatedListingCurrentNonce = await listingWizardAdapter.getDelegatedListingCurrentNonce(
-      toAccountId(lister.address),
-    );
-
-    const data = await prepareTypedDataActionEip712SignatureV1(
-      buildDelegatedListingDataV1(delegatedListingCurrentNonce),
-      buildDelegatedListingPrimaryTypeV1(),
-      lister,
-      getChainId().reference,
-      listingWizard.address,
-    );
-
+    const data = await listingWizardAdapter.createDelegatedListingSignature();
     return data.signatureEncodedForProtocol;
   };
 

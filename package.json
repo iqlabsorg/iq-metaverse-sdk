@@ -38,11 +38,11 @@
     "package.json": "sort-package-json"
   },
   "dependencies": {
-    "@iqprotocol/iq-space-protocol-light": "2.1.16",
+    "@iqprotocol/iq-space-protocol-light": "2.1.17",
     "caip": "^1.1.0"
   },
   "devDependencies": {
-    "@iqprotocol/iq-space-protocol": "2.1.16",
+    "@iqprotocol/iq-space-protocol": "2.1.17",
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
     "@knodes/typedoc-plugin-monorepo-readmes": "^0.22.5",
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.6",

@@ -71,7 +71,7 @@ export class ACLAdapter extends Adapter {
    * @param role Role bytes.
    */
   async renounceRole(role: string): Promise<ContractTransaction> {
-    const signerAddress = await this.signerAddress();
+    const signerAddress = (await this.signerData()).address;
     return this.contract.renounceRole(role, signerAddress);
   }
 
