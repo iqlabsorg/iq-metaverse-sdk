@@ -54,6 +54,7 @@ export type {
   RentalFees,
   RentalStatus,
   RentingEstimationParams,
+  RentingExtendedDelegatedSignatureData,
   RentingParams,
   SignerData,
   TaxStrategyConfig,

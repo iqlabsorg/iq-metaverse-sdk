@@ -1,23 +1,37 @@
-import { BASE_TOKEN_DECIMALS, convertToWei } from '@iqprotocol/iq-space-protocol';
+import {
+  BASE_TOKEN_DECIMALS,
+  buildDelegatedRentDataV1,
+  buildDelegatedRentPrimaryTypeV1,
+  buildExtendedDelegatedRentDataV1,
+  buildExtendedDelegatedRentPrimaryTypeV1,
+  convertToWei,
+  EMPTY_BYTES_DATA_HEX,
+  prepareTypedDataActionEip712SignatureV1,
+} from '@iqprotocol/iq-space-protocol';
 import {
   ERC20Mock,
-  ERC721Mock,
   IMetahub,
   IRentingManager,
   IRentingWizardV1,
+  Rentings,
 } from '@iqprotocol/iq-space-protocol/typechain';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AccountId, AssetType } from 'caip';
 import { expect } from 'chai';
-import { BytesLike } from 'ethers';
+import { BigNumber, BytesLike } from 'ethers';
 import { deployments, ethers } from 'hardhat';
+import { RentingHelper } from '../src/helpers';
 import {
   AddressTranslator,
   Asset,
   AssetCoder,
   createAsset,
+  DelegatedSignature,
+  DelegatedSignatureWithNonce,
   IQSpace,
+  RentalFees,
   RentingEstimationParams,
+  RentingExtendedDelegatedSignatureData,
   RentingManagerAdapter,
   RentingWizardAdapterV1,
 } from '../src';
@@ -42,28 +56,30 @@ describe('RentingWizardAdapterV1', () => {
   let rentingManagerAdapterRenter: RentingManagerAdapter;
   let rentingWizardAdapterRenter: RentingWizardAdapterV1;
   let rentingWizardAdapterDelegated: RentingWizardAdapterV1;
+  let addressTranslator: AddressTranslator;
 
   /** Mocks & Samples */
   let baseToken: ERC20Mock;
-  let collection: ERC721Mock;
 
   /** Constants */
   const rentalPeriod = SECONDS_IN_HOUR * 3;
+  const salt = 'salty';
 
   /** Data Structs */
   let warperReference: AssetType;
   let baseTokenReference: AssetType;
   let renterAccountId: AccountId;
   let rentingEstimationParams: RentingEstimationParams;
+  let rentingParams: Rentings.ParamsStruct;
   let warpedAsset: Asset;
+  let estimate: RentalFees;
 
   const getDelegatedRentSignature = async (): Promise<BytesLike> => {
     const data = await rentingWizardAdapterRenter.createDelegatedRentSignature();
-    return data.signatureEncodedForProtocol;
+    return data.delegatedSignature.signatureEncodedForProtocol;
   };
 
   const delegateRentAsset = async (): Promise<void> => {
-    const estimate = await rentingManagerAdapterRenter.estimateRent(rentingEstimationParams);
     await baseToken.connect(renter).approve(rentingWizard.address, estimate.total);
     await rentingWizardAdapterDelegated.delegatedRent(
       {
@@ -89,7 +105,6 @@ describe('RentingWizardAdapterV1', () => {
     rentingWizard = await ethers.getContract('RentingWizardV1');
     metahub = await ethers.getContract('Metahub');
     baseToken = await ethers.getContract('ERC20Mock');
-    collection = await ethers.getContract('ERC721Mock');
 
     const renterIQSpace = await IQSpace.init({ signer: renter });
     const delegatedIQSpace = await IQSpace.init({ signer: delegatedRenter });
@@ -115,6 +130,9 @@ describe('RentingWizardAdapterV1', () => {
     };
 
     warpedAsset = createAsset('erc721', toAccountId(warperReference.assetName.reference), 1);
+    estimate = await rentingManagerAdapterRenter.estimateRent(rentingEstimationParams);
+    addressTranslator = new AddressTranslator(getChainId());
+    rentingParams = RentingHelper.prepareRentingParams(rentingEstimationParams, addressTranslator);
   });
 
   describe('delegatedRent', () => {
@@ -132,6 +150,165 @@ describe('RentingWizardAdapterV1', () => {
       expect(agreement.listingId).to.eql(COMMON_ID);
       expect(agreement.universeId).to.eql(COMMON_ID);
       expect(asset).to.deep.equal(warpedAsset);
+    });
+  });
+
+  describe('createDelegatedRentSignature', () => {
+    let premadeSignature1: DelegatedSignatureWithNonce;
+    let premadeSignature2: DelegatedSignatureWithNonce;
+
+    beforeEach(async () => {
+      premadeSignature1 = {
+        nonce: BigNumber.from(0),
+        delegatedSignature: await prepareTypedDataActionEip712SignatureV1(
+          buildDelegatedRentDataV1(BigNumber.from(0)),
+          buildDelegatedRentPrimaryTypeV1(),
+          renter,
+          getChainId().reference,
+          rentingWizard.address,
+        ),
+      };
+
+      premadeSignature2 = {
+        nonce: BigNumber.from(1),
+        delegatedSignature: await prepareTypedDataActionEip712SignatureV1(
+          buildDelegatedRentDataV1(BigNumber.from(1)),
+          buildDelegatedRentPrimaryTypeV1(),
+          renter,
+          getChainId().reference,
+          rentingWizard.address,
+        ),
+      };
+    });
+
+    it('should create a signature', async () => {
+      const signature1 = await rentingWizardAdapterRenter.createDelegatedRentSignature();
+      const signature2 = await rentingWizardAdapterRenter.createDelegatedRentSignature(premadeSignature2.nonce);
+
+      expect(signature1).to.deep.eq(premadeSignature1);
+      expect(signature2).to.deep.eq(premadeSignature2);
+    });
+  });
+
+  describe('verifyDelegatedRentSignature', () => {
+    describe('if nonce has not changed', () => {
+      it('should return true', async () => {
+        const signature = await rentingWizardAdapterRenter.createDelegatedRentSignature();
+        expect(
+          await rentingWizardAdapterRenter.verifyDelegatedRentSignature(signature.delegatedSignature.signature),
+        ).to.eq(true);
+      });
+    });
+
+    describe('if nonce has changed', () => {
+      it('should return false', async () => {
+        const signature = await rentingWizardAdapterRenter.createDelegatedRentSignature();
+        expect(
+          await rentingWizardAdapterRenter.verifyDelegatedRentSignature(
+            signature.delegatedSignature.signature,
+            BigNumber.from(28),
+          ),
+        ).to.eq(false);
+      });
+    });
+  });
+
+  describe('createExtendedDelegatedRentSignature', () => {
+    let firstSignature: DelegatedSignature;
+    let secondSignature: DelegatedSignatureWithNonce;
+    const nonce = BigNumber.from(0);
+
+    beforeEach(async () => {
+      firstSignature = await prepareTypedDataActionEip712SignatureV1(
+        buildDelegatedRentDataV1(BigNumber.from(0)),
+        buildDelegatedRentPrimaryTypeV1(),
+        renter,
+        getChainId().reference,
+        rentingWizard.address,
+      );
+      secondSignature = {
+        nonce,
+        delegatedSignature: await prepareTypedDataActionEip712SignatureV1(
+          buildExtendedDelegatedRentDataV1(
+            salt,
+            nonce,
+            rentingParams,
+            EMPTY_BYTES_DATA_HEX,
+            EMPTY_BYTES_DATA_HEX,
+            estimate.total,
+            firstSignature.signatureEncodedForProtocol,
+          ),
+          buildExtendedDelegatedRentPrimaryTypeV1(),
+          renter,
+          getChainId().reference,
+          rentingWizard.address,
+        ),
+      };
+    });
+
+    it('should create a signature', async () => {
+      const signatureWithoutNonce = await rentingWizardAdapterRenter.createExtendedDelegatedRentSignature({
+        params: {
+          ...rentingEstimationParams,
+          tokenQuote: EMPTY_BYTES_DATA_HEX,
+          tokenQuoteSignature: EMPTY_BYTES_DATA_HEX,
+          maxPaymentAmount: estimate.total,
+        },
+        salt,
+      });
+      const signatureWithNonce = await rentingWizardAdapterRenter.createExtendedDelegatedRentSignature({
+        params: {
+          ...rentingEstimationParams,
+          tokenQuote: EMPTY_BYTES_DATA_HEX,
+          tokenQuoteSignature: EMPTY_BYTES_DATA_HEX,
+          maxPaymentAmount: estimate.total,
+        },
+        salt,
+        delegatedSignatureWithNonce: { nonce, delegatedSignature: firstSignature },
+      });
+
+      expect(signatureWithoutNonce).to.deep.eq(signatureWithNonce);
+      expect(signatureWithoutNonce).to.deep.eq(secondSignature.delegatedSignature);
+    });
+  });
+
+  describe('verifyExtendedDelegatedRentSignature', () => {
+    let signatureData: RentingExtendedDelegatedSignatureData;
+    let signature: DelegatedSignature;
+
+    beforeEach(async () => {
+      signatureData = {
+        params: {
+          ...rentingEstimationParams,
+          tokenQuote: EMPTY_BYTES_DATA_HEX,
+          tokenQuoteSignature: EMPTY_BYTES_DATA_HEX,
+          maxPaymentAmount: estimate.total,
+        },
+        salt,
+      };
+
+      signature = await rentingWizardAdapterRenter.createExtendedDelegatedRentSignature({
+        ...signatureData,
+      });
+    });
+
+    describe('if data has not changed', () => {
+      it('should return true', async () => {
+        expect(
+          await rentingWizardAdapterRenter.verifyExtendedDelegatedRentSignature(signatureData, signature.signature),
+        ).to.eq(true);
+      });
+    });
+
+    describe('if data has changed', () => {
+      it('should return false', async () => {
+        expect(
+          await rentingWizardAdapterRenter.verifyExtendedDelegatedRentSignature(
+            { ...signatureData, params: { ...signatureData.params, maxPaymentAmount: BigNumber.from(999) } },
+            signature.signature,
+          ),
+        ).to.eq(false);
+      });
     });
   });
 });

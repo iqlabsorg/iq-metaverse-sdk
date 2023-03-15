@@ -2,7 +2,10 @@ import { TypedDataSigner } from '@ethersproject/abstract-signer';
 import {
   buildDelegatedRentDataV1,
   buildDelegatedRentPrimaryTypeV1,
+  buildExtendedDelegatedRentDataV1,
+  buildExtendedDelegatedRentPrimaryTypeV1,
   prepareTypedDataActionEip712SignatureV1,
+  verifyTypedDataActionEip712SignatureV1,
 } from '@iqprotocol/iq-space-protocol-light';
 import { RentingWizardV1 } from '@iqprotocol/iq-space-protocol-light/typechain';
 import { AccountId } from 'caip';
@@ -11,7 +14,12 @@ import { Adapter } from '../../adapter';
 import { AddressTranslator } from '../../address-translator';
 import { ContractResolver } from '../../contract-resolver';
 import { RentingHelper } from '../../helpers';
-import { DelegatedSignature, RentingParams } from '../../types';
+import {
+  DelegatedSignature,
+  DelegatedSignatureWithNonce,
+  RentingExtendedDelegatedSignatureData,
+  RentingParams,
+} from '../../types';
 
 export class RentingWizardAdapterV1 extends Adapter {
   private readonly contract: RentingWizardV1;
@@ -39,19 +47,116 @@ export class RentingWizardAdapterV1 extends Adapter {
   }
 
   /**
-   * Create delegated renting ECDSA signature ABI encoded (v,r,s)(uint8, bytes32, bytes32).
+   * Create delegated renting ABI encoded (v,r,s)(uint8, bytes32, bytes32) typed data signature (EIP712).
    * Caller should be the actual renter.
+   * @param nonce Nonce (optional).
    */
-  async createDelegatedRentSignature(): Promise<DelegatedSignature> {
+  async createDelegatedRentSignature(nonce?: BigNumber): Promise<DelegatedSignatureWithNonce> {
     const signerData = await this.signerData();
-    const delegatedRentingCurrentNonce = await this.getDelegatedRentCurrentNonce(signerData.accountId);
-    return prepareTypedDataActionEip712SignatureV1(
+
+    const delegatedRentingCurrentNonce = nonce ?? (await this.getDelegatedRentCurrentNonce(signerData.accountId));
+    const delegatedSignature = await prepareTypedDataActionEip712SignatureV1(
       buildDelegatedRentDataV1(delegatedRentingCurrentNonce),
       buildDelegatedRentPrimaryTypeV1(),
       signerData.signer as unknown as TypedDataSigner,
       signerData.accountId.chainId.reference,
       this.contract.address,
     );
+
+    return {
+      nonce: delegatedRentingCurrentNonce,
+      delegatedSignature,
+    };
+  }
+
+  /**
+   * Create extended delegated renting ABI encoded (v,r,s)(uint8, bytes32, bytes32) typed data signature (EIP712).
+   * Caller should be the actual renter.
+   * @param dataToSign Data to sign.
+   */
+  async createExtendedDelegatedRentSignature(
+    dataToSign: RentingExtendedDelegatedSignatureData,
+  ): Promise<DelegatedSignature> {
+    const signerData = await this.signerData();
+
+    const delegatedSignatureWithNonce =
+      dataToSign.delegatedSignatureWithNonce ?? (await this.createDelegatedRentSignature());
+
+    const { rentingParams, tokenQuote, tokenQuoteSignature, maxPaymentAmount } =
+      RentingHelper.prepareExtendedRentingParams(dataToSign.params, this.addressTranslator);
+
+    return prepareTypedDataActionEip712SignatureV1(
+      buildExtendedDelegatedRentDataV1(
+        dataToSign.salt,
+        delegatedSignatureWithNonce.nonce,
+        rentingParams,
+        tokenQuote,
+        tokenQuoteSignature,
+        maxPaymentAmount,
+        delegatedSignatureWithNonce.delegatedSignature.signatureEncodedForProtocol,
+      ),
+      buildExtendedDelegatedRentPrimaryTypeV1(),
+      signerData.signer as unknown as TypedDataSigner,
+      signerData.accountId.chainId.reference,
+      this.contract.address,
+    );
+  }
+
+  /**
+   * Verify delegated renting signature.
+   * @param signature Typed data signature (EIP712).
+   * @returns True if signature is valid.
+   */
+  async verifyDelegatedRentSignature(signature: BytesLike, nonce?: BigNumber): Promise<boolean> {
+    const signerData = await this.signerData();
+    const delegatedListingCurrentNonce = nonce ?? (await this.getDelegatedRentCurrentNonce(signerData.accountId));
+
+    const address = verifyTypedDataActionEip712SignatureV1(
+      this.contract.address,
+      signerData.accountId.chainId.reference,
+      buildDelegatedRentDataV1(delegatedListingCurrentNonce),
+      buildDelegatedRentPrimaryTypeV1(),
+      signature,
+    );
+
+    return address === signerData.address;
+  }
+
+  /**
+   * Verify extended delegated renting signature.
+   * @param signatureData Signature data.
+   * @param signature Typed data signature (EIP712).
+   * @returns True if signature is valid.
+   */
+  async verifyExtendedDelegatedRentSignature(
+    signatureData: RentingExtendedDelegatedSignatureData,
+    signature: BytesLike,
+  ): Promise<boolean> {
+    const signerData = await this.signerData();
+
+    const delegatedSignatureWithNonce =
+      signatureData.delegatedSignatureWithNonce ?? (await this.createDelegatedRentSignature());
+
+    const { rentingParams, tokenQuote, tokenQuoteSignature, maxPaymentAmount } =
+      RentingHelper.prepareExtendedRentingParams(signatureData.params, this.addressTranslator);
+
+    const address = verifyTypedDataActionEip712SignatureV1(
+      this.contract.address,
+      signerData.accountId.chainId.reference,
+      buildExtendedDelegatedRentDataV1(
+        signatureData.salt,
+        delegatedSignatureWithNonce.nonce,
+        rentingParams,
+        tokenQuote,
+        tokenQuoteSignature,
+        maxPaymentAmount,
+        delegatedSignatureWithNonce.delegatedSignature.signatureEncodedForProtocol,
+      ),
+      buildExtendedDelegatedRentPrimaryTypeV1(),
+      signature,
+    );
+
+    return address === signerData.address;
   }
 
   /**

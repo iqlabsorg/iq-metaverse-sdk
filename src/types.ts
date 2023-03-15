@@ -205,3 +205,9 @@ export type ListingExtendedDelegatedSignatureData = {
   salt: string;
   delegatedSignatureWithNonce?: DelegatedSignatureWithNonce;
 };
+
+export type RentingExtendedDelegatedSignatureData = {
+  params: RentingParams;
+  salt: string;
+  delegatedSignatureWithNonce?: DelegatedSignatureWithNonce;
+};
