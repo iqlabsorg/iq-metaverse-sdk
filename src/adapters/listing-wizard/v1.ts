@@ -82,21 +82,6 @@ export class ListingWizardAdapterV1 extends Adapter {
   }
 
   /**
-   * Get the current nonce of lister for delegated listing.
-   * @param lister Lister account ID.
-   */
-  async getDelegatedListingCurrentNonce(lister: AccountId): Promise<BigNumber> {
-    return this.contract.getDelegatedListingCurrentNonce(this.accountIdToAddress(lister));
-  }
-
-  /**
-   * Returns the domain separator used in the encoding of the signature for permit, as defined by EIP712.
-   */
-  async DOMAIN_SEPARATOR(): Promise<string> {
-    return this.contract.DOMAIN_SEPARATOR();
-  }
-
-  /**
    * Create delegated listing ABI encoded (v,r,s)(uint8, bytes32, bytes32) typed data signature (EIP712).
    * Caller should be the actual lister.
    * @param nonce Nonce (optional).
@@ -213,6 +198,21 @@ export class ListingWizardAdapterV1 extends Adapter {
     );
 
     return address === signerData.address;
+  }
+
+  /**
+   * Get the current nonce of lister for delegated listing.
+   * @param lister Lister account ID.
+   */
+  async getDelegatedListingCurrentNonce(lister: AccountId): Promise<BigNumber> {
+    return this.contract.getDelegatedListingCurrentNonce(this.accountIdToAddress(lister));
+  }
+
+  /**
+   * Returns the domain separator used in the encoding of the signature for permit, as defined by EIP712.
+   */
+  async DOMAIN_SEPARATOR(): Promise<string> {
+    return this.contract.DOMAIN_SEPARATOR();
   }
 
   private prepareListingParams(assetListingParams: AssetListingParams): {
