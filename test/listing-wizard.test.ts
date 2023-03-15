@@ -1,10 +1,7 @@
 import {
-  buildDelegatedListingDataV1,
-  buildDelegatedListingPrimaryTypeV1,
   LISTING_STRATEGY_IDS,
   makeFixedRateListingTermsFromUnconverted,
   makeFixedRateWithRewardListingTermsFromUnconverted,
-  prepareTypedDataActionEip712SignatureV1,
 } from '@iqprotocol/iq-space-protocol';
 import {
   ERC721Mock,
@@ -18,14 +15,7 @@ import { BytesLike } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import { AssetListingParams, AssetType, createAsset, IQSpace, ListingParams, ListingWizardAdapterV1 } from '../src';
 import { setupForListing } from './helpers/setup';
-import {
-  COMMON_BASE_RATE,
-  COMMON_ID,
-  COMMON_REWARD_RATE,
-  getChainId,
-  SECONDS_IN_DAY,
-  toAccountId,
-} from './helpers/utils';
+import { COMMON_BASE_RATE, COMMON_ID, COMMON_REWARD_RATE, SECONDS_IN_DAY, toAccountId } from './helpers/utils';
 
 /**
  * @group integration

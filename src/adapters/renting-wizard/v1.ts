@@ -1,3 +1,9 @@
+import { TypedDataSigner } from '@ethersproject/abstract-signer';
+import {
+  buildDelegatedRentDataV1,
+  buildDelegatedRentPrimaryTypeV1,
+  prepareTypedDataActionEip712SignatureV1,
+} from '@iqprotocol/iq-space-protocol-light';
 import { RentingWizardV1 } from '@iqprotocol/iq-space-protocol-light/typechain';
 import { AccountId } from 'caip';
 import { BigNumber, BytesLike } from 'ethers';
@@ -5,7 +11,7 @@ import { Adapter } from '../../adapter';
 import { AddressTranslator } from '../../address-translator';
 import { ContractResolver } from '../../contract-resolver';
 import { RentingHelper } from '../../helpers';
-import { RentingParams } from '../../types';
+import { DelegatedSignature, RentingParams } from '../../types';
 
 export class RentingWizardAdapterV1 extends Adapter {
   private readonly contract: RentingWizardV1;
@@ -18,9 +24,9 @@ export class RentingWizardAdapterV1 extends Adapter {
   /**
    * Performs renting operation (delegated).
    * @param params Renting parameters.
-   * @param delegatedRentingSignature Delegated Renting ECDSA signature ABI encoded (v,r,s)(uint8, bytes32, bytes32).
+   * @param delegatedRentSignature Delegated Rent ECDSA signature ABI encoded (v,r,s)(uint8, bytes32, bytes32).
    */
-  async delegatedRent(params: RentingParams, delegatedRentingSignature: BytesLike) {
+  async delegatedRent(params: RentingParams, delegatedRentSignature: BytesLike) {
     const { rentingParams, tokenQuote, tokenQuoteSignature, maxPaymentAmount } =
       RentingHelper.prepareExtendedRentingParams(params, this.addressTranslator);
     return this.contract.delegatedRent(
@@ -28,7 +34,23 @@ export class RentingWizardAdapterV1 extends Adapter {
       tokenQuote,
       tokenQuoteSignature,
       maxPaymentAmount,
-      delegatedRentingSignature,
+      delegatedRentSignature,
+    );
+  }
+
+  /**
+   * Create delegated renting ECDSA signature ABI encoded (v,r,s)(uint8, bytes32, bytes32).
+   * Caller should be the actual renter.
+   */
+  async createDelegatedRentSignature(): Promise<DelegatedSignature> {
+    const signerData = await this.signerData();
+    const delegatedRentingCurrentNonce = await this.getDelegatedRentCurrentNonce(signerData.accountId);
+    return prepareTypedDataActionEip712SignatureV1(
+      buildDelegatedRentDataV1(delegatedRentingCurrentNonce),
+      buildDelegatedRentPrimaryTypeV1(),
+      signerData.signer as unknown as TypedDataSigner,
+      signerData.accountId.chainId.reference,
+      this.contract.address,
     );
   }
 

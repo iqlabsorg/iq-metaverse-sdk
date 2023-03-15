@@ -1,10 +1,4 @@
-import {
-  BASE_TOKEN_DECIMALS,
-  buildDelegatedRentDataV1,
-  buildDelegatedRentPrimaryTypeV1,
-  convertToWei,
-  prepareTypedDataActionEip712SignatureV1,
-} from '@iqprotocol/iq-space-protocol';
+import { BASE_TOKEN_DECIMALS, convertToWei } from '@iqprotocol/iq-space-protocol';
 import {
   ERC20Mock,
   ERC721Mock,
@@ -46,6 +40,7 @@ describe('RentingWizardAdapterV1', () => {
 
   /** SDK */
   let rentingManagerAdapterRenter: RentingManagerAdapter;
+  let rentingWizardAdapterRenter: RentingWizardAdapterV1;
   let rentingWizardAdapterDelegated: RentingWizardAdapterV1;
 
   /** Mocks & Samples */
@@ -62,19 +57,8 @@ describe('RentingWizardAdapterV1', () => {
   let rentingEstimationParams: RentingEstimationParams;
   let warpedAsset: Asset;
 
-  const getDelegatedRentingSignature = async (): Promise<BytesLike> => {
-    const delegatedRentingCurrentNonce = await rentingWizardAdapterDelegated.getDelegatedRentCurrentNonce(
-      toAccountId(renter.address),
-    );
-
-    const data = await prepareTypedDataActionEip712SignatureV1(
-      buildDelegatedRentDataV1(delegatedRentingCurrentNonce),
-      buildDelegatedRentPrimaryTypeV1(),
-      renter,
-      getChainId().reference,
-      rentingWizard.address,
-    );
-
+  const getDelegatedRentSignature = async (): Promise<BytesLike> => {
+    const data = await rentingWizardAdapterRenter.createDelegatedRentSignature();
     return data.signatureEncodedForProtocol;
   };
 
@@ -91,7 +75,7 @@ describe('RentingWizardAdapterV1', () => {
         maxPaymentAmount: estimate.total,
         listingTermsId: COMMON_ID,
       },
-      await getDelegatedRentingSignature(),
+      await getDelegatedRentSignature(),
     );
   };
 
@@ -111,6 +95,7 @@ describe('RentingWizardAdapterV1', () => {
     const delegatedIQSpace = await IQSpace.init({ signer: delegatedRenter });
     rentingManagerAdapterRenter = renterIQSpace.rentingManager(toAccountId(rentingManager.address));
     rentingWizardAdapterDelegated = delegatedIQSpace.rentingWizardV1(toAccountId(rentingWizard.address));
+    rentingWizardAdapterRenter = renterIQSpace.rentingWizardV1(toAccountId(rentingWizard.address));
 
     baseTokenReference = AddressTranslator.createAssetType(toAccountId(baseToken.address), 'erc20');
     renterAccountId = toAccountId(renter.address);

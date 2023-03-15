@@ -1,3 +1,4 @@
+import { TypedDataSigner } from '@ethersproject/abstract-signer';
 import {
   buildDelegatedListingDataV1,
   buildDelegatedListingPrimaryTypeV1,
@@ -12,7 +13,6 @@ import { Adapter } from '../../adapter';
 import { AddressTranslator } from '../../address-translator';
 import { ContractResolver } from '../../contract-resolver';
 import { AssetListingParams, DelegatedSignature } from '../../types';
-import { TypedDataSigner } from '@ethersproject/abstract-signer';
 
 export class ListingWizardAdapterV1 extends Adapter {
   private readonly contract: ListingWizardV1;
