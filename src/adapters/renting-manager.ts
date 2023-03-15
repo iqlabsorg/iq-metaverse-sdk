@@ -1,4 +1,3 @@
-import { EMPTY_BYTES_DATA_HEX } from '@iqprotocol/iq-space-protocol-light';
 import { RentingManager } from '@iqprotocol/iq-space-protocol-light/typechain';
 import { Rentings } from '@iqprotocol/iq-space-protocol-light/typechain/contracts/metahub/core/IMetahub';
 import { AccountId } from 'caip';
@@ -7,8 +6,9 @@ import { Adapter } from '../adapter';
 import { AddressTranslator } from '../address-translator';
 import { rentalStatusMap } from '../constants';
 import { ContractResolver } from '../contract-resolver';
+import { RentingHelper } from '../helpers';
 import { Asset, RentalAgreement, RentalFees, RentalStatus, RentingEstimationParams, RentingParams } from '../types';
-import { createEmptyListingTerms, pick } from '../utils';
+import { pick } from '../utils';
 
 export class RentingManagerAdapter extends Adapter {
   private readonly contract: RentingManager;
@@ -23,19 +23,7 @@ export class RentingManagerAdapter extends Adapter {
    * @param params
    */
   async estimateRent(params: RentingEstimationParams): Promise<RentalFees> {
-    const { listingId, paymentToken, rentalPeriod, renter, warper, selectedConfiguratorListingTerms, listingTermsId } =
-      params;
-    const configuratorListingTerms = selectedConfiguratorListingTerms ?? createEmptyListingTerms();
-    const fees = await this.contract.estimateRent({
-      listingId,
-      rentalPeriod,
-      warper: this.assetTypeToAddress(warper),
-      renter: this.accountIdToAddress(renter),
-      paymentToken: this.assetTypeToAddress(paymentToken),
-      selectedConfiguratorListingTerms: configuratorListingTerms,
-      listingTermsId,
-    });
-
+    const fees = await this.contract.estimateRent(RentingHelper.prepareRentingParams(params, this.addressTranslator));
     return pick(fees, ['total', 'protocolFee', 'listerBaseFee', 'listerPremium', 'universeBaseFee', 'universePremium']);
   }
 
@@ -44,33 +32,9 @@ export class RentingManagerAdapter extends Adapter {
    * @param params Renting parameters.
    */
   async rent(params: RentingParams): Promise<ContractTransaction> {
-    const {
-      listingId,
-      paymentToken,
-      rentalPeriod,
-      renter,
-      warper,
-      maxPaymentAmount,
-      selectedConfiguratorListingTerms,
-      listingTermsId,
-      tokenQuote,
-      tokenQuoteSignature,
-    } = params;
-    const configuratorListingTerms = selectedConfiguratorListingTerms ?? createEmptyListingTerms();
-    return this.contract.rent(
-      {
-        listingId,
-        rentalPeriod,
-        warper: this.assetTypeToAddress(warper),
-        renter: this.accountIdToAddress(renter),
-        paymentToken: this.assetTypeToAddress(paymentToken),
-        listingTermsId,
-        selectedConfiguratorListingTerms: configuratorListingTerms,
-      },
-      tokenQuote ?? EMPTY_BYTES_DATA_HEX,
-      tokenQuoteSignature ?? EMPTY_BYTES_DATA_HEX,
-      maxPaymentAmount,
-    );
+    const { rentingParams, tokenQuote, tokenQuoteSignature, maxPaymentAmount } =
+      RentingHelper.prepareExtendedRentingParams(params, this.addressTranslator);
+    return this.contract.rent(rentingParams, tokenQuote, tokenQuoteSignature, maxPaymentAmount);
   }
 
   /**

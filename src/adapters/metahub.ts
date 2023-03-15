@@ -182,7 +182,7 @@ export class MetahubAdapter extends Adapter {
     }
 
     // Check operator.
-    const assumedOwner = await this.signerAddress();
+    const assumedOwner = (await this.signerData()).address;
     return assetContract.isApprovedForAll(assumedOwner, this.contract.address);
   }
 

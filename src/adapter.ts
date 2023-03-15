@@ -1,9 +1,10 @@
 import { Assets, Rentings } from '@iqprotocol/iq-space-protocol-light/typechain/contracts/metahub/core/IMetahub';
 import { AccountId, AssetId, AssetType, ChainId } from 'caip';
+import { Signer } from 'ethers';
 import { AddressTranslator } from './address-translator';
 import { AgreementTermsCoder, AssetCoder } from './coders';
 import { ContractResolver } from './contract-resolver';
-import { Address, AgreementTerms, Asset, AssetNamespace, ChainAware } from './types';
+import { Address, AgreementTerms, Asset, AssetNamespace, ChainAware, SignerData } from './types';
 
 export abstract class Adapter implements ChainAware {
   protected constructor(
@@ -75,7 +76,13 @@ export abstract class Adapter implements ChainAware {
     return { name, symbol, decimals };
   }
 
-  protected async signerAddress(): Promise<Address> {
-    return this.contractResolver.signerAddress();
+  protected async signerData(): Promise<SignerData> {
+    const signer = this.contractResolver.getSigner();
+    const address = await signer.getAddress();
+    return {
+      signer,
+      address,
+      accountId: this.addressToAccountId(address),
+    };
   }
 }

@@ -334,22 +334,13 @@ console.log(`Tx ${tx.hash}`);
 There is also a possibility to delegate listing creation to another signer (for example, a backend system).
 
 ```ts
-import { prepareTypedDataActionEip712Signature } from '@iqprotocol/iq-space-sdk-js';
+import { createDelegatedListingSignature } from '@iqprotocol/iq-space-sdk-js';
 
 // Prepare listing data.. (see previous step above)
 
-// Get delegated listing nonce for original lister
-const delegatedListingCurrentNonce = await listingWizard.getDelegatedListingCurrentNonce(listerAccountId);
-
 // Lister must provide a signature which allows for delegation.
-// Using IQ provided helper in this example for signature generation.
-// Listers client can use their own implementation for signature creation.
-const signature = await prepareTypedDataActionEip712Signature(
-  { nonce: delegatedListingCurrentNonce },
-  lister, // original lister (Signer object)
-  chainId.reference, // raw chain ID
-  listingWizardAddress, // raw address of ListingWizardV1 contract
-);
+// This method should be used by the actual lister.
+const signature = await listingWizardOfActualLister.createDelegatedListingSignature();
 
 const tx = await listingWizard.delegatedCreateListingWithTerms({
   universeId,

@@ -1,9 +1,13 @@
 import {
   buildDelegatedListingDataV1,
+  buildDelegatedListingPrimaryTypeV1,
+  buildExtendedDelegatedListingDataV1,
+  buildExtendedDelegatedListingPrimaryTypeV1,
   LISTING_STRATEGY_IDS,
+  makeERC721Assets,
   makeFixedRateListingTermsFromUnconverted,
   makeFixedRateWithRewardListingTermsFromUnconverted,
-  prepareTypedDataActionEip712Signature,
+  prepareTypedDataActionEip712SignatureV1,
 } from '@iqprotocol/iq-space-protocol';
 import {
   ERC721Mock,
@@ -13,9 +17,19 @@ import {
 } from '@iqprotocol/iq-space-protocol/typechain';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
-import { BytesLike } from 'ethers';
+import { BigNumber, BytesLike } from 'ethers';
 import { deployments, ethers } from 'hardhat';
-import { AssetListingParams, AssetType, createAsset, IQSpace, ListingParams, ListingWizardAdapterV1 } from '../src';
+import {
+  AssetListingParams,
+  AssetType,
+  createAsset,
+  DelegatedSignature,
+  DelegatedSignatureWithNonce,
+  IQSpace,
+  ListingExtendedDelegatedSignatureData,
+  ListingParams,
+  ListingWizardAdapterV1,
+} from '../src';
 import { setupForListing } from './helpers/setup';
 import {
   COMMON_BASE_RATE,
@@ -51,6 +65,10 @@ describe('ListingWizardAdapterV1', () => {
   let assetListingParams: AssetListingParams;
   let warperReference: AssetType;
 
+  const maxLockPeriod = SECONDS_IN_DAY * 7;
+  const immediatePayout = true;
+  const salt = 'salty';
+
   const getTermsStrategyId = async (): Promise<string> => {
     const [, termsList] = await listingTermsRegistry.allListingTerms(
       { listingId: COMMON_ID, universeId: COMMON_ID, warperAddress: warperReference.assetName.reference },
@@ -62,16 +80,8 @@ describe('ListingWizardAdapterV1', () => {
   };
 
   const getDelegatedListingSignature = async (): Promise<BytesLike> => {
-    const delegatedListingCurrentNonce = await listingWizardAdapter.getDelegatedListingCurrentNonce(
-      toAccountId(lister.address),
-    );
-
-    return prepareTypedDataActionEip712Signature(
-      buildDelegatedListingDataV1(delegatedListingCurrentNonce),
-      lister,
-      getChainId().reference,
-      listingWizard.address,
-    );
+    const data = await listingWizardAdapter.createDelegatedListingSignature();
+    return data.delegatedSignature.signatureEncodedForProtocol;
   };
 
   beforeEach(async () => {
@@ -96,7 +106,7 @@ describe('ListingWizardAdapterV1', () => {
     assetListingParams = {
       assets: [createAsset('erc721', toAccountId(collection.address), 1)],
       params: listingParams,
-      maxLockPeriod: SECONDS_IN_DAY * 7,
+      maxLockPeriod,
       immediatePayout: true,
     };
   });
@@ -183,6 +193,158 @@ describe('ListingWizardAdapterV1', () => {
         expect(listing.configurator).to.be.eq(listingParams.configurator.address);
         expect(listing.maxLockPeriod).to.be.eq(assetListingParams.maxLockPeriod);
         expect(listing.immediatePayout).to.be.eq(assetListingParams.immediatePayout);
+      });
+    });
+  });
+
+  describe('createDelegatedListingSignature', () => {
+    let premadeSignature1: DelegatedSignatureWithNonce;
+    let premadeSignature2: DelegatedSignatureWithNonce;
+
+    beforeEach(async () => {
+      premadeSignature1 = {
+        nonce: BigNumber.from(0),
+        delegatedSignature: await prepareTypedDataActionEip712SignatureV1(
+          buildDelegatedListingDataV1(BigNumber.from(0)),
+          buildDelegatedListingPrimaryTypeV1(),
+          lister,
+          getChainId().reference,
+          listingWizard.address,
+        ),
+      };
+
+      premadeSignature2 = {
+        nonce: BigNumber.from(1),
+        delegatedSignature: await prepareTypedDataActionEip712SignatureV1(
+          buildDelegatedListingDataV1(BigNumber.from(1)),
+          buildDelegatedListingPrimaryTypeV1(),
+          lister,
+          getChainId().reference,
+          listingWizard.address,
+        ),
+      };
+    });
+
+    it('should create a signature', async () => {
+      const signature1 = await listingWizardAdapter.createDelegatedListingSignature();
+      const signature2 = await listingWizardAdapter.createDelegatedListingSignature(premadeSignature2.nonce);
+
+      expect(signature1).to.deep.eq(premadeSignature1);
+      expect(signature2).to.deep.eq(premadeSignature2);
+    });
+  });
+
+  describe('verifyDelegatedListingSignature', () => {
+    describe('if nonce has not changed', () => {
+      it('should return true', async () => {
+        const signature = await listingWizardAdapter.createDelegatedListingSignature();
+        expect(
+          await listingWizardAdapter.verifyDelegatedListingSignature(signature.delegatedSignature.signature),
+        ).to.eq(true);
+      });
+    });
+
+    describe('if nonce has changed', () => {
+      it('should return false', async () => {
+        const signature = await listingWizardAdapter.createDelegatedListingSignature();
+        expect(
+          await listingWizardAdapter.verifyDelegatedListingSignature(
+            signature.delegatedSignature.signature,
+            BigNumber.from(28),
+          ),
+        ).to.eq(false);
+      });
+    });
+  });
+
+  describe('createExtendedDelegatedListingSignature', () => {
+    let firstSignature: DelegatedSignature;
+    let secondSignature: DelegatedSignatureWithNonce;
+    const nonce = BigNumber.from(0);
+
+    beforeEach(async () => {
+      firstSignature = await prepareTypedDataActionEip712SignatureV1(
+        buildDelegatedListingDataV1(BigNumber.from(0)),
+        buildDelegatedListingPrimaryTypeV1(),
+        lister,
+        getChainId().reference,
+        listingWizard.address,
+      );
+      secondSignature = {
+        nonce,
+        delegatedSignature: await prepareTypedDataActionEip712SignatureV1(
+          buildExtendedDelegatedListingDataV1(
+            salt,
+            nonce,
+            makeERC721Assets(collection.address, [1]),
+            { lister: lister.address, configurator: ethers.constants.AddressZero },
+            listingTerms,
+            maxLockPeriod,
+            immediatePayout,
+            COMMON_ID,
+            firstSignature.signatureEncodedForProtocol,
+          ),
+          buildExtendedDelegatedListingPrimaryTypeV1(),
+          lister,
+          getChainId().reference,
+          listingWizard.address,
+        ),
+      };
+    });
+
+    it('should create a signature', async () => {
+      const signatureWithoutNonce = await listingWizardAdapter.createExtendedDelegatedListingSignature({
+        universeId: COMMON_ID,
+        assetListingParams,
+        listingTerms,
+        salt,
+      });
+      const signatureWithNonce = await listingWizardAdapter.createExtendedDelegatedListingSignature({
+        universeId: COMMON_ID,
+        assetListingParams,
+        listingTerms,
+        salt,
+        delegatedSignatureWithNonce: { nonce, delegatedSignature: firstSignature },
+      });
+
+      expect(signatureWithoutNonce).to.deep.eq(signatureWithNonce);
+      expect(signatureWithoutNonce).to.deep.eq(secondSignature.delegatedSignature);
+    });
+  });
+
+  describe('verifyExtendedDelegatedListingSignature', () => {
+    let signatureData: ListingExtendedDelegatedSignatureData;
+    let signature: DelegatedSignature;
+
+    beforeEach(async () => {
+      signatureData = {
+        universeId: COMMON_ID,
+        assetListingParams,
+        listingTerms,
+        salt,
+      };
+
+      signature = await listingWizardAdapter.createExtendedDelegatedListingSignature({
+        ...signatureData,
+      });
+    });
+
+    describe('if data has not changed', () => {
+      it('should return true', async () => {
+        expect(
+          await listingWizardAdapter.verifyExtendedDelegatedListingSignature(signatureData, signature.signature),
+        ).to.eq(true);
+      });
+    });
+
+    describe('if data has changed', () => {
+      it('should return false', async () => {
+        expect(
+          await listingWizardAdapter.verifyExtendedDelegatedListingSignature(
+            { ...signatureData, universeId: BigNumber.from(30) },
+            signature.signature,
+          ),
+        ).to.eq(false);
       });
     });
   });

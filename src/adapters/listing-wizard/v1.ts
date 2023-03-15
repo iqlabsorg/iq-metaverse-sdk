@@ -1,3 +1,12 @@
+import { TypedDataSigner } from '@ethersproject/abstract-signer';
+import {
+  buildDelegatedListingDataV1,
+  buildDelegatedListingPrimaryTypeV1,
+  buildExtendedDelegatedListingDataV1,
+  buildExtendedDelegatedListingPrimaryTypeV1,
+  prepareTypedDataActionEip712SignatureV1,
+  verifyTypedDataActionEip712SignatureV1,
+} from '@iqprotocol/iq-space-protocol-light';
 import { IListingTermsRegistry, ListingWizardV1 } from '@iqprotocol/iq-space-protocol-light/typechain';
 import { Listings } from '@iqprotocol/iq-space-protocol-light/typechain/contracts/listing/listing-manager/ListingManager';
 import { Assets } from '@iqprotocol/iq-space-protocol-light/typechain/contracts/metahub/core/IMetahub';
@@ -6,7 +15,12 @@ import { BigNumber, BigNumberish, BytesLike, ContractTransaction } from 'ethers'
 import { Adapter } from '../../adapter';
 import { AddressTranslator } from '../../address-translator';
 import { ContractResolver } from '../../contract-resolver';
-import { AssetListingParams } from '../../types';
+import {
+  AssetListingParams,
+  DelegatedSignature,
+  DelegatedSignatureWithNonce,
+  ListingExtendedDelegatedSignatureData,
+} from '../../types';
 
 export class ListingWizardAdapterV1 extends Adapter {
   private readonly contract: ListingWizardV1;
@@ -65,6 +79,125 @@ export class ListingWizardAdapterV1 extends Adapter {
       universeId,
       delegatedListingSignature,
     );
+  }
+
+  /**
+   * Create delegated listing ABI encoded (v,r,s)(uint8, bytes32, bytes32) typed data signature (EIP712).
+   * Caller should be the actual lister.
+   * @param nonce Nonce (optional).
+   */
+  async createDelegatedListingSignature(nonce?: BigNumber): Promise<DelegatedSignatureWithNonce> {
+    const signerData = await this.signerData();
+
+    const delegatedListingCurrentNonce = nonce ?? (await this.getDelegatedListingCurrentNonce(signerData.accountId));
+    const delegatedSignature = await prepareTypedDataActionEip712SignatureV1(
+      buildDelegatedListingDataV1(delegatedListingCurrentNonce),
+      buildDelegatedListingPrimaryTypeV1(),
+      signerData.signer as unknown as TypedDataSigner,
+      signerData.accountId.chainId.reference,
+      this.contract.address,
+    );
+
+    return {
+      nonce: delegatedListingCurrentNonce,
+      delegatedSignature,
+    };
+  }
+
+  /**
+   * Create extended delegated listing ABI encoded (v,r,s)(uint8, bytes32, bytes32) typed data signature (EIP712).
+   * Caller should be the actual lister.
+   * @param dataToSign Data to sign.
+   */
+  async createExtendedDelegatedListingSignature(
+    dataToSign: ListingExtendedDelegatedSignatureData,
+  ): Promise<DelegatedSignature> {
+    const signerData = await this.signerData();
+
+    const delegatedSignatureWithNonce =
+      dataToSign.delegatedSignatureWithNonce ?? (await this.createDelegatedListingSignature());
+
+    const { encodedAssets, listingParams, maxLockPeriod, immediatePayout } = this.prepareListingParams(
+      dataToSign.assetListingParams,
+    );
+
+    return prepareTypedDataActionEip712SignatureV1(
+      buildExtendedDelegatedListingDataV1(
+        dataToSign.salt,
+        delegatedSignatureWithNonce.nonce,
+        encodedAssets,
+        listingParams,
+        dataToSign.listingTerms,
+        maxLockPeriod,
+        immediatePayout,
+        dataToSign.universeId,
+        delegatedSignatureWithNonce.delegatedSignature.signatureEncodedForProtocol,
+      ),
+      buildExtendedDelegatedListingPrimaryTypeV1(),
+      signerData.signer as unknown as TypedDataSigner,
+      signerData.accountId.chainId.reference,
+      this.contract.address,
+    );
+  }
+
+  /**
+   * Verify delegated listing signature.
+   * @param signature Typed data signature (EIP712).
+   * @returns True if signature is valid.
+   */
+  async verifyDelegatedListingSignature(signature: BytesLike, nonce?: BigNumber): Promise<boolean> {
+    const signerData = await this.signerData();
+    const delegatedListingCurrentNonce = nonce ?? (await this.getDelegatedListingCurrentNonce(signerData.accountId));
+
+    const address = verifyTypedDataActionEip712SignatureV1(
+      this.contract.address,
+      signerData.accountId.chainId.reference,
+      buildDelegatedListingDataV1(delegatedListingCurrentNonce),
+      buildDelegatedListingPrimaryTypeV1(),
+      signature,
+    );
+
+    return address === signerData.address;
+  }
+
+  /**
+   * Verify extended delegated listing signature.
+   * @param signatureData Signature data.
+   * @param signature Typed data signature (EIP712).
+   * @returns True if signature is valid.
+   */
+  async verifyExtendedDelegatedListingSignature(
+    signatureData: ListingExtendedDelegatedSignatureData,
+    signature: BytesLike,
+  ): Promise<boolean> {
+    const signerData = await this.signerData();
+
+    const delegatedSignatureWithNonce =
+      signatureData.delegatedSignatureWithNonce ?? (await this.createDelegatedListingSignature());
+
+    const { encodedAssets, listingParams, maxLockPeriod, immediatePayout } = this.prepareListingParams(
+      signatureData.assetListingParams,
+    );
+
+    const address = verifyTypedDataActionEip712SignatureV1(
+      this.contract.address,
+      signerData.accountId.chainId.reference,
+      buildExtendedDelegatedListingDataV1(
+        signatureData.salt,
+        delegatedSignatureWithNonce.nonce,
+        encodedAssets,
+        listingParams,
+        signatureData.listingTerms,
+        maxLockPeriod,
+        immediatePayout,
+        signatureData.universeId,
+        delegatedSignatureWithNonce.delegatedSignature.signatureEncodedForProtocol,
+      ),
+      buildExtendedDelegatedListingPrimaryTypeV1(),
+      signature,
+    );
+
+    return address === signerData.address;
   }
 
   /**

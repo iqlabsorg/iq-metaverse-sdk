@@ -9,6 +9,25 @@ import { BigNumber, BytesLike, Overrides as BaseOverrides, Signer } from 'ethers
 
 export type Address = string;
 
+export type SignerData = {
+  signer: Signer;
+  address: string;
+  accountId: AccountId;
+};
+
+export type DelegatedSignature = {
+  signature: string;
+  signatureEncodedForProtocol: BytesLike;
+  v: number;
+  r: string;
+  s: string;
+};
+
+export type DelegatedSignatureWithNonce = {
+  delegatedSignature: DelegatedSignature;
+  nonce: BigNumber;
+};
+
 export type Overrides = BaseOverrides & { from?: string | Promise<string> };
 
 export type IQSpaceParams = {
@@ -177,4 +196,18 @@ export type ListingConfiguratorPreset = {
 
 export type TaxStrategyConfig = {
   controller: AccountId;
+};
+
+export type ListingExtendedDelegatedSignatureData = {
+  universeId: BigNumberish;
+  assetListingParams: AssetListingParams;
+  listingTerms: IListingTermsRegistry.ListingTermsStruct;
+  salt: string;
+  delegatedSignatureWithNonce?: DelegatedSignatureWithNonce;
+};
+
+export type RentingExtendedDelegatedSignatureData = {
+  params: RentingParams;
+  salt: string;
+  delegatedSignatureWithNonce?: DelegatedSignatureWithNonce;
 };

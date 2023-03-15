@@ -12,6 +12,7 @@ import {
   ListingWizardAdapterV1,
   MetahubAdapter,
   RentingManagerAdapter,
+  RentingWizardAdapterV1,
   TaxStrategyRegistryAdapter,
   TaxTermsRegistryAdapter,
   UniverseRegistryAdapter,
@@ -197,11 +198,19 @@ export class IQSpace implements ChainAware {
   /**
    * Resolves the listing wizard adapter (version 1).
    * @param accountId Listing wizard account ID.
-   * @returns
    */
   listingWizardV1(accountId: AccountId): ListingWizardAdapterV1 {
     this.addressTranslator.assertSameChainId(accountId.chainId);
     return new ListingWizardAdapterV1(accountId, this.contractResolver, this.addressTranslator);
+  }
+
+  /**
+   * Resolves the renting wizard adapter (version 1).
+   * @param accountId Renting wizard account ID.
+   */
+  rentingWizardV1(accountId: AccountId): RentingWizardAdapterV1 {
+    this.addressTranslator.assertSameChainId(accountId.chainId);
+    return new RentingWizardAdapterV1(accountId, this.contractResolver, this.addressTranslator);
   }
 
   /**
