@@ -12,6 +12,7 @@ import { Listings } from '@iqprotocol/iq-space-protocol-light/typechain/contract
 import { Assets } from '@iqprotocol/iq-space-protocol-light/typechain/contracts/metahub/core/IMetahub';
 import { AccountId } from 'caip';
 import { BigNumber, BigNumberish, BytesLike, ContractTransaction } from 'ethers';
+import { ListingExtendedDelegatedSignatureVerificationData } from 'src';
 import { Adapter } from '../../adapter';
 import { AddressTranslator } from '../../address-translator';
 import { ContractResolver } from '../../contract-resolver';
@@ -108,14 +109,15 @@ export class ListingWizardAdapterV1 extends Adapter {
    * Create extended delegated listing ABI encoded (v,r,s)(uint8, bytes32, bytes32) typed data signature (EIP712).
    * Caller should be the actual lister.
    * @param dataToSign Data to sign.
+   * @param delegatedSignatureWithNonce ABI encoded typed data signature with nonce (optional).
    */
   async createExtendedDelegatedListingSignature(
     dataToSign: ListingExtendedDelegatedSignatureData,
+    delegatedSignatureWithNonce?: DelegatedSignatureWithNonce,
   ): Promise<DelegatedSignature> {
     const signerData = await this.signerData();
 
-    const delegatedSignatureWithNonce =
-      dataToSign.delegatedSignatureWithNonce ?? (await this.createDelegatedListingSignature());
+    delegatedSignatureWithNonce = delegatedSignatureWithNonce ?? (await this.createDelegatedListingSignature());
 
     const { encodedAssets, listingParams, maxLockPeriod, immediatePayout } = this.prepareListingParams(
       dataToSign.assetListingParams,
@@ -142,62 +144,59 @@ export class ListingWizardAdapterV1 extends Adapter {
 
   /**
    * Verify delegated listing signature.
+   * @param signer Signers account ID.
    * @param signature Typed data signature (EIP712).
    * @returns True if signature is valid.
    */
-  async verifyDelegatedListingSignature(signature: BytesLike, nonce?: BigNumber): Promise<boolean> {
-    const signerData = await this.signerData();
-    const delegatedListingCurrentNonce = nonce ?? (await this.getDelegatedListingCurrentNonce(signerData.accountId));
+  async verifyDelegatedListingSignature(signer: AccountId, signature: BytesLike, nonce?: BigNumber): Promise<boolean> {
+    const delegatedListingCurrentNonce = nonce ?? (await this.getDelegatedListingCurrentNonce(signer));
 
     const address = verifyTypedDataActionEip712SignatureV1(
       this.contract.address,
-      signerData.accountId.chainId.reference,
+      signer.chainId.reference,
       buildDelegatedListingDataV1(delegatedListingCurrentNonce),
       buildDelegatedListingPrimaryTypeV1(),
       signature,
     );
 
-    return address === signerData.address;
+    return address === signer.address;
   }
 
   /**
    * Verify extended delegated listing signature.
-   * @param signatureData Signature data.
+   * @param signer Signers account ID.
+   * @param signatureData Signature verification data.
    * @param signature Typed data signature (EIP712).
    * @returns True if signature is valid.
    */
   async verifyExtendedDelegatedListingSignature(
-    signatureData: ListingExtendedDelegatedSignatureData,
+    signer: AccountId,
+    signatureData: ListingExtendedDelegatedSignatureVerificationData,
     signature: BytesLike,
   ): Promise<boolean> {
-    const signerData = await this.signerData();
-
-    const delegatedSignatureWithNonce =
-      signatureData.delegatedSignatureWithNonce ?? (await this.createDelegatedListingSignature());
-
     const { encodedAssets, listingParams, maxLockPeriod, immediatePayout } = this.prepareListingParams(
       signatureData.assetListingParams,
     );
 
     const address = verifyTypedDataActionEip712SignatureV1(
       this.contract.address,
-      signerData.accountId.chainId.reference,
+      signer.chainId.reference,
       buildExtendedDelegatedListingDataV1(
         signatureData.salt,
-        delegatedSignatureWithNonce.nonce,
+        signatureData.delegatedSignatureWithNonce.nonce,
         encodedAssets,
         listingParams,
         signatureData.listingTerms,
         maxLockPeriod,
         immediatePayout,
         signatureData.universeId,
-        delegatedSignatureWithNonce.delegatedSignature.signatureEncodedForProtocol,
+        signatureData.delegatedSignatureWithNonce.delegatedSignature.signatureEncodedForProtocol,
       ),
       buildExtendedDelegatedListingPrimaryTypeV1(),
       signature,
     );
 
-    return address === signerData.address;
+    return address === signer.address;
   }
 
   /**

@@ -20,6 +20,7 @@ import { expect } from 'chai';
 import { BigNumber, BytesLike } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import {
+  AccountId,
   AssetListingParams,
   AssetType,
   createAsset,
@@ -27,6 +28,7 @@ import {
   DelegatedSignatureWithNonce,
   IQSpace,
   ListingExtendedDelegatedSignatureData,
+  ListingExtendedDelegatedSignatureVerificationData,
   ListingParams,
   ListingWizardAdapterV1,
 } from '../src';
@@ -64,6 +66,7 @@ describe('ListingWizardAdapterV1', () => {
   let listingParams: ListingParams;
   let assetListingParams: AssetListingParams;
   let warperReference: AssetType;
+  let listerAccountId: AccountId;
 
   const maxLockPeriod = SECONDS_IN_DAY * 7;
   const immediatePayout = true;
@@ -109,6 +112,7 @@ describe('ListingWizardAdapterV1', () => {
       maxLockPeriod,
       immediatePayout: true,
     };
+    listerAccountId = toAccountId(lister.address);
   });
 
   describe('createListingWithTerms', () => {
@@ -239,7 +243,10 @@ describe('ListingWizardAdapterV1', () => {
       it('should return true', async () => {
         const signature = await listingWizardAdapter.createDelegatedListingSignature();
         expect(
-          await listingWizardAdapter.verifyDelegatedListingSignature(signature.delegatedSignature.signature),
+          await listingWizardAdapter.verifyDelegatedListingSignature(
+            listerAccountId,
+            signature.delegatedSignature.signature,
+          ),
         ).to.eq(true);
       });
     });
@@ -249,6 +256,7 @@ describe('ListingWizardAdapterV1', () => {
         const signature = await listingWizardAdapter.createDelegatedListingSignature();
         expect(
           await listingWizardAdapter.verifyDelegatedListingSignature(
+            listerAccountId,
             signature.delegatedSignature.signature,
             BigNumber.from(28),
           ),
@@ -299,13 +307,15 @@ describe('ListingWizardAdapterV1', () => {
         listingTerms,
         salt,
       });
-      const signatureWithNonce = await listingWizardAdapter.createExtendedDelegatedListingSignature({
-        universeId: COMMON_ID,
-        assetListingParams,
-        listingTerms,
-        salt,
-        delegatedSignatureWithNonce: { nonce, delegatedSignature: firstSignature },
-      });
+      const signatureWithNonce = await listingWizardAdapter.createExtendedDelegatedListingSignature(
+        {
+          universeId: COMMON_ID,
+          assetListingParams,
+          listingTerms,
+          salt,
+        },
+        { nonce, delegatedSignature: firstSignature },
+      );
 
       expect(signatureWithoutNonce).to.deep.eq(signatureWithNonce);
       expect(signatureWithoutNonce).to.deep.eq(secondSignature.delegatedSignature);
@@ -314,7 +324,9 @@ describe('ListingWizardAdapterV1', () => {
 
   describe('verifyExtendedDelegatedListingSignature', () => {
     let signatureData: ListingExtendedDelegatedSignatureData;
-    let signature: DelegatedSignature;
+    let signatureVerificationData: ListingExtendedDelegatedSignatureVerificationData;
+    let signature: DelegatedSignatureWithNonce;
+    let extendedSignature: DelegatedSignature;
 
     beforeEach(async () => {
       signatureData = {
@@ -324,15 +336,23 @@ describe('ListingWizardAdapterV1', () => {
         salt,
       };
 
-      signature = await listingWizardAdapter.createExtendedDelegatedListingSignature({
+      signature = await listingWizardAdapter.createDelegatedListingSignature();
+      extendedSignature = await listingWizardAdapter.createExtendedDelegatedListingSignature(signatureData, signature);
+
+      signatureVerificationData = {
         ...signatureData,
-      });
+        delegatedSignatureWithNonce: signature,
+      };
     });
 
     describe('if data has not changed', () => {
       it('should return true', async () => {
         expect(
-          await listingWizardAdapter.verifyExtendedDelegatedListingSignature(signatureData, signature.signature),
+          await listingWizardAdapter.verifyExtendedDelegatedListingSignature(
+            listerAccountId,
+            signatureVerificationData,
+            extendedSignature.signature,
+          ),
         ).to.eq(true);
       });
     });
@@ -341,8 +361,9 @@ describe('ListingWizardAdapterV1', () => {
       it('should return false', async () => {
         expect(
           await listingWizardAdapter.verifyExtendedDelegatedListingSignature(
-            { ...signatureData, universeId: BigNumber.from(30) },
-            signature.signature,
+            listerAccountId,
+            { ...signatureVerificationData, universeId: BigNumber.from(30) },
+            extendedSignature.signature,
           ),
         ).to.eq(false);
       });

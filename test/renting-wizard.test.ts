@@ -20,7 +20,6 @@ import { AccountId, AssetType } from 'caip';
 import { expect } from 'chai';
 import { BigNumber, BytesLike } from 'ethers';
 import { deployments, ethers } from 'hardhat';
-import { RentingHelper } from '../src/helpers';
 import {
   AddressTranslator,
   Asset,
@@ -32,9 +31,11 @@ import {
   RentalFees,
   RentingEstimationParams,
   RentingExtendedDelegatedSignatureData,
+  RentingExtendedDelegatedSignatureVerificationData,
   RentingManagerAdapter,
   RentingWizardAdapterV1,
 } from '../src';
+import { RentingHelper } from '../src/helpers';
 import { setupForRenting } from './helpers/setup';
 import { COMMON_ID, getChainId, SECONDS_IN_HOUR, toAccountId } from './helpers/utils';
 
@@ -195,7 +196,10 @@ describe('RentingWizardAdapterV1', () => {
       it('should return true', async () => {
         const signature = await rentingWizardAdapterRenter.createDelegatedRentSignature();
         expect(
-          await rentingWizardAdapterRenter.verifyDelegatedRentSignature(signature.delegatedSignature.signature),
+          await rentingWizardAdapterRenter.verifyDelegatedRentSignature(
+            renterAccountId,
+            signature.delegatedSignature.signature,
+          ),
         ).to.eq(true);
       });
     });
@@ -205,6 +209,7 @@ describe('RentingWizardAdapterV1', () => {
         const signature = await rentingWizardAdapterRenter.createDelegatedRentSignature();
         expect(
           await rentingWizardAdapterRenter.verifyDelegatedRentSignature(
+            renterAccountId,
             signature.delegatedSignature.signature,
             BigNumber.from(28),
           ),
@@ -256,16 +261,18 @@ describe('RentingWizardAdapterV1', () => {
         },
         salt,
       });
-      const signatureWithNonce = await rentingWizardAdapterRenter.createExtendedDelegatedRentSignature({
-        params: {
-          ...rentingEstimationParams,
-          tokenQuote: EMPTY_BYTES_DATA_HEX,
-          tokenQuoteSignature: EMPTY_BYTES_DATA_HEX,
-          maxPaymentAmount: estimate.total,
+      const signatureWithNonce = await rentingWizardAdapterRenter.createExtendedDelegatedRentSignature(
+        {
+          params: {
+            ...rentingEstimationParams,
+            tokenQuote: EMPTY_BYTES_DATA_HEX,
+            tokenQuoteSignature: EMPTY_BYTES_DATA_HEX,
+            maxPaymentAmount: estimate.total,
+          },
+          salt,
         },
-        salt,
-        delegatedSignatureWithNonce: { nonce, delegatedSignature: firstSignature },
-      });
+        { nonce, delegatedSignature: firstSignature },
+      );
 
       expect(signatureWithoutNonce).to.deep.eq(signatureWithNonce);
       expect(signatureWithoutNonce).to.deep.eq(secondSignature.delegatedSignature);
@@ -274,7 +281,9 @@ describe('RentingWizardAdapterV1', () => {
 
   describe('verifyExtendedDelegatedRentSignature', () => {
     let signatureData: RentingExtendedDelegatedSignatureData;
-    let signature: DelegatedSignature;
+    let signatureVerificationData: RentingExtendedDelegatedSignatureVerificationData;
+    let signature: DelegatedSignatureWithNonce;
+    let extendedSignature: DelegatedSignature;
 
     beforeEach(async () => {
       signatureData = {
@@ -287,15 +296,26 @@ describe('RentingWizardAdapterV1', () => {
         salt,
       };
 
-      signature = await rentingWizardAdapterRenter.createExtendedDelegatedRentSignature({
+      signature = await rentingWizardAdapterRenter.createDelegatedRentSignature();
+      extendedSignature = await rentingWizardAdapterRenter.createExtendedDelegatedRentSignature(
+        signatureData,
+        signature,
+      );
+
+      signatureVerificationData = {
         ...signatureData,
-      });
+        delegatedSignatureWithNonce: signature,
+      };
     });
 
     describe('if data has not changed', () => {
       it('should return true', async () => {
         expect(
-          await rentingWizardAdapterRenter.verifyExtendedDelegatedRentSignature(signatureData, signature.signature),
+          await rentingWizardAdapterRenter.verifyExtendedDelegatedRentSignature(
+            renterAccountId,
+            signatureVerificationData,
+            extendedSignature.signature,
+          ),
         ).to.eq(true);
       });
     });
@@ -304,8 +324,12 @@ describe('RentingWizardAdapterV1', () => {
       it('should return false', async () => {
         expect(
           await rentingWizardAdapterRenter.verifyExtendedDelegatedRentSignature(
-            { ...signatureData, params: { ...signatureData.params, maxPaymentAmount: BigNumber.from(999) } },
-            signature.signature,
+            renterAccountId,
+            {
+              ...signatureVerificationData,
+              params: { ...signatureVerificationData.params, maxPaymentAmount: BigNumber.from(999) },
+            },
+            extendedSignature.signature,
           ),
         ).to.eq(false);
       });

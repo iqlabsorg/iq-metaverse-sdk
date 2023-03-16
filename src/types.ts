@@ -203,11 +203,17 @@ export type ListingExtendedDelegatedSignatureData = {
   assetListingParams: AssetListingParams;
   listingTerms: IListingTermsRegistry.ListingTermsStruct;
   salt: string;
-  delegatedSignatureWithNonce?: DelegatedSignatureWithNonce;
+};
+
+export type ListingExtendedDelegatedSignatureVerificationData = ListingExtendedDelegatedSignatureData & {
+  delegatedSignatureWithNonce: DelegatedSignatureWithNonce;
 };
 
 export type RentingExtendedDelegatedSignatureData = {
   params: RentingParams;
   salt: string;
-  delegatedSignatureWithNonce?: DelegatedSignatureWithNonce;
+};
+
+export type RentingExtendedDelegatedSignatureVerificationData = RentingExtendedDelegatedSignatureData & {
+  delegatedSignatureWithNonce: DelegatedSignatureWithNonce;
 };

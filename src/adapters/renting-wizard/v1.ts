@@ -18,6 +18,7 @@ import {
   DelegatedSignature,
   DelegatedSignatureWithNonce,
   RentingExtendedDelegatedSignatureData,
+  RentingExtendedDelegatedSignatureVerificationData,
   RentingParams,
 } from '../../types';
 
@@ -73,14 +74,15 @@ export class RentingWizardAdapterV1 extends Adapter {
    * Create extended delegated renting ABI encoded (v,r,s)(uint8, bytes32, bytes32) typed data signature (EIP712).
    * Caller should be the actual renter.
    * @param dataToSign Data to sign.
+   * @param delegatedSignatureWithNonce ABI encoded typed data signature with nonce (optional).
    */
   async createExtendedDelegatedRentSignature(
     dataToSign: RentingExtendedDelegatedSignatureData,
+    delegatedSignatureWithNonce?: DelegatedSignatureWithNonce,
   ): Promise<DelegatedSignature> {
     const signerData = await this.signerData();
 
-    const delegatedSignatureWithNonce =
-      dataToSign.delegatedSignatureWithNonce ?? (await this.createDelegatedRentSignature());
+    delegatedSignatureWithNonce = delegatedSignatureWithNonce ?? (await this.createDelegatedRentSignature());
 
     const { rentingParams, tokenQuote, tokenQuoteSignature, maxPaymentAmount } =
       RentingHelper.prepareExtendedRentingParams(dataToSign.params, this.addressTranslator);
@@ -104,59 +106,56 @@ export class RentingWizardAdapterV1 extends Adapter {
 
   /**
    * Verify delegated renting signature.
+   * @param signer Signers account ID.
    * @param signature Typed data signature (EIP712).
    * @returns True if signature is valid.
    */
-  async verifyDelegatedRentSignature(signature: BytesLike, nonce?: BigNumber): Promise<boolean> {
-    const signerData = await this.signerData();
-    const delegatedListingCurrentNonce = nonce ?? (await this.getDelegatedRentCurrentNonce(signerData.accountId));
+  async verifyDelegatedRentSignature(signer: AccountId, signature: BytesLike, nonce?: BigNumber): Promise<boolean> {
+    const delegatedListingCurrentNonce = nonce ?? (await this.getDelegatedRentCurrentNonce(signer));
 
     const address = verifyTypedDataActionEip712SignatureV1(
       this.contract.address,
-      signerData.accountId.chainId.reference,
+      signer.chainId.reference,
       buildDelegatedRentDataV1(delegatedListingCurrentNonce),
       buildDelegatedRentPrimaryTypeV1(),
       signature,
     );
 
-    return address === signerData.address;
+    return address === signer.address;
   }
 
   /**
    * Verify extended delegated renting signature.
-   * @param signatureData Signature data.
+   * @param signer Signers account ID.
+   * @param signatureData Signature verification data.
    * @param signature Typed data signature (EIP712).
    * @returns True if signature is valid.
    */
   async verifyExtendedDelegatedRentSignature(
-    signatureData: RentingExtendedDelegatedSignatureData,
+    signer: AccountId,
+    signatureData: RentingExtendedDelegatedSignatureVerificationData,
     signature: BytesLike,
   ): Promise<boolean> {
-    const signerData = await this.signerData();
-
-    const delegatedSignatureWithNonce =
-      signatureData.delegatedSignatureWithNonce ?? (await this.createDelegatedRentSignature());
-
     const { rentingParams, tokenQuote, tokenQuoteSignature, maxPaymentAmount } =
       RentingHelper.prepareExtendedRentingParams(signatureData.params, this.addressTranslator);
 
     const address = verifyTypedDataActionEip712SignatureV1(
       this.contract.address,
-      signerData.accountId.chainId.reference,
+      signer.chainId.reference,
       buildExtendedDelegatedRentDataV1(
         signatureData.salt,
-        delegatedSignatureWithNonce.nonce,
+        signatureData.delegatedSignatureWithNonce.nonce,
         rentingParams,
         tokenQuote,
         tokenQuoteSignature,
         maxPaymentAmount,
-        delegatedSignatureWithNonce.delegatedSignature.signatureEncodedForProtocol,
+        signatureData.delegatedSignatureWithNonce.delegatedSignature.signatureEncodedForProtocol,
       ),
       buildExtendedDelegatedRentPrimaryTypeV1(),
       signature,
     );
 
-    return address === signerData.address;
+    return address === signer.address;
   }
 
   /**
