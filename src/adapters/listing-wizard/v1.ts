@@ -83,6 +83,33 @@ export class ListingWizardAdapterV1 extends Adapter {
   }
 
   /**
+   * Estimates the gas amount needed for creating new asset listing (delegated).
+   * @param universeId Universe ID.
+   * @param assetListingParams Listing params.
+   * @param listingTerms Listing terms.
+   * @param delegatedListingSignature Delegated Listing ECDSA signature ABI encoded (v,r,s)(uint8, bytes32, bytes32).
+   */
+  async estimateDelegatedCreateListingWithTerms(
+    universeId: BigNumberish,
+    assetListingParams: AssetListingParams,
+    listingTerms: IListingTermsRegistry.ListingTermsStruct,
+    delegatedListingSignature: BytesLike,
+  ): Promise<BigNumber> {
+    const { encodedAssets, listingParams, maxLockPeriod, immediatePayout } =
+      this.prepareListingParams(assetListingParams);
+
+    return this.contract.estimateGas.delegatedCreateListingWithTerms(
+      encodedAssets,
+      listingParams,
+      listingTerms,
+      maxLockPeriod,
+      immediatePayout,
+      universeId,
+      delegatedListingSignature,
+    );
+  }
+
+  /**
    * Create delegated listing ABI encoded (v,r,s)(uint8, bytes32, bytes32) typed data signature (EIP712).
    * Caller should be the actual lister.
    * @param nonce Nonce (optional).

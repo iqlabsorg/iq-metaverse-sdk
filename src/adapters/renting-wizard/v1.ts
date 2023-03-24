@@ -9,7 +9,7 @@ import {
 } from '@iqprotocol/iq-space-protocol-light';
 import { RentingWizardV1 } from '@iqprotocol/iq-space-protocol-light/typechain';
 import { AccountId } from 'caip';
-import { BigNumber, BytesLike } from 'ethers';
+import { BigNumber, BytesLike, ContractTransaction } from 'ethers';
 import { Adapter } from '../../adapter';
 import { AddressTranslator } from '../../address-translator';
 import { ContractResolver } from '../../contract-resolver';
@@ -35,10 +35,27 @@ export class RentingWizardAdapterV1 extends Adapter {
    * @param params Renting parameters.
    * @param delegatedRentSignature Delegated Rent ECDSA signature ABI encoded (v,r,s)(uint8, bytes32, bytes32).
    */
-  async delegatedRent(params: RentingParams, delegatedRentSignature: BytesLike) {
+  async delegatedRent(params: RentingParams, delegatedRentSignature: BytesLike): Promise<ContractTransaction> {
     const { rentingParams, tokenQuote, tokenQuoteSignature, maxPaymentAmount } =
       RentingHelper.prepareExtendedRentingParams(params, this.addressTranslator);
     return this.contract.delegatedRent(
+      rentingParams,
+      tokenQuote,
+      tokenQuoteSignature,
+      maxPaymentAmount,
+      delegatedRentSignature,
+    );
+  }
+
+  /**
+   * Estimates the gas amount needed for performing renting operation (delegated).
+   * @param params Renting parameters.
+   * @param delegatedRentSignature Delegated Rent ECDSA signature ABI encoded (v,r,s)(uint8, bytes32, bytes32).
+   */
+  async estimateDelegatedRent(params: RentingParams, delegatedRentSignature: BytesLike): Promise<BigNumber> {
+    const { rentingParams, tokenQuote, tokenQuoteSignature, maxPaymentAmount } =
+      RentingHelper.prepareExtendedRentingParams(params, this.addressTranslator);
+    return this.contract.estimateGas.delegatedRent(
       rentingParams,
       tokenQuote,
       tokenQuoteSignature,
