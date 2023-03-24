@@ -80,9 +80,9 @@ describe('RentingWizardAdapterV1', () => {
     return data.delegatedSignature.signatureEncodedForProtocol;
   };
 
-  const delegateRentAsset = async (): Promise<void> => {
+  const delegateRentAsset = async (): Promise<{ estimate: BigNumber; gasUsed: BigNumber }> => {
     await baseToken.connect(renter).approve(rentingWizard.address, estimate.total);
-    await rentingWizardAdapterDelegated.delegatedRent(
+    const gasAmountEstimate = await rentingWizardAdapterDelegated.estimateDelegatedRent(
       {
         listingId: COMMON_ID,
         paymentToken: baseTokenReference,
@@ -94,6 +94,20 @@ describe('RentingWizardAdapterV1', () => {
       },
       await getDelegatedRentSignature(),
     );
+    const tx = await rentingWizardAdapterDelegated.delegatedRent(
+      {
+        listingId: COMMON_ID,
+        paymentToken: baseTokenReference,
+        rentalPeriod,
+        renter: renterAccountId,
+        warper: warperReference,
+        maxPaymentAmount: estimate.total,
+        listingTermsId: COMMON_ID,
+      },
+      await getDelegatedRentSignature(),
+    );
+    const receipt = await tx.wait();
+    return { estimate: gasAmountEstimate, gasUsed: receipt.cumulativeGasUsed };
   };
 
   beforeEach(async () => {
@@ -137,8 +151,11 @@ describe('RentingWizardAdapterV1', () => {
   });
 
   describe('delegatedRent', () => {
+    let estimate: BigNumber;
+    let gasUsed: BigNumber;
+
     beforeEach(async () => {
-      await delegateRentAsset();
+      ({ estimate, gasUsed } = await delegateRentAsset());
     });
 
     it('should rent asset on behalf of actual renter', async () => {
@@ -151,6 +168,7 @@ describe('RentingWizardAdapterV1', () => {
       expect(agreement.listingId).to.eql(COMMON_ID);
       expect(agreement.universeId).to.eql(COMMON_ID);
       expect(asset).to.deep.equal(warpedAsset);
+      expect(estimate).to.be.greaterThan(gasUsed);
     });
   });
 
