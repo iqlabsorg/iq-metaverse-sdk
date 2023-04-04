@@ -1,4 +1,4 @@
-import { BASE_TOKEN_DECIMALS, convertToWei } from '@iqprotocol/iq-space-protocol';
+import { convertToWei } from '@iqprotocol/iq-space-protocol';
 import {
   ERC20Mock,
   ERC721Mock,
@@ -23,7 +23,14 @@ import {
 } from '../src';
 import { mintNFTs } from './helpers/asset';
 import { setupForRenting, setupUniverseAndRegisteredWarper } from './helpers/setup';
-import { COMMON_ID, getChainId, SECONDS_IN_HOUR, toAccountId, waitBlockchainTime } from './helpers/utils';
+import {
+  COMMON_ID,
+  getChainId,
+  SECONDS_IN_HOUR,
+  TEST_BASE_TOKEN_DECIMALS,
+  toAccountId,
+  waitBlockchainTime,
+} from './helpers/utils';
 
 /**
  * @group integration
@@ -120,7 +127,7 @@ describe('MetahubAdapter', () => {
     baseTokenReference = AddressTranslator.createAssetType(toAccountId(baseToken.address), 'erc20');
     asset = createAsset('erc721', toAccountId(collection.address), 1);
 
-    await baseToken.connect(deployer).mint(renter.address, convertToWei('1000', BASE_TOKEN_DECIMALS));
+    await baseToken.connect(deployer).mint(renter.address, convertToWei('1000', TEST_BASE_TOKEN_DECIMALS));
   });
 
   describe('getChainId', () => {
@@ -315,7 +322,7 @@ describe('MetahubAdapter', () => {
   });
 
   describe('approveForRentalPayment', () => {
-    const amount = convertToWei('10', BASE_TOKEN_DECIMALS);
+    const amount = convertToWei('10', TEST_BASE_TOKEN_DECIMALS);
 
     it('should approve payment token to be spent by metahub', async () => {
       await renterMetahubAdapter.approveForRentalPayment(baseTokenReference, amount);
@@ -333,7 +340,7 @@ describe('MetahubAdapter', () => {
     });
 
     describe('when allowance has been set', () => {
-      const amount = convertToWei('10', BASE_TOKEN_DECIMALS);
+      const amount = convertToWei('10', TEST_BASE_TOKEN_DECIMALS);
 
       beforeEach(async () => {
         await renterMetahubAdapter.approveForRentalPayment(baseTokenReference, amount);

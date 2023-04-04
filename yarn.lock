@@ -928,10 +928,10 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
-"@iqprotocol/iq-space-protocol-light@2.1.17":
-  version "2.1.17"
-  resolved "https://registry.yarnpkg.com/@iqprotocol/iq-space-protocol-light/-/iq-space-protocol-light-2.1.17.tgz#be262a0222d8c09b9f22c6d467db7a146ac9a483"
-  integrity sha512-GlRlR7ckQsfCPX+jde0SsfMxqT92QfKPoIW3lhdrLoXQObO4tkcXEqHQSisfXwFxaks8hVudqpymbeKCLC7wUg==
+"@iqprotocol/iq-space-protocol-light@2.1.21":
+  version "2.1.21"
+  resolved "https://registry.yarnpkg.com/@iqprotocol/iq-space-protocol-light/-/iq-space-protocol-light-2.1.21.tgz#21bfcb3479d2d0ab3ea6323b8201f82a70323d21"
+  integrity sha512-NP5VP81h4OwSlhXbzVVUB3srg1SAUTt8fMYDtfgSjoJ9kSjGL2qEdHOlXB+2yN+bNYlUdaOMltTqDc6RwGCVjg==
   dependencies:
     "@ethersproject/abstract-signer" "^5.5.0"
     "@nomiclabs/hardhat-ethers" "npm:hardhat-deploy-ethers@latest"
@@ -939,14 +939,15 @@
     ethers "5.6.4"
     typechain "^8.0.0"
 
-"@iqprotocol/iq-space-protocol@2.1.17":
-  version "2.1.17"
-  resolved "https://registry.yarnpkg.com/@iqprotocol/iq-space-protocol/-/iq-space-protocol-2.1.17.tgz#2a3f58202d2ca420dabcf4e5ecdbee927cffebc8"
-  integrity sha512-BpW1+BaqpIS6+eg+qM1xRUIv6RtcHr8PEz1H1g2yoVl5IMZ29PM3q+gL3Z0xPTa8dragNptcbXgmT0AmSH7p2g==
+"@iqprotocol/iq-space-protocol@2.1.21":
+  version "2.1.21"
+  resolved "https://registry.yarnpkg.com/@iqprotocol/iq-space-protocol/-/iq-space-protocol-2.1.21.tgz#d50f1bf99b8076a1ae7a31548ad750b896e917ac"
+  integrity sha512-A+YSwa8ubSzFdplA6S1DcnSdblcJuHKOoFnZLPxcQsT6OzVkbZHsIZM4xJhiuYlaaFcLJXSf7gfAtiYGwqHVhQ==
   dependencies:
     "@ethersproject/abstract-signer" "^5.5.0"
     "@openzeppelin/contracts" "^4.6.0"
     "@openzeppelin/contracts-upgradeable" "^4.6.0"
+    "@openzeppelin/hardhat-upgrades" "^1.22.1"
     winston "^3.8.2"
 
 "@istanbuljs/load-nyc-config@^1.0.0":
@@ -1326,6 +1327,16 @@
   version "1.21.0"
   resolved "https://registry.yarnpkg.com/@openzeppelin/hardhat-upgrades/-/hardhat-upgrades-1.21.0.tgz#e90fb7d858093f35a300b3a5a2fd32bca6179dfc"
   integrity sha512-Kwl7IN0Hlhj4HluMTTl0DrtU90OI/Q6rG3sAyd2pv3fababe9EuZqs9DydOlkWM45JwTzC+eBzX3TgHsqI13eA==
+  dependencies:
+    "@openzeppelin/upgrades-core" "^1.20.0"
+    chalk "^4.1.0"
+    debug "^4.1.1"
+    proper-lockfile "^4.1.1"
+
+"@openzeppelin/hardhat-upgrades@^1.22.1":
+  version "1.22.1"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/hardhat-upgrades/-/hardhat-upgrades-1.22.1.tgz#93e2b3f870c57b00a1ae8a330a2cdd9c2d634eb8"
+  integrity sha512-MdoitCTLl4zwMU8MeE/bCj+7JMWBEvd38XqJkw36PkJrXlbv6FedDVCPoumMAhpmtymm0nTwTYYklYG+L6WiiQ==
   dependencies:
     "@openzeppelin/upgrades-core" "^1.20.0"
     chalk "^4.1.0"

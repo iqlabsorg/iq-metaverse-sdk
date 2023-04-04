@@ -1,4 +1,4 @@
-import { BASE_TOKEN_DECIMALS, convertToWei } from '@iqprotocol/iq-space-protocol';
+import { convertToWei } from '@iqprotocol/iq-space-protocol';
 import { ERC20Mock, IMetahub, IRentingManager } from '@iqprotocol/iq-space-protocol/typechain';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { AccountId, AssetType } from 'caip';
@@ -7,7 +7,7 @@ import { BigNumber } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import { AddressTranslator, Asset, createAsset, IQSpace, RentingEstimationParams, RentingManagerAdapter } from '../src';
 import { setupForRenting } from './helpers/setup';
-import { COMMON_ID, SECONDS_IN_HOUR, toAccountId, waitBlockchainTime } from './helpers/utils';
+import { COMMON_ID, SECONDS_IN_HOUR, TEST_BASE_TOKEN_DECIMALS, toAccountId, waitBlockchainTime } from './helpers/utils';
 
 /**
  * @group integration
@@ -69,7 +69,7 @@ describe('RentingManagerAdapter', () => {
     baseTokenReference = AddressTranslator.createAssetType(toAccountId(baseToken.address), 'erc20');
     renterAccountId = toAccountId(renter.address);
 
-    await baseToken.connect(deployer).mint(renter.address, convertToWei('1000', BASE_TOKEN_DECIMALS));
+    await baseToken.connect(deployer).mint(renter.address, convertToWei('1000', TEST_BASE_TOKEN_DECIMALS));
 
     rentingEstimationParams = {
       warper: warperReference,

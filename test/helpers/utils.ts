@@ -31,8 +31,13 @@ export const waitBlockchainTime = async (seconds: number): Promise<void> => {
 export const SECONDS_IN_DAY = 86400;
 export const SECONDS_IN_HOUR = 3600;
 
+export const TEST_BASE_TOKEN_DECIMALS = 18;
 export const COMMON_ID = BigNumber.from(1);
 export const COMMON_PRICE = '10';
 export const COMMON_TAX_RATE = '2.25';
 export const COMMON_REWARD_RATE = '0.5';
-export const COMMON_BASE_RATE = calculateBaseRateInBaseTokenEthers(COMMON_PRICE, SECONDS_IN_DAY);
+export const COMMON_BASE_RATE = calculateBaseRateInBaseTokenEthers(
+  COMMON_PRICE,
+  SECONDS_IN_DAY,
+  TEST_BASE_TOKEN_DECIMALS,
+);

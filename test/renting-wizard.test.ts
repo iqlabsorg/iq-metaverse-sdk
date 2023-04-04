@@ -1,5 +1,4 @@
 import {
-  BASE_TOKEN_DECIMALS,
   buildDelegatedRentDataV1,
   buildDelegatedRentPrimaryTypeV1,
   buildExtendedDelegatedRentDataV1,
@@ -37,7 +36,7 @@ import {
 } from '../src';
 import { RentingHelper } from '../src/helpers';
 import { setupForRenting } from './helpers/setup';
-import { COMMON_ID, getChainId, SECONDS_IN_HOUR, toAccountId } from './helpers/utils';
+import { COMMON_ID, getChainId, SECONDS_IN_HOUR, TEST_BASE_TOKEN_DECIMALS, toAccountId } from './helpers/utils';
 
 /**
  * @group integration
@@ -130,8 +129,8 @@ describe('RentingWizardAdapterV1', () => {
     baseTokenReference = AddressTranslator.createAssetType(toAccountId(baseToken.address), 'erc20');
     renterAccountId = toAccountId(renter.address);
 
-    await baseToken.connect(deployer).mint(renter.address, convertToWei('100', BASE_TOKEN_DECIMALS));
-    await baseToken.connect(deployer).mint(delegatedRenter.address, convertToWei('100', BASE_TOKEN_DECIMALS));
+    await baseToken.connect(deployer).mint(renter.address, convertToWei('100', TEST_BASE_TOKEN_DECIMALS));
+    await baseToken.connect(deployer).mint(delegatedRenter.address, convertToWei('100', TEST_BASE_TOKEN_DECIMALS));
 
     ({ warperReference } = await setupForRenting());
 

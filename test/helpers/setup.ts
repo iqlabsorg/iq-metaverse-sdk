@@ -26,7 +26,15 @@ import { ethers } from 'hardhat';
 import { AddressTranslator } from '../../src';
 import { grantWizardRolesToDeployer } from './acl';
 import { mintAndApproveNFTs } from './asset';
-import { COMMON_BASE_RATE, COMMON_ID, COMMON_REWARD_RATE, COMMON_TAX_RATE, SECONDS_IN_DAY, toAccountId } from './utils';
+import {
+  COMMON_BASE_RATE,
+  COMMON_ID,
+  COMMON_REWARD_RATE,
+  COMMON_TAX_RATE,
+  SECONDS_IN_DAY,
+  TEST_BASE_TOKEN_DECIMALS,
+  toAccountId,
+} from './utils';
 import { findWarperByDeploymentTransaction } from './warper';
 
 export type UniverseCreated = {
@@ -136,8 +144,8 @@ const createListingWithTerms = async (
 
   const listingAssets = [makeERC721Asset(collection.address, 1)];
   const listingTerms = withReward
-    ? makeFixedRateWithRewardListingTermsFromUnconverted(COMMON_BASE_RATE, COMMON_REWARD_RATE)
-    : makeFixedRateListingTermsFromUnconverted(COMMON_BASE_RATE);
+    ? makeFixedRateWithRewardListingTermsFromUnconverted(COMMON_BASE_RATE, COMMON_REWARD_RATE, TEST_BASE_TOKEN_DECIMALS)
+    : makeFixedRateListingTermsFromUnconverted(COMMON_BASE_RATE, TEST_BASE_TOKEN_DECIMALS);
   const listingParams = makeListingParams(lister.address);
   const tx = await listingWizard
     .connect(lister)

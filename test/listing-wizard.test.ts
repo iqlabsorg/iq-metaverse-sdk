@@ -39,6 +39,7 @@ import {
   COMMON_REWARD_RATE,
   getChainId,
   SECONDS_IN_DAY,
+  TEST_BASE_TOKEN_DECIMALS,
   toAccountId,
 } from './helpers/utils';
 
@@ -103,8 +104,12 @@ describe('ListingWizardAdapterV1', () => {
     listingWizardAdapter = iqSpaceLister.listingWizardV1(toAccountId(listingWizard.address));
     listingWizardAdapterStranger = iqSpaceStranger.listingWizardV1(toAccountId(listingWizard.address));
 
-    listingTerms = makeFixedRateListingTermsFromUnconverted(COMMON_BASE_RATE);
-    listingTermsWithReward = makeFixedRateWithRewardListingTermsFromUnconverted(COMMON_BASE_RATE, COMMON_REWARD_RATE);
+    listingTerms = makeFixedRateListingTermsFromUnconverted(COMMON_BASE_RATE, TEST_BASE_TOKEN_DECIMALS);
+    listingTermsWithReward = makeFixedRateWithRewardListingTermsFromUnconverted(
+      COMMON_BASE_RATE,
+      COMMON_REWARD_RATE,
+      TEST_BASE_TOKEN_DECIMALS,
+    );
     listingParams = { lister: toAccountId(lister.address), configurator: toAccountId(ethers.constants.AddressZero) };
     assetListingParams = {
       assets: [createAsset('erc721', toAccountId(collection.address), 1)],

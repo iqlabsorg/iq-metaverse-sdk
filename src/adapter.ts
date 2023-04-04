@@ -1,6 +1,5 @@
 import { Assets, Rentings } from '@iqprotocol/iq-space-protocol-light/typechain/contracts/metahub/core/IMetahub';
 import { AccountId, AssetId, AssetType, ChainId } from 'caip';
-import { Signer } from 'ethers';
 import { AddressTranslator } from './address-translator';
 import { AgreementTermsCoder, AssetCoder } from './coders';
 import { ContractResolver } from './contract-resolver';

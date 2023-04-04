@@ -10,7 +10,13 @@ import { deployments, ethers } from 'hardhat';
 import { AddressTranslator, AssetType, IQSpace, ListingTermsInfo, ListingTermsRegistryAdapter } from '../src';
 import { findListingTermsIdByTransaction } from './helpers/listing-renting';
 import { createListing, setupForRenting, setupUniverseAndRegisteredWarper } from './helpers/setup';
-import { COMMON_BASE_RATE, COMMON_ID, COMMON_REWARD_RATE, toAccountId } from './helpers/utils';
+import {
+  COMMON_BASE_RATE,
+  COMMON_ID,
+  COMMON_REWARD_RATE,
+  TEST_BASE_TOKEN_DECIMALS,
+  toAccountId,
+} from './helpers/utils';
 
 /**
  * @group integration
@@ -32,14 +38,18 @@ describe('ListingTermsRegistryAdapter', () => {
   let warperReference: AssetType;
 
   /** Constants */
-  const fixedTerms = makeFixedRateListingTermsFromUnconverted(COMMON_BASE_RATE);
+  const fixedTerms = makeFixedRateListingTermsFromUnconverted(COMMON_BASE_RATE, TEST_BASE_TOKEN_DECIMALS);
   const fixedTermsInfo: ListingTermsInfo = {
     id: COMMON_ID,
     ...fixedTerms,
   };
   const fixedTermsWithRewardInfo: ListingTermsInfo = {
     id: COMMON_ID,
-    ...makeFixedRateWithRewardListingTermsFromUnconverted(COMMON_BASE_RATE, COMMON_REWARD_RATE),
+    ...makeFixedRateWithRewardListingTermsFromUnconverted(
+      COMMON_BASE_RATE,
+      COMMON_REWARD_RATE,
+      TEST_BASE_TOKEN_DECIMALS,
+    ),
   };
 
   beforeEach(async () => {
