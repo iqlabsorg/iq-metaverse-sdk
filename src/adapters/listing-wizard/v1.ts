@@ -56,6 +56,30 @@ export class ListingWizardAdapterV1 extends Adapter {
   }
 
   /**
+   * Estimates the gas amount needed for creating new asset listing.
+   * @param universeId Universe ID.
+   * @param assetListingParams Listing params.
+   * @param listingTerms Listing terms.
+   */
+  async estimateCreateListingWithTerms(
+    universeId: BigNumberish,
+    assetListingParams: AssetListingParams,
+    listingTerms: IListingTermsRegistry.ListingTermsStruct,
+  ): Promise<BigNumber> {
+    const { encodedAssets, listingParams, maxLockPeriod, immediatePayout } =
+      this.prepareListingParams(assetListingParams);
+
+    return this.contract.estimateGas.createListingWithTerms(
+      encodedAssets,
+      listingParams,
+      listingTerms,
+      maxLockPeriod,
+      immediatePayout,
+      universeId,
+    );
+  }
+
+  /**
    * Creates new asset listing (delegated).
    * @param universeId Universe ID.
    * @param assetListingParams Listing params.

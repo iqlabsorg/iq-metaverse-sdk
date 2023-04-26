@@ -121,10 +121,20 @@ describe('ListingWizardAdapterV1', () => {
   });
 
   describe('createListingWithTerms', () => {
+    let estimate: BigNumber;
+    let gasUsed: BigNumber;
+
     describe('with fixed rate', () => {
       beforeEach(async () => {
         ({ warperReference } = await setupForListing());
-        await listingWizardAdapter.createListingWithTerms(1, assetListingParams, listingTerms);
+        estimate = await listingWizardAdapter.estimateCreateListingWithTerms(
+          COMMON_ID,
+          assetListingParams,
+          listingTerms,
+        );
+        const tx = await listingWizardAdapter.createListingWithTerms(COMMON_ID, assetListingParams, listingTerms);
+        const receipt = await tx.wait();
+        gasUsed = receipt.gasUsed;
       });
 
       it('should create listing with fixed rate', async () => {
@@ -136,13 +146,25 @@ describe('ListingWizardAdapterV1', () => {
         expect(listing.configurator).to.be.eq(listingParams.configurator.address);
         expect(listing.maxLockPeriod).to.be.eq(assetListingParams.maxLockPeriod);
         expect(listing.immediatePayout).to.be.eq(assetListingParams.immediatePayout);
+        expect(estimate).to.be.greaterThan(gasUsed);
       });
     });
 
     describe('with fixed rate and reward', () => {
       beforeEach(async () => {
         ({ warperReference } = await setupForListing(true));
-        await listingWizardAdapter.createListingWithTerms(COMMON_ID, assetListingParams, listingTermsWithReward);
+        estimate = await listingWizardAdapter.estimateCreateListingWithTerms(
+          COMMON_ID,
+          assetListingParams,
+          listingTermsWithReward,
+        );
+        const tx = await listingWizardAdapter.createListingWithTerms(
+          COMMON_ID,
+          assetListingParams,
+          listingTermsWithReward,
+        );
+        const receipt = await tx.wait();
+        gasUsed = receipt.gasUsed;
       });
 
       it('should create listing with fixed rate and reward', async () => {
@@ -154,6 +176,7 @@ describe('ListingWizardAdapterV1', () => {
         expect(listing.configurator).to.be.eq(listingParams.configurator.address);
         expect(listing.maxLockPeriod).to.be.eq(assetListingParams.maxLockPeriod);
         expect(listing.immediatePayout).to.be.eq(assetListingParams.immediatePayout);
+        expect(estimate).to.be.greaterThan(gasUsed);
       });
     });
   });
@@ -178,7 +201,7 @@ describe('ListingWizardAdapterV1', () => {
           await getDelegatedListingSignature(),
         );
         const receipt = await tx.wait();
-        gasUsed = receipt.cumulativeGasUsed;
+        gasUsed = receipt.gasUsed;
       });
 
       it('should create listing with fixed rate', async () => {
@@ -210,7 +233,7 @@ describe('ListingWizardAdapterV1', () => {
           await getDelegatedListingSignature(),
         );
         const receipt = await tx.wait();
-        gasUsed = receipt.cumulativeGasUsed;
+        gasUsed = receipt.gasUsed;
       });
 
       it('should create listing with fixed rate and reward', async () => {
