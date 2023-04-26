@@ -8,16 +8,18 @@ import {
   verifyTypedDataActionEip712SignatureV1,
 } from '@iqprotocol/iq-space-protocol-light';
 import { IListingTermsRegistry, ListingWizardV1 } from '@iqprotocol/iq-space-protocol-light/typechain';
-import { Listings } from '@iqprotocol/iq-space-protocol-light/typechain/contracts/listing/listing-manager/ListingManager';
-import { Assets } from '@iqprotocol/iq-space-protocol-light/typechain/contracts/metahub/core/IMetahub';
 import { AccountId } from 'caip';
 import { BigNumber, BigNumberish, BytesLike, ContractTransaction } from 'ethers';
 import { ListingExtendedDelegatedSignatureVerificationData } from 'src';
 import { Adapter } from '../../adapter';
 import { AddressTranslator } from '../../address-translator';
+import { ListingCoder } from '../../coders';
+import { BLOCK_GAS_LIMIT, NOMINAL_BATCH_GAS_LIMIT, NOMINAL_BATCH_SIZE } from '../../constants';
 import { ContractResolver } from '../../contract-resolver';
+import { ListingHelper } from '../../helpers';
 import {
   AssetListingParams,
+  CreateListingParams,
   DelegatedSignature,
   DelegatedSignatureWithNonce,
   ListingExtendedDelegatedSignatureData,
@@ -42,8 +44,10 @@ export class ListingWizardAdapterV1 extends Adapter {
     assetListingParams: AssetListingParams,
     listingTerms: IListingTermsRegistry.ListingTermsStruct,
   ): Promise<ContractTransaction> {
-    const { encodedAssets, listingParams, maxLockPeriod, immediatePayout } =
-      this.prepareListingParams(assetListingParams);
+    const { encodedAssets, listingParams, maxLockPeriod, immediatePayout } = ListingHelper.prepareListingParams(
+      assetListingParams,
+      this.addressTranslator,
+    );
 
     return this.contract.createListingWithTerms(
       encodedAssets,
@@ -66,8 +70,10 @@ export class ListingWizardAdapterV1 extends Adapter {
     assetListingParams: AssetListingParams,
     listingTerms: IListingTermsRegistry.ListingTermsStruct,
   ): Promise<BigNumber> {
-    const { encodedAssets, listingParams, maxLockPeriod, immediatePayout } =
-      this.prepareListingParams(assetListingParams);
+    const { encodedAssets, listingParams, maxLockPeriod, immediatePayout } = ListingHelper.prepareListingParams(
+      assetListingParams,
+      this.addressTranslator,
+    );
 
     return this.contract.estimateGas.createListingWithTerms(
       encodedAssets,
@@ -77,6 +83,25 @@ export class ListingWizardAdapterV1 extends Adapter {
       immediatePayout,
       universeId,
     );
+  }
+
+  /**
+   * Creates new asset listings.
+   * @param listings List of listings.
+   */
+  async createListingsWithTerms(listings: CreateListingParams[]): Promise<ContractTransaction[]> {
+    const batches = await this.createBatches(listings);
+    const transactions: ContractTransaction[] = [];
+
+    for (const batch of batches) {
+      const tx = await this.contract.multicall(batch);
+      if (tx) {
+        await tx.wait();
+        transactions.push(tx);
+      }
+    }
+
+    return transactions;
   }
 
   /**
@@ -92,8 +117,10 @@ export class ListingWizardAdapterV1 extends Adapter {
     listingTerms: IListingTermsRegistry.ListingTermsStruct,
     delegatedListingSignature: BytesLike,
   ): Promise<ContractTransaction> {
-    const { encodedAssets, listingParams, maxLockPeriod, immediatePayout } =
-      this.prepareListingParams(assetListingParams);
+    const { encodedAssets, listingParams, maxLockPeriod, immediatePayout } = ListingHelper.prepareListingParams(
+      assetListingParams,
+      this.addressTranslator,
+    );
 
     return this.contract.delegatedCreateListingWithTerms(
       encodedAssets,
@@ -119,8 +146,10 @@ export class ListingWizardAdapterV1 extends Adapter {
     listingTerms: IListingTermsRegistry.ListingTermsStruct,
     delegatedListingSignature: BytesLike,
   ): Promise<BigNumber> {
-    const { encodedAssets, listingParams, maxLockPeriod, immediatePayout } =
-      this.prepareListingParams(assetListingParams);
+    const { encodedAssets, listingParams, maxLockPeriod, immediatePayout } = ListingHelper.prepareListingParams(
+      assetListingParams,
+      this.addressTranslator,
+    );
 
     return this.contract.estimateGas.delegatedCreateListingWithTerms(
       encodedAssets,
@@ -170,8 +199,9 @@ export class ListingWizardAdapterV1 extends Adapter {
 
     delegatedSignatureWithNonce = delegatedSignatureWithNonce ?? (await this.createDelegatedListingSignature());
 
-    const { encodedAssets, listingParams, maxLockPeriod, immediatePayout } = this.prepareListingParams(
+    const { encodedAssets, listingParams, maxLockPeriod, immediatePayout } = ListingHelper.prepareListingParams(
       dataToSign.assetListingParams,
+      this.addressTranslator,
     );
 
     return prepareTypedDataActionEip712SignatureV1(
@@ -225,8 +255,9 @@ export class ListingWizardAdapterV1 extends Adapter {
     signatureData: ListingExtendedDelegatedSignatureVerificationData,
     signature: BytesLike,
   ): Promise<boolean> {
-    const { encodedAssets, listingParams, maxLockPeriod, immediatePayout } = this.prepareListingParams(
+    const { encodedAssets, listingParams, maxLockPeriod, immediatePayout } = ListingHelper.prepareListingParams(
       signatureData.assetListingParams,
+      this.addressTranslator,
     );
 
     const address = verifyTypedDataActionEip712SignatureV1(
@@ -265,19 +296,45 @@ export class ListingWizardAdapterV1 extends Adapter {
     return this.contract.DOMAIN_SEPARATOR();
   }
 
-  private prepareListingParams(assetListingParams: AssetListingParams): {
-    encodedAssets: Assets.AssetStruct[];
-    listingParams: Listings.ParamsStruct;
-    maxLockPeriod: BigNumberish;
-    immediatePayout: boolean;
-  } {
-    const { assets, params, maxLockPeriod, immediatePayout } = assetListingParams;
-    const encodedAssets = assets.map(x => this.encodeAsset(x));
-    const listingParams: Listings.ParamsStruct = {
-      lister: this.accountIdToAddress(params.lister),
-      configurator: this.accountIdToAddress(params.configurator),
-    };
+  private async createBatch(listings: CreateListingParams[], buffer: CreateListingParams[]): Promise<string[]> {
+    if (listings.length === 1) {
+      // if we are here, then most likely this is a heavy transaction
+      const estimate = await this.estimateCreateListingWithTerms(
+        listings[0].universeId,
+        listings[0].assetListingParams,
+        listings[0].listingTerms,
+      );
 
-    return { encodedAssets, listingParams, maxLockPeriod, immediatePayout };
+      if (estimate.gt(BLOCK_GAS_LIMIT)) {
+        throw new Error('Listing creation will exceed block gas limit');
+      }
+
+      return [ListingCoder.encodeCreateListingWithTermsCall(listings[0], this.contract, this.addressTranslator)];
+    }
+
+    const batch: string[] = [];
+
+    for (const listing of listings) {
+      batch.push(ListingCoder.encodeCreateListingWithTermsCall(listing, this.contract, this.addressTranslator));
+    }
+
+    const estimate = await this.contract.estimateGas.multicall(batch);
+
+    if (estimate.gt(NOMINAL_BATCH_GAS_LIMIT)) {
+      buffer.push(listings.pop()!);
+      return this.createBatch(listings, buffer);
+    }
+
+    return batch;
+  }
+
+  private async createBatches(listings: CreateListingParams[]): Promise<string[][]> {
+    const batches: string[][] = [];
+
+    while (listings.length > 0) {
+      batches.push(await this.createBatch(listings.splice(0, NOMINAL_BATCH_SIZE), listings));
+    }
+
+    return batches;
   }
 }

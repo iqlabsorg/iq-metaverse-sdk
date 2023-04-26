@@ -80,6 +80,12 @@ export type Listing = Pick<
   lister: AccountId;
 };
 
+export type CreateListingParams = {
+  universeId: BigNumberish;
+  assetListingParams: AssetListingParams;
+  listingTerms: IListingTermsRegistry.ListingTermsStruct;
+};
+
 export type AssetNamespace = 'erc20' | 'erc721' | 'erc1155';
 
 export type Asset = {

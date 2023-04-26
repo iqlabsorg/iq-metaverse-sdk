@@ -24,6 +24,7 @@ import {
   AssetListingParams,
   AssetType,
   createAsset,
+  CreateListingParams,
   DelegatedSignature,
   DelegatedSignatureWithNonce,
   IQSpace,
@@ -86,6 +87,22 @@ describe('ListingWizardAdapterV1', () => {
   const getDelegatedListingSignature = async (): Promise<BytesLike> => {
     const data = await listingWizardAdapter.createDelegatedListingSignature();
     return data.delegatedSignature.signatureEncodedForProtocol;
+  };
+
+  const createBatchListingsParams = (assetCount: number): CreateListingParams[] => {
+    const params: CreateListingParams[] = [];
+
+    for (let i = 1; i <= assetCount; i++) {
+      const assetListingParams = {
+        assets: [createAsset('erc721', toAccountId(collection.address), i)],
+        params: listingParams,
+        maxLockPeriod,
+        immediatePayout: true,
+      };
+      params.push({ universeId: COMMON_ID, assetListingParams, listingTerms });
+    }
+
+    return params;
   };
 
   beforeEach(async () => {
@@ -177,6 +194,28 @@ describe('ListingWizardAdapterV1', () => {
         expect(listing.maxLockPeriod).to.be.eq(assetListingParams.maxLockPeriod);
         expect(listing.immediatePayout).to.be.eq(assetListingParams.immediatePayout);
         expect(estimate).to.be.greaterThan(gasUsed);
+      });
+    });
+  });
+
+  describe('createListingsWithTerms (TODO)', function () {
+    describe('happy path', () => {
+      let txCount: number;
+      const singleAssetListingCount = 50;
+
+      beforeEach(async function () {
+        this.timeout(200000);
+        ({ warperReference } = await setupForListing(false, singleAssetListingCount));
+        const transactions = await listingWizardAdapter.createListingsWithTerms(
+          createBatchListingsParams(singleAssetListingCount),
+        );
+        txCount = transactions.length;
+      });
+
+      it('should create multiple listings with transaction count less than listing count', async () => {
+        const listingCount = await listingManager.listingCount();
+        expect(listingCount).to.eq(singleAssetListingCount);
+        expect(txCount).to.be.lt(singleAssetListingCount);
       });
     });
   });

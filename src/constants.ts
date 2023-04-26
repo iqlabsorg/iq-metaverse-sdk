@@ -18,3 +18,7 @@ export const rentalStatusMap: Map<RentalStatusEnum, RentalStatus> = new Map([
   [RentalStatusEnum.AVAILABLE, 'available'],
   [RentalStatusEnum.RENTED, 'rented'],
 ]);
+
+export const NOMINAL_BATCH_SIZE = 5;
+export const NOMINAL_BATCH_GAS_LIMIT = 5n * 1000_000n;
+export const BLOCK_GAS_LIMIT = 30n * 1000_000n;
