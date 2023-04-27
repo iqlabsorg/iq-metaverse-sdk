@@ -198,7 +198,7 @@ describe('ListingWizardAdapterV1', () => {
     });
   });
 
-  describe('createListingsWithTerms (TODO)', function () {
+  describe.only('createListingsWithTerms (TODO)', function () {
     describe('happy path', () => {
       let txCount: number;
       const singleAssetListingCount = 50;

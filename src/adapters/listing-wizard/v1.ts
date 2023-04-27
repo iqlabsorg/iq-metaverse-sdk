@@ -24,6 +24,7 @@ import {
   DelegatedSignatureWithNonce,
   ListingExtendedDelegatedSignatureData,
 } from '../../types';
+import { sleep } from '../../utils';
 
 export class ListingWizardAdapterV1 extends Adapter {
   private readonly contract: ListingWizardV1;
@@ -94,11 +95,8 @@ export class ListingWizardAdapterV1 extends Adapter {
     const transactions: ContractTransaction[] = [];
 
     for (const batch of batches) {
-      const tx = await this.contract.multicall(batch);
-      if (tx) {
-        await tx.wait();
-        transactions.push(tx);
-      }
+      transactions.push(await this.contract.multicall(batch));
+      await sleep(50);
     }
 
     return transactions;
@@ -296,7 +294,9 @@ export class ListingWizardAdapterV1 extends Adapter {
     return this.contract.DOMAIN_SEPARATOR();
   }
 
-  private async createBatch(listings: CreateListingParams[], buffer: CreateListingParams[]): Promise<string[]> {
+  private async createBatch(
+    listings: CreateListingParams[],
+  ): Promise<{ leftOver: CreateListingParams[]; batch: string[] }> {
     if (listings.length === 1) {
       // if we are here, then most likely this is a heavy transaction
       const estimate = await this.estimateCreateListingWithTerms(
@@ -309,30 +309,36 @@ export class ListingWizardAdapterV1 extends Adapter {
         throw new Error('Listing creation will exceed block gas limit');
       }
 
-      return [ListingCoder.encodeCreateListingWithTermsCall(listings[0], this.contract, this.addressTranslator)];
+      return {
+        leftOver: [],
+        batch: [ListingCoder.encodeCreateListingWithTermsCall(listings[0], this.contract, this.addressTranslator)],
+      };
     }
 
-    const batch: string[] = [];
-
-    for (const listing of listings) {
-      batch.push(ListingCoder.encodeCreateListingWithTermsCall(listing, this.contract, this.addressTranslator));
-    }
-
+    const batch = listings.map(listing =>
+      ListingCoder.encodeCreateListingWithTermsCall(listing, this.contract, this.addressTranslator),
+    );
     const estimate = await this.contract.estimateGas.multicall(batch);
 
-    if (estimate.gt(NOMINAL_BATCH_GAS_LIMIT)) {
-      buffer.push(listings.pop()!);
-      return this.createBatch(listings, buffer);
+    if (estimate.lte(NOMINAL_BATCH_GAS_LIMIT)) {
+      return { leftOver: [], batch };
     }
 
-    return batch;
+    const removedListing = listings.pop()!;
+    const { leftOver, batch: createdBatch } = await this.createBatch(listings);
+    leftOver.push(removedListing);
+
+    return { leftOver, batch: createdBatch };
   }
 
   private async createBatches(listings: CreateListingParams[]): Promise<string[][]> {
     const batches: string[][] = [];
 
     while (listings.length > 0) {
-      batches.push(await this.createBatch(listings.splice(0, NOMINAL_BATCH_SIZE), listings));
+      const { leftOver, batch } = await this.createBatch(listings.splice(0, NOMINAL_BATCH_SIZE));
+      listings = listings.concat(leftOver);
+      batches.push(batch);
+      await sleep(50);
     }
 
     return batches;
