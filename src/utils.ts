@@ -17,4 +17,4 @@ export const createEmptyListingTerms = (): IListingTermsRegistry.ListingTermsStr
   return { strategyId: EMPTY_BYTES4_DATA_HEX, strategyData: EMPTY_BYTES_DATA_HEX };
 };
 
-export const sleep = (ms: number): Promise<void> => new Promise(resolve => setTimeout(() => resolve(), ms));
+export const sleep = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));

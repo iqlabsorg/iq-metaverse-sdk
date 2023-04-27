@@ -21,6 +21,7 @@ import { BigNumber, BytesLike } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import {
   AccountId,
+  Asset,
   AssetListingParams,
   AssetType,
   createAsset,
@@ -42,6 +43,7 @@ import {
   SECONDS_IN_DAY,
   TEST_BASE_TOKEN_DECIMALS,
   toAccountId,
+  createRandomInteger,
 } from './helpers/utils';
 
 /**
@@ -89,17 +91,38 @@ describe('ListingWizardAdapterV1', () => {
     return data.delegatedSignature.signatureEncodedForProtocol;
   };
 
-  const createBatchListingsParams = (assetCount: number): CreateListingParams[] => {
-    const params: CreateListingParams[] = [];
+  const createAssets = (idMin: number, idMax: number): Asset[] => {
+    const assets: Asset[] = [];
 
-    for (let i = 1; i <= assetCount; i++) {
+    for (let i = idMin; i <= idMax; i++) {
+      assets.push(createAsset('erc721', toAccountId(collection.address), i));
+    }
+
+    return assets;
+  };
+
+  const createListingsParams = (totalAssetCount: number, maxAssetCountPerListing = 5): CreateListingParams[] => {
+    const params: CreateListingParams[] = [];
+    let assetsUsed = 0;
+    let assetsLeft = totalAssetCount;
+
+    while (assetsLeft > 0) {
+      let assetCount = createRandomInteger(1, maxAssetCountPerListing);
+      if (assetsLeft < assetCount) {
+        assetCount = 1;
+      }
+
+      const assets = createAssets(assetsUsed + 1, assetsUsed + assetCount);
       const assetListingParams = {
-        assets: [createAsset('erc721', toAccountId(collection.address), i)],
+        assets,
         params: listingParams,
         maxLockPeriod,
         immediatePayout: true,
       };
       params.push({ universeId: COMMON_ID, assetListingParams, listingTerms });
+
+      assetsUsed += assetCount;
+      assetsLeft = totalAssetCount - assetsUsed;
     }
 
     return params;
@@ -198,24 +221,28 @@ describe('ListingWizardAdapterV1', () => {
     });
   });
 
-  describe.only('createListingsWithTerms (TODO)', function () {
+  describe('createListingsWithTerms (TODO)', function () {
     describe('happy path', () => {
       let txCount: number;
-      const singleAssetListingCount = 50;
+      let listingCount: number;
+      const totalAssetCount = 20;
 
       beforeEach(async function () {
         this.timeout(200000);
-        ({ warperReference } = await setupForListing(false, singleAssetListingCount));
-        const transactions = await listingWizardAdapter.createListingsWithTerms(
-          createBatchListingsParams(singleAssetListingCount),
-        );
+
+        ({ warperReference } = await setupForListing(false, totalAssetCount));
+
+        const listings = createListingsParams(totalAssetCount);
+        listingCount = listings.length;
+
+        const transactions = await listingWizardAdapter.createListingsWithTerms(listings);
         txCount = transactions.length;
       });
 
       it('should create multiple listings with transaction count less than listing count', async () => {
-        const listingCount = await listingManager.listingCount();
-        expect(listingCount).to.eq(singleAssetListingCount);
-        expect(txCount).to.be.lt(singleAssetListingCount);
+        const actualListingCount = await listingManager.listingCount();
+        expect(actualListingCount).to.eq(BigNumber.from(listingCount));
+        expect(txCount).to.be.lt(listingCount);
       });
     });
   });

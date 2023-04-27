@@ -223,3 +223,8 @@ export type RentingExtendedDelegatedSignatureData = {
 export type RentingExtendedDelegatedSignatureVerificationData = RentingExtendedDelegatedSignatureData & {
   delegatedSignatureWithNonce: DelegatedSignatureWithNonce;
 };
+
+export type CreateListingsBatchData = {
+  multiCall: string[];
+  singleCall?: CreateListingParams;
+};

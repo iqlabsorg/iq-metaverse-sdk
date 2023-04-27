@@ -28,6 +28,12 @@ export const waitBlockchainTime = async (seconds: number): Promise<void> => {
   await mineBlock(time + seconds);
 };
 
+export const createRandomInteger = (min: number, max: number): number => {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1) + min);
+};
+
 export const SECONDS_IN_DAY = 86400;
 export const SECONDS_IN_HOUR = 3600;
 
