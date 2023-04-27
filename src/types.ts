@@ -39,11 +39,6 @@ export interface ChainAware {
   getChainId(): Promise<ChainId>;
 }
 
-export type ListingParams = {
-  lister: AccountId;
-  configurator: AccountId;
-};
-
 export type ListingTermsInfo = IListingTermsRegistry.ListingTermsStruct & {
   id: BigNumber;
 };
@@ -64,7 +59,10 @@ export type TaxTermsQueryParams = {
 
 export type AssetListingParams = {
   assets: Asset[];
-  params: ListingParams;
+  params: {
+    lister: AccountId;
+    configurator: AccountId;
+  };
   maxLockPeriod: BigNumberish;
   immediatePayout: boolean;
 };
@@ -80,10 +78,11 @@ export type Listing = Pick<
   lister: AccountId;
 };
 
-export type CreateListingParams = {
+export type ListingParams = {
   universeId: BigNumberish;
   assetListingParams: AssetListingParams;
   listingTerms: IListingTermsRegistry.ListingTermsStruct;
+  delegatedListingSignature?: BytesLike;
 };
 
 export type AssetNamespace = 'erc20' | 'erc721' | 'erc1155';
@@ -224,7 +223,7 @@ export type RentingExtendedDelegatedSignatureVerificationData = RentingExtendedD
   delegatedSignatureWithNonce: DelegatedSignatureWithNonce;
 };
 
-export type CreateListingsBatchData = {
+export type ListingBatchData = {
   multiCall: string[];
-  singleCall?: CreateListingParams;
+  singleCall?: ListingParams;
 };

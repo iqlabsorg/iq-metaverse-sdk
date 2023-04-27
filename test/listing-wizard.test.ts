@@ -25,13 +25,12 @@ import {
   AssetListingParams,
   AssetType,
   createAsset,
-  CreateListingParams,
+  ListingParams,
   DelegatedSignature,
   DelegatedSignatureWithNonce,
   IQSpace,
   ListingExtendedDelegatedSignatureData,
   ListingExtendedDelegatedSignatureVerificationData,
-  ListingParams,
   ListingWizardAdapterV1,
 } from '../src';
 import { setupForListing } from './helpers/setup';
@@ -67,8 +66,7 @@ describe('ListingWizardAdapterV1', () => {
   /** Data Structs */
   let listingTerms: IListingTermsRegistry.ListingTermsStruct;
   let listingTermsWithReward: IListingTermsRegistry.ListingTermsStruct;
-  let listingParams: ListingParams;
-  let assetListingParams: AssetListingParams;
+  let singleAssetListingParams: AssetListingParams;
   let warperReference: AssetType;
   let listerAccountId: AccountId;
 
@@ -86,8 +84,8 @@ describe('ListingWizardAdapterV1', () => {
     return termsList[0].strategyId;
   };
 
-  const getDelegatedListingSignature = async (): Promise<BytesLike> => {
-    const data = await listingWizardAdapter.createDelegatedListingSignature();
+  const getDelegatedListingSignature = async (nonce?: BigNumber): Promise<BytesLike> => {
+    const data = await listingWizardAdapter.createDelegatedListingSignature(nonce);
     return data.delegatedSignature.signatureEncodedForProtocol;
   };
 
@@ -101,10 +99,15 @@ describe('ListingWizardAdapterV1', () => {
     return assets;
   };
 
-  const createListingsParams = (totalAssetCount: number, maxAssetCountPerListing = 5): CreateListingParams[] => {
-    const params: CreateListingParams[] = [];
+  const createListingsParams = async (
+    totalAssetCount: number,
+    maxAssetCountPerListing = 5,
+    delegated = false,
+  ): Promise<ListingParams[]> => {
+    const params: ListingParams[] = [];
     let assetsUsed = 0;
     let assetsLeft = totalAssetCount;
+    let loops = 0;
 
     while (assetsLeft > 0) {
       let assetCount = createRandomInteger(1, maxAssetCountPerListing);
@@ -115,14 +118,20 @@ describe('ListingWizardAdapterV1', () => {
       const assets = createAssets(assetsUsed + 1, assetsUsed + assetCount);
       const assetListingParams = {
         assets,
-        params: listingParams,
+        params: singleAssetListingParams.params,
         maxLockPeriod,
         immediatePayout: true,
       };
-      params.push({ universeId: COMMON_ID, assetListingParams, listingTerms });
+      params.push({
+        universeId: COMMON_ID,
+        assetListingParams,
+        listingTerms,
+        delegatedListingSignature: delegated ? await getDelegatedListingSignature(BigNumber.from(loops)) : undefined,
+      });
 
       assetsUsed += assetCount;
       assetsLeft = totalAssetCount - assetsUsed;
+      loops++;
     }
 
     return params;
@@ -150,10 +159,9 @@ describe('ListingWizardAdapterV1', () => {
       COMMON_REWARD_RATE,
       TEST_BASE_TOKEN_DECIMALS,
     );
-    listingParams = { lister: toAccountId(lister.address), configurator: toAccountId(ethers.constants.AddressZero) };
-    assetListingParams = {
+    singleAssetListingParams = {
       assets: [createAsset('erc721', toAccountId(collection.address), 1)],
-      params: listingParams,
+      params: { lister: toAccountId(lister.address), configurator: toAccountId(ethers.constants.AddressZero) },
       maxLockPeriod,
       immediatePayout: true,
     };
@@ -169,10 +177,10 @@ describe('ListingWizardAdapterV1', () => {
         ({ warperReference } = await setupForListing());
         estimate = await listingWizardAdapter.estimateCreateListingWithTerms(
           COMMON_ID,
-          assetListingParams,
+          singleAssetListingParams,
           listingTerms,
         );
-        const tx = await listingWizardAdapter.createListingWithTerms(COMMON_ID, assetListingParams, listingTerms);
+        const tx = await listingWizardAdapter.createListingWithTerms(COMMON_ID, singleAssetListingParams, listingTerms);
         const receipt = await tx.wait();
         gasUsed = receipt.gasUsed;
       });
@@ -182,10 +190,10 @@ describe('ListingWizardAdapterV1', () => {
         const strategyId = await getTermsStrategyId();
 
         expect(strategyId).to.be.eq(LISTING_STRATEGY_IDS.FIXED_RATE);
-        expect(listing.lister).to.be.eq(listingParams.lister.address);
-        expect(listing.configurator).to.be.eq(listingParams.configurator.address);
-        expect(listing.maxLockPeriod).to.be.eq(assetListingParams.maxLockPeriod);
-        expect(listing.immediatePayout).to.be.eq(assetListingParams.immediatePayout);
+        expect(listing.lister).to.be.eq(singleAssetListingParams.params.lister.address);
+        expect(listing.configurator).to.be.eq(singleAssetListingParams.params.configurator.address);
+        expect(listing.maxLockPeriod).to.be.eq(singleAssetListingParams.maxLockPeriod);
+        expect(listing.immediatePayout).to.be.eq(singleAssetListingParams.immediatePayout);
         expect(estimate).to.be.greaterThan(gasUsed);
       });
     });
@@ -195,12 +203,12 @@ describe('ListingWizardAdapterV1', () => {
         ({ warperReference } = await setupForListing(true));
         estimate = await listingWizardAdapter.estimateCreateListingWithTerms(
           COMMON_ID,
-          assetListingParams,
+          singleAssetListingParams,
           listingTermsWithReward,
         );
         const tx = await listingWizardAdapter.createListingWithTerms(
           COMMON_ID,
-          assetListingParams,
+          singleAssetListingParams,
           listingTermsWithReward,
         );
         const receipt = await tx.wait();
@@ -212,17 +220,17 @@ describe('ListingWizardAdapterV1', () => {
         const strategyId = await getTermsStrategyId();
 
         expect(strategyId).to.be.eq(LISTING_STRATEGY_IDS.FIXED_RATE_WITH_REWARD);
-        expect(listing.lister).to.be.eq(listingParams.lister.address);
-        expect(listing.configurator).to.be.eq(listingParams.configurator.address);
-        expect(listing.maxLockPeriod).to.be.eq(assetListingParams.maxLockPeriod);
-        expect(listing.immediatePayout).to.be.eq(assetListingParams.immediatePayout);
+        expect(listing.lister).to.be.eq(singleAssetListingParams.params.lister.address);
+        expect(listing.configurator).to.be.eq(singleAssetListingParams.params.configurator.address);
+        expect(listing.maxLockPeriod).to.be.eq(singleAssetListingParams.maxLockPeriod);
+        expect(listing.immediatePayout).to.be.eq(singleAssetListingParams.immediatePayout);
         expect(estimate).to.be.greaterThan(gasUsed);
       });
     });
   });
 
   describe('createListingsWithTerms (TODO)', function () {
-    describe('happy path', () => {
+    describe('listings', () => {
       let txCount: number;
       let listingCount: number;
       const totalAssetCount = 20;
@@ -232,7 +240,7 @@ describe('ListingWizardAdapterV1', () => {
 
         ({ warperReference } = await setupForListing(false, totalAssetCount));
 
-        const listings = createListingsParams(totalAssetCount);
+        const listings = await createListingsParams(totalAssetCount);
         listingCount = listings.length;
 
         const transactions = await listingWizardAdapter.createListingsWithTerms(listings);
@@ -243,6 +251,32 @@ describe('ListingWizardAdapterV1', () => {
         const actualListingCount = await listingManager.listingCount();
         expect(actualListingCount).to.eq(BigNumber.from(listingCount));
         expect(txCount).to.be.lt(listingCount);
+      });
+    });
+
+    describe.only('delegated listings', () => {
+      let txCount: number;
+      let listingCount: number;
+      const totalAssetCount = 20;
+
+      beforeEach(async function () {
+        this.timeout(200000);
+
+        ({ warperReference } = await setupForListing(false, totalAssetCount));
+
+        const listings = await createListingsParams(totalAssetCount, 5, true);
+        listingCount = listings.length;
+
+        const transactions = await listingWizardAdapter.createListingsWithTerms(listings); // fails at estimateGas...
+        txCount = transactions.length;
+      });
+
+      it('should create multiple delegated listings with transaction count less than listing count', async () => {
+        const actualListingCount = await listingManager.listingCount();
+        expect(actualListingCount).to.eq(BigNumber.from(listingCount));
+        expect(txCount).to.be.lt(listingCount);
+        console.log('listingCount', listingCount);
+        console.log('txCount', txCount);
       });
     });
   });
@@ -256,13 +290,13 @@ describe('ListingWizardAdapterV1', () => {
         ({ warperReference } = await setupForListing());
         estimate = await listingWizardAdapterStranger.estimateDelegatedCreateListingWithTerms(
           COMMON_ID,
-          assetListingParams,
+          singleAssetListingParams,
           listingTerms,
           await getDelegatedListingSignature(),
         );
         const tx = await listingWizardAdapterStranger.delegatedCreateListingWithTerms(
           COMMON_ID,
-          assetListingParams,
+          singleAssetListingParams,
           listingTerms,
           await getDelegatedListingSignature(),
         );
@@ -275,10 +309,10 @@ describe('ListingWizardAdapterV1', () => {
         const strategyId = await getTermsStrategyId();
 
         expect(strategyId).to.be.eq(LISTING_STRATEGY_IDS.FIXED_RATE);
-        expect(listing.lister).to.be.eq(listingParams.lister.address);
-        expect(listing.configurator).to.be.eq(listingParams.configurator.address);
-        expect(listing.maxLockPeriod).to.be.eq(assetListingParams.maxLockPeriod);
-        expect(listing.immediatePayout).to.be.eq(assetListingParams.immediatePayout);
+        expect(listing.lister).to.be.eq(singleAssetListingParams.params.lister.address);
+        expect(listing.configurator).to.be.eq(singleAssetListingParams.params.configurator.address);
+        expect(listing.maxLockPeriod).to.be.eq(singleAssetListingParams.maxLockPeriod);
+        expect(listing.immediatePayout).to.be.eq(singleAssetListingParams.immediatePayout);
         expect(estimate).to.be.greaterThan(gasUsed);
       });
     });
@@ -288,13 +322,13 @@ describe('ListingWizardAdapterV1', () => {
         ({ warperReference } = await setupForListing(true));
         estimate = await listingWizardAdapterStranger.estimateDelegatedCreateListingWithTerms(
           COMMON_ID,
-          assetListingParams,
+          singleAssetListingParams,
           listingTermsWithReward,
           await getDelegatedListingSignature(),
         );
         const tx = await listingWizardAdapterStranger.delegatedCreateListingWithTerms(
           COMMON_ID,
-          assetListingParams,
+          singleAssetListingParams,
           listingTermsWithReward,
           await getDelegatedListingSignature(),
         );
@@ -307,10 +341,10 @@ describe('ListingWizardAdapterV1', () => {
         const strategyId = await getTermsStrategyId();
 
         expect(strategyId).to.be.eq(LISTING_STRATEGY_IDS.FIXED_RATE_WITH_REWARD);
-        expect(listing.lister).to.be.eq(listingParams.lister.address);
-        expect(listing.configurator).to.be.eq(listingParams.configurator.address);
-        expect(listing.maxLockPeriod).to.be.eq(assetListingParams.maxLockPeriod);
-        expect(listing.immediatePayout).to.be.eq(assetListingParams.immediatePayout);
+        expect(listing.lister).to.be.eq(singleAssetListingParams.params.lister.address);
+        expect(listing.configurator).to.be.eq(singleAssetListingParams.params.configurator.address);
+        expect(listing.maxLockPeriod).to.be.eq(singleAssetListingParams.maxLockPeriod);
+        expect(listing.immediatePayout).to.be.eq(singleAssetListingParams.immediatePayout);
         expect(estimate).to.be.greaterThan(gasUsed);
       });
     });
@@ -418,14 +452,14 @@ describe('ListingWizardAdapterV1', () => {
     it('should create a signature', async () => {
       const signatureWithoutNonce = await listingWizardAdapter.createExtendedDelegatedListingSignature({
         universeId: COMMON_ID,
-        assetListingParams,
+        assetListingParams: singleAssetListingParams,
         listingTerms,
         salt,
       });
       const signatureWithNonce = await listingWizardAdapter.createExtendedDelegatedListingSignature(
         {
           universeId: COMMON_ID,
-          assetListingParams,
+          assetListingParams: singleAssetListingParams,
           listingTerms,
           salt,
         },
@@ -446,7 +480,7 @@ describe('ListingWizardAdapterV1', () => {
     beforeEach(async () => {
       signatureData = {
         universeId: COMMON_ID,
-        assetListingParams,
+        assetListingParams: singleAssetListingParams,
         listingTerms,
         salt,
       };

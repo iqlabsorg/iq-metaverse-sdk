@@ -1,11 +1,17 @@
 import { ListingWizardV1 } from '@iqprotocol/iq-space-protocol-light/typechain';
 import { AddressTranslator } from '../address-translator';
 import { ListingHelper } from '../helpers/listing';
-import { CreateListingParams } from '../types';
+import { ListingParams } from '../types';
 
 export class ListingCoder {
+  /**
+   * Encode function data for either `createListingWithTerms` or `delegatedCreateListingWithTerms`.
+   * @param listing Listing parameters.
+   * @param contract Listing wizard contract.
+   * @param addressTranslator Address translator.
+   */
   static encodeCreateListingWithTermsCall(
-    listing: CreateListingParams,
+    listing: ListingParams,
     contract: ListingWizardV1,
     addressTranslator: AddressTranslator,
   ): string {
@@ -13,6 +19,18 @@ export class ListingCoder {
       listing.assetListingParams,
       addressTranslator,
     );
+
+    if (listing.delegatedListingSignature) {
+      return contract.interface.encodeFunctionData('delegatedCreateListingWithTerms', [
+        encodedAssets,
+        listingParams,
+        listing.listingTerms,
+        maxLockPeriod,
+        immediatePayout,
+        listing.universeId,
+        listing.delegatedListingSignature,
+      ]);
+    }
 
     return contract.interface.encodeFunctionData('createListingWithTerms', [
       encodedAssets,

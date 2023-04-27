@@ -38,7 +38,6 @@ export type {
   AssetListingParams,
   AssetNamespace,
   BaseToken,
-  CreateListingParams,
   DelegatedSignature,
   DelegatedSignatureWithNonce,
   IQSpaceParams,

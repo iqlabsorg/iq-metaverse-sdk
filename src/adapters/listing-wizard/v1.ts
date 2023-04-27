@@ -19,8 +19,8 @@ import { ContractResolver } from '../../contract-resolver';
 import { ListingHelper } from '../../helpers';
 import {
   AssetListingParams,
-  CreateListingParams,
-  CreateListingsBatchData,
+  ListingParams,
+  ListingBatchData,
   DelegatedSignature,
   DelegatedSignatureWithNonce,
   ListingExtendedDelegatedSignatureData,
@@ -88,10 +88,10 @@ export class ListingWizardAdapterV1 extends Adapter {
   }
 
   /**
-   * Creates new asset listings.
+   * Creates multiple asset listings (works also with delegated listings).
    * @param listings List of listings.
    */
-  async createListingsWithTerms(listings: CreateListingParams[]): Promise<ContractTransaction[]> {
+  async createListingsWithTerms(listings: ListingParams[]): Promise<ContractTransaction[]> {
     const batches = await this.createBatches(listings);
     const transactions: ContractTransaction[] = [];
 
@@ -307,16 +307,23 @@ export class ListingWizardAdapterV1 extends Adapter {
     return this.contract.DOMAIN_SEPARATOR();
   }
 
-  private async createBatch(
-    listings: CreateListingParams[],
-  ): Promise<CreateListingsBatchData & { leftOver: CreateListingParams[] }> {
+  private async createBatch(listings: ListingParams[]): Promise<ListingBatchData & { leftOver: ListingParams[] }> {
     if (listings.length === 1) {
       // if we are here, then most likely this is a heavy transaction
-      const estimate = await this.estimateCreateListingWithTerms(
-        listings[0].universeId,
-        listings[0].assetListingParams,
-        listings[0].listingTerms,
-      );
+      const listing = listings[0];
+
+      const estimate = listing.delegatedListingSignature
+        ? await this.estimateDelegatedCreateListingWithTerms(
+            listing.universeId,
+            listing.assetListingParams,
+            listing.listingTerms,
+            listing.delegatedListingSignature,
+          )
+        : await this.estimateCreateListingWithTerms(
+            listing.universeId,
+            listing.assetListingParams,
+            listing.listingTerms,
+          );
 
       if (estimate.gt(BLOCK_GAS_LIMIT)) {
         throw new Error('Listing creation will exceed block gas limit');
@@ -324,8 +331,8 @@ export class ListingWizardAdapterV1 extends Adapter {
 
       return {
         leftOver: [],
-        multiCall: ['single-call'],
-        singleCall: listings[0],
+        multiCall: [],
+        singleCall: listing,
       };
     }
 
@@ -345,8 +352,8 @@ export class ListingWizardAdapterV1 extends Adapter {
     return { leftOver, multiCall: recursiveMultiCall };
   }
 
-  private async createBatches(listings: CreateListingParams[]): Promise<CreateListingsBatchData[]> {
-    const batches: CreateListingsBatchData[] = [];
+  private async createBatches(listings: ListingParams[]): Promise<ListingBatchData[]> {
+    const batches: ListingBatchData[] = [];
 
     while (listings.length > 0) {
       const { leftOver, multiCall, singleCall } = await this.createBatch(listings.splice(0, NOMINAL_BATCH_SIZE));
