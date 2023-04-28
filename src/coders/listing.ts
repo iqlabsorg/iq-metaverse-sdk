@@ -20,18 +20,6 @@ export class ListingCoder {
       addressTranslator,
     );
 
-    if (listing.delegatedListingSignature) {
-      return contract.interface.encodeFunctionData('delegatedCreateListingWithTerms', [
-        encodedAssets,
-        listingParams,
-        listing.listingTerms,
-        maxLockPeriod,
-        immediatePayout,
-        listing.universeId,
-        listing.delegatedListingSignature,
-      ]);
-    }
-
     return contract.interface.encodeFunctionData('createListingWithTerms', [
       encodedAssets,
       listingParams,
