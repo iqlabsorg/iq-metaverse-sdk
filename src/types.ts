@@ -82,7 +82,6 @@ export type ListingParams = {
   universeId: BigNumberish;
   assetListingParams: AssetListingParams;
   listingTerms: IListingTermsRegistry.ListingTermsStruct;
-  delegatedListingSignature?: BytesLike;
 };
 
 export type AssetNamespace = 'erc20' | 'erc721' | 'erc1155';
@@ -223,7 +222,7 @@ export type RentingExtendedDelegatedSignatureVerificationData = RentingExtendedD
   delegatedSignatureWithNonce: DelegatedSignatureWithNonce;
 };
 
-export type ListingBatchData = {
+export type ListingBatch = {
   multiCall: string[];
   singleCall?: ListingParams;
 };

@@ -19,11 +19,11 @@ import { ContractResolver } from '../../contract-resolver';
 import { ListingHelper } from '../../helpers';
 import {
   AssetListingParams,
-  ListingParams,
-  ListingBatchData,
   DelegatedSignature,
   DelegatedSignatureWithNonce,
+  ListingBatch,
   ListingExtendedDelegatedSignatureData,
+  ListingParams,
 } from '../../types';
 import { sleep } from '../../utils';
 
@@ -88,7 +88,7 @@ export class ListingWizardAdapterV1 extends Adapter {
   }
 
   /**
-   * Creates multiple asset listings (works also with delegated listings).
+   * Creates multiple asset listings.
    * @param listings List of listings.
    */
   async createListingsWithTerms(listings: ListingParams[]): Promise<ContractTransaction[]> {
@@ -307,23 +307,16 @@ export class ListingWizardAdapterV1 extends Adapter {
     return this.contract.DOMAIN_SEPARATOR();
   }
 
-  private async createBatch(listings: ListingParams[]): Promise<ListingBatchData & { leftOver: ListingParams[] }> {
+  private async createBatch(listings: ListingParams[]): Promise<ListingBatch & { leftOver: ListingParams[] }> {
     if (listings.length === 1) {
       // if we are here, then most likely this is a heavy transaction
       const listing = listings[0];
 
-      const estimate = listing.delegatedListingSignature
-        ? await this.estimateDelegatedCreateListingWithTerms(
-            listing.universeId,
-            listing.assetListingParams,
-            listing.listingTerms,
-            listing.delegatedListingSignature,
-          )
-        : await this.estimateCreateListingWithTerms(
-            listing.universeId,
-            listing.assetListingParams,
-            listing.listingTerms,
-          );
+      const estimate = await this.estimateCreateListingWithTerms(
+        listing.universeId,
+        listing.assetListingParams,
+        listing.listingTerms,
+      );
 
       if (estimate.gt(BLOCK_GAS_LIMIT)) {
         throw new Error('Listing creation will exceed block gas limit');
@@ -352,8 +345,8 @@ export class ListingWizardAdapterV1 extends Adapter {
     return { leftOver, multiCall: recursiveMultiCall };
   }
 
-  private async createBatches(listings: ListingParams[]): Promise<ListingBatchData[]> {
-    const batches: ListingBatchData[] = [];
+  private async createBatches(listings: ListingParams[]): Promise<ListingBatch[]> {
+    const batches: ListingBatch[] = [];
 
     while (listings.length > 0) {
       const { leftOver, multiCall, singleCall } = await this.createBatch(listings.splice(0, NOMINAL_BATCH_SIZE));

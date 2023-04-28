@@ -102,12 +102,10 @@ describe('ListingWizardAdapterV1', () => {
   const createListingsParams = async (
     totalAssetCount: number,
     maxAssetCountPerListing = 5,
-    delegated = false,
   ): Promise<ListingParams[]> => {
     const params: ListingParams[] = [];
     let assetsUsed = 0;
     let assetsLeft = totalAssetCount;
-    let loops = 0;
 
     while (assetsLeft > 0) {
       let assetCount = createRandomInteger(1, maxAssetCountPerListing);
@@ -126,12 +124,10 @@ describe('ListingWizardAdapterV1', () => {
         universeId: COMMON_ID,
         assetListingParams,
         listingTerms,
-        delegatedListingSignature: delegated ? await getDelegatedListingSignature(BigNumber.from(loops)) : undefined,
       });
 
       assetsUsed += assetCount;
       assetsLeft = totalAssetCount - assetsUsed;
-      loops++;
     }
 
     return params;
@@ -229,8 +225,8 @@ describe('ListingWizardAdapterV1', () => {
     });
   });
 
-  describe('createListingsWithTerms (TODO)', function () {
-    describe('listings', () => {
+  describe('createListingsWithTerms', function () {
+    describe('happy path', () => {
       let txCount: number;
       let listingCount: number;
       const totalAssetCount = 20;
@@ -251,32 +247,6 @@ describe('ListingWizardAdapterV1', () => {
         const actualListingCount = await listingManager.listingCount();
         expect(actualListingCount).to.eq(BigNumber.from(listingCount));
         expect(txCount).to.be.lt(listingCount);
-      });
-    });
-
-    describe.only('delegated listings', () => {
-      let txCount: number;
-      let listingCount: number;
-      const totalAssetCount = 20;
-
-      beforeEach(async function () {
-        this.timeout(200000);
-
-        ({ warperReference } = await setupForListing(false, totalAssetCount));
-
-        const listings = await createListingsParams(totalAssetCount, 5, true);
-        listingCount = listings.length;
-
-        const transactions = await listingWizardAdapter.createListingsWithTerms(listings); // fails at estimateGas...
-        txCount = transactions.length;
-      });
-
-      it('should create multiple delegated listings with transaction count less than listing count', async () => {
-        const actualListingCount = await listingManager.listingCount();
-        expect(actualListingCount).to.eq(BigNumber.from(listingCount));
-        expect(txCount).to.be.lt(listingCount);
-        console.log('listingCount', listingCount);
-        console.log('txCount', txCount);
       });
     });
   });
