@@ -98,18 +98,13 @@ export class ListingWizardAdapterV1 extends Adapter {
     for (const batch of batches) {
       await sleep(50);
 
-      if (batch.singleCall) {
-        transactions.push(
-          await this.createListingWithTerms(
-            batch.singleCall.universeId,
-            batch.singleCall.assetListingParams,
-            batch.singleCall.listingTerms,
-          ),
-        );
+      if (batch.length === 1) {
+        const { signer } = await this.signerData();
+        transactions.push(await signer.sendTransaction({ to: this.contract.address, data: batch[0] }));
         continue;
       }
 
-      transactions.push(await this.contract.multicall(batch.multiCall));
+      transactions.push(await this.contract.multicall(batch));
     }
 
     return transactions;
@@ -307,7 +302,7 @@ export class ListingWizardAdapterV1 extends Adapter {
     return this.contract.DOMAIN_SEPARATOR();
   }
 
-  private async createBatch(listings: ListingParams[]): Promise<ListingBatch & { leftOver: ListingParams[] }> {
+  private async createBatch(listings: ListingParams[]): Promise<{ batch: ListingBatch; leftOver: ListingParams[] }> {
     if (listings.length === 1) {
       // if we are here, then most likely this is a heavy transaction
       const listing = listings[0];
@@ -324,34 +319,34 @@ export class ListingWizardAdapterV1 extends Adapter {
 
       return {
         leftOver: [],
-        multiCall: [],
-        singleCall: listing,
+        batch: [ListingCoder.encodeCreateListingWithTermsCall(listing, this.contract, this.addressTranslator)],
       };
     }
 
-    const multiCall = listings.map(listing =>
+    const batch = listings.map(listing =>
       ListingCoder.encodeCreateListingWithTermsCall(listing, this.contract, this.addressTranslator),
     );
-    const estimate = await this.contract.estimateGas.multicall(multiCall);
+
+    const estimate = await this.contract.estimateGas.multicall(batch);
 
     if (estimate.lte(NOMINAL_BATCH_GAS_LIMIT)) {
-      return { leftOver: [], multiCall };
+      return { leftOver: [], batch };
     }
 
     const removedListing = listings.pop()!;
-    const { leftOver, multiCall: recursiveMultiCall } = await this.createBatch(listings);
+    const { leftOver, batch: recursiveBatch } = await this.createBatch(listings);
     leftOver.push(removedListing);
 
-    return { leftOver, multiCall: recursiveMultiCall };
+    return { leftOver, batch: recursiveBatch };
   }
 
   private async createBatches(listings: ListingParams[]): Promise<ListingBatch[]> {
     const batches: ListingBatch[] = [];
 
     while (listings.length > 0) {
-      const { leftOver, multiCall, singleCall } = await this.createBatch(listings.splice(0, NOMINAL_BATCH_SIZE));
+      const { leftOver, batch } = await this.createBatch(listings.splice(0, NOMINAL_BATCH_SIZE));
       listings = listings.concat(leftOver);
-      batches.push({ multiCall, singleCall });
+      batches.push(batch);
       await sleep(100);
     }
 

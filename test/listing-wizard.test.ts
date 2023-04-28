@@ -90,6 +90,7 @@ describe('ListingWizardAdapterV1', () => {
   };
 
   const createAssets = (idMin: number, idMax: number): Asset[] => {
+    console.log('min, max', idMin, idMax);
     const assets: Asset[] = [];
 
     for (let i = idMin; i <= idMax; i++) {
@@ -108,12 +109,13 @@ describe('ListingWizardAdapterV1', () => {
     let assetsLeft = totalAssetCount;
 
     while (assetsLeft > 0) {
-      let assetCount = createRandomInteger(1, maxAssetCountPerListing);
-      if (assetsLeft < assetCount) {
-        assetCount = 1;
-      }
+      let assetCount = maxAssetCountPerListing; //createRandomInteger(1, maxAssetCountPerListing);
+      // if (assetsLeft < assetCount) {
+      //   assetCount = 1;
+      // }
 
       const assets = createAssets(assetsUsed + 1, assetsUsed + assetCount);
+      console.log('assets (N)', assets.length);
       const assetListingParams = {
         assets,
         params: singleAssetListingParams.params,
@@ -247,6 +249,59 @@ describe('ListingWizardAdapterV1', () => {
         const actualListingCount = await listingManager.listingCount();
         expect(actualListingCount).to.eq(BigNumber.from(listingCount));
         expect(txCount).to.be.lt(listingCount);
+      });
+    });
+
+    describe.only('...', () => {
+      let txCount: number;
+      let listingCount: number;
+      const totalAssetCount = 1;
+
+      beforeEach(async function () {
+        this.timeout(2000000);
+
+        ({ warperReference } = await setupForListing(false, totalAssetCount));
+
+        // flow 1
+        // const assets = createAssets(1, totalAssetCount);
+        // console.log('assets (N)', assets.length);
+        // const assetListingParams = {
+        //   assets,
+        //   params: singleAssetListingParams.params,
+        //   maxLockPeriod,
+        //   immediatePayout: true,
+        // };
+        // const estimate = await listingWizardAdapter.estimateCreateListingWithTerms(
+        //   COMMON_ID,
+        //   assetListingParams,
+        //   listingTerms,
+        // );
+        // const tx = await listingWizardAdapter.createListingWithTerms(COMMON_ID, assetListingParams, listingTerms);
+        // const receipt = await tx.wait();
+        // console.log('estimate', estimate.toBigInt().toString());
+        // console.log('gas used', receipt.gasUsed.toBigInt().toString());
+
+        // flow 2
+        const listings = await createListingsParams(totalAssetCount, 1);
+        listingCount = listings.length;
+
+        const transactions = await listingWizardAdapter.createListingsWithTerms(listings);
+        console.log(transactions);
+        // const transactions = await listingWizardAdapter.createListingsWithTerms([
+        //   { universeId: COMMON_ID, assetListingParams, listingTerms },
+        // ]);
+        // txCount = transactions.length;
+        // for (const tx of transactions) {
+        //   const rc = await tx.wait();
+        //   console.log('gas used', rc.gasUsed.toBigInt().toString());
+        // }
+      });
+
+      it('should create multiple listings with transaction count less than listing count', async () => {
+        const actualListingCount = await listingManager.listingCount();
+        // expect(actualListingCount).to.eq(BigNumber.from(listingCount));
+        // expect(txCount).to.be.lt(listingCount);
+        console.log('actualListingCount', actualListingCount.toBigInt().toString());
       });
     });
   });

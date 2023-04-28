@@ -222,7 +222,4 @@ export type RentingExtendedDelegatedSignatureVerificationData = RentingExtendedD
   delegatedSignatureWithNonce: DelegatedSignatureWithNonce;
 };
 
-export type ListingBatch = {
-  multiCall: string[];
-  singleCall?: ListingParams;
-};
+export type ListingBatch = string[];
