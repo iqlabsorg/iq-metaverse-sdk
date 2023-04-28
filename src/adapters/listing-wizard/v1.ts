@@ -14,7 +14,12 @@ import { ListingExtendedDelegatedSignatureVerificationData } from 'src';
 import { Adapter } from '../../adapter';
 import { AddressTranslator } from '../../address-translator';
 import { ListingCoder } from '../../coders';
-import { BLOCK_GAS_LIMIT, NOMINAL_BATCH_GAS_LIMIT, NOMINAL_BATCH_SIZE } from '../../constants';
+import {
+  BLOCK_GAS_LIMIT,
+  ERROR_CREATE_LISTING_BLOCK_GAS_LIMIT_EXCEEDED,
+  NOMINAL_BATCH_GAS_LIMIT,
+  NOMINAL_BATCH_SIZE,
+} from '../../constants';
 import { ContractResolver } from '../../contract-resolver';
 import { ListingHelper } from '../../helpers';
 import {
@@ -305,21 +310,17 @@ export class ListingWizardAdapterV1 extends Adapter {
   private async createBatch(listings: ListingParams[]): Promise<{ batch: ListingBatch; leftOver: ListingParams[] }> {
     if (listings.length === 1) {
       // if we are here, then most likely this is a heavy transaction
-      const listing = listings[0];
+      const data = ListingCoder.encodeCreateListingWithTermsCall(listings[0], this.contract, this.addressTranslator);
+      const { signer } = await this.signerData();
 
-      const estimate = await this.estimateCreateListingWithTerms(
-        listing.universeId,
-        listing.assetListingParams,
-        listing.listingTerms,
-      );
-
+      const estimate = await signer.estimateGas({ to: this.contract.address, data });
       if (estimate.gt(BLOCK_GAS_LIMIT)) {
-        throw new Error('Listing creation will exceed block gas limit');
+        throw new Error(ERROR_CREATE_LISTING_BLOCK_GAS_LIMIT_EXCEEDED);
       }
 
       return {
         leftOver: [],
-        batch: [ListingCoder.encodeCreateListingWithTermsCall(listing, this.contract, this.addressTranslator)],
+        batch: [data],
       };
     }
 
@@ -328,7 +329,6 @@ export class ListingWizardAdapterV1 extends Adapter {
     );
 
     const estimate = await this.contract.estimateGas.multicall(batch);
-
     if (estimate.lte(NOMINAL_BATCH_GAS_LIMIT)) {
       return { leftOver: [], batch };
     }
