@@ -5,7 +5,7 @@ import { Accounts } from '@iqprotocol/iq-space-protocol-light/typechain/contract
 import { Rentings } from '@iqprotocol/iq-space-protocol-light/typechain/contracts/renting/renting-manager/IRentingManager';
 import { Warpers } from '@iqprotocol/iq-space-protocol-light/typechain/contracts/warper/IWarperController';
 import { AccountId, AssetId, AssetType, ChainId } from 'caip';
-import { BigNumber, BytesLike, Overrides as BaseOverrides, Signer } from 'ethers';
+import { Overrides as BaseOverrides, BigNumber, BytesLike, ContractTransaction, Signer } from 'ethers';
 
 export type Address = string;
 
@@ -82,6 +82,10 @@ export type ListingParams = {
   universeId: BigNumberish;
   assetListingParams: AssetListingParams;
   listingTerms: IListingTermsRegistry.ListingTermsStruct;
+};
+
+export type TrackedListingParams = ListingParams & {
+  trackingId: string;
 };
 
 export type AssetNamespace = 'erc20' | 'erc721' | 'erc1155';
@@ -222,4 +226,12 @@ export type RentingExtendedDelegatedSignatureVerificationData = RentingExtendedD
   delegatedSignatureWithNonce: DelegatedSignatureWithNonce;
 };
 
-export type ListingBatch = string[];
+export type ListingBatch = {
+  calls: string[];
+  trackingIds: string[];
+};
+
+export type ListingBatchTransaction = {
+  transaction: ContractTransaction;
+  trackingIds: string[];
+};

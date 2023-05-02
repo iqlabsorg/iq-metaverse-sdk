@@ -22,5 +22,3 @@ export const rentalStatusMap: Map<RentalStatusEnum, RentalStatus> = new Map([
 export const NOMINAL_BATCH_SIZE = 5;
 export const NOMINAL_BATCH_GAS_LIMIT = 5n * 1000_000n;
 export const BLOCK_GAS_LIMIT = 30n * 1000_000n;
-
-export const ERROR_CREATE_LISTING_BLOCK_GAS_LIMIT_EXCEEDED = 'Listing creation will exceed block gas limit';

@@ -14,12 +14,7 @@ import { ListingExtendedDelegatedSignatureVerificationData } from 'src';
 import { Adapter } from '../../adapter';
 import { AddressTranslator } from '../../address-translator';
 import { ListingCoder } from '../../coders';
-import {
-  BLOCK_GAS_LIMIT,
-  ERROR_CREATE_LISTING_BLOCK_GAS_LIMIT_EXCEEDED,
-  NOMINAL_BATCH_GAS_LIMIT,
-  NOMINAL_BATCH_SIZE,
-} from '../../constants';
+import { BLOCK_GAS_LIMIT, NOMINAL_BATCH_GAS_LIMIT, NOMINAL_BATCH_SIZE } from '../../constants';
 import { ContractResolver } from '../../contract-resolver';
 import { ListingHelper } from '../../helpers';
 import {
@@ -27,8 +22,9 @@ import {
   DelegatedSignature,
   DelegatedSignatureWithNonce,
   ListingBatch,
+  ListingBatchTransaction,
   ListingExtendedDelegatedSignatureData,
-  ListingParams,
+  TrackedListingParams,
 } from '../../types';
 import { sleep } from '../../utils';
 
@@ -96,20 +92,23 @@ export class ListingWizardAdapterV1 extends Adapter {
    * Creates multiple asset listings.
    * @param listings List of listings.
    */
-  async createListingsWithTerms(listings: ListingParams[]): Promise<ContractTransaction[]> {
+  async createListingsWithTerms(listings: TrackedListingParams[]): Promise<ListingBatchTransaction[]> {
     const batches = await this.createBatches(listings);
-    const transactions: ContractTransaction[] = [];
+    const transactions: ListingBatchTransaction[] = [];
 
     for (const batch of batches) {
       await sleep(50);
 
-      if (batch.length === 1) {
+      if (batch.calls.length === 1) {
         const { signer } = await this.signerData();
-        transactions.push(await signer.sendTransaction({ to: this.contract.address, data: batch[0] }));
+        transactions.push({
+          transaction: await signer.sendTransaction({ to: this.contract.address, data: batch.calls[0] }),
+          trackingIds: batch.trackingIds,
+        });
         continue;
       }
 
-      transactions.push(await this.contract.multicall(batch));
+      transactions.push({ transaction: await this.contract.multicall(batch.calls), trackingIds: batch.trackingIds });
     }
 
     return transactions;
@@ -307,30 +306,32 @@ export class ListingWizardAdapterV1 extends Adapter {
     return this.contract.DOMAIN_SEPARATOR();
   }
 
-  private async createBatch(listings: ListingParams[]): Promise<{ batch: ListingBatch; leftOver: ListingParams[] }> {
+  private async createBatch(
+    listings: TrackedListingParams[],
+  ): Promise<{ batch: ListingBatch; leftOver: TrackedListingParams[] }> {
     if (listings.length === 1) {
       // if we are here, then most likely this is a heavy transaction
-      const data = ListingCoder.encodeCreateListingWithTermsCall(listings[0], this.contract, this.addressTranslator);
+      const call = ListingCoder.encodeCreateListingWithTermsCall(listings[0], this.contract, this.addressTranslator);
       const { signer } = await this.signerData();
 
-      const estimate = await signer.estimateGas({ to: this.contract.address, data });
+      const estimate = await signer.estimateGas({ to: this.contract.address, data: call });
       if (estimate.gt(BLOCK_GAS_LIMIT)) {
-        throw new Error(ERROR_CREATE_LISTING_BLOCK_GAS_LIMIT_EXCEEDED);
+        throw new Error('Listing creation will exceed block gas limit');
       }
 
       return {
         leftOver: [],
-        batch: [data],
+        batch: { calls: [call], trackingIds: [listings[0].trackingId] },
       };
     }
 
-    const batch = listings.map(listing =>
+    const calls = listings.map(listing =>
       ListingCoder.encodeCreateListingWithTermsCall(listing, this.contract, this.addressTranslator),
     );
 
-    const estimate = await this.contract.estimateGas.multicall(batch);
+    const estimate = await this.contract.estimateGas.multicall(calls);
     if (estimate.lte(NOMINAL_BATCH_GAS_LIMIT)) {
-      return { leftOver: [], batch };
+      return { leftOver: [], batch: { calls, trackingIds: listings.map(listing => listing.trackingId) } };
     }
 
     const removedListing = listings.pop()!;
@@ -340,7 +341,7 @@ export class ListingWizardAdapterV1 extends Adapter {
     return { leftOver, batch: recursiveBatch };
   }
 
-  private async createBatches(listings: ListingParams[]): Promise<ListingBatch[]> {
+  private async createBatches(listings: TrackedListingParams[]): Promise<ListingBatch[]> {
     const batches: ListingBatch[] = [];
 
     while (listings.length > 0) {

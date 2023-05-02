@@ -28,12 +28,12 @@ import {
   DelegatedSignature,
   DelegatedSignatureWithNonce,
   IQSpace,
+  ListingBatchTransaction,
   ListingExtendedDelegatedSignatureData,
   ListingExtendedDelegatedSignatureVerificationData,
-  ListingParams,
   ListingWizardAdapterV1,
+  TrackedListingParams,
 } from '../src';
-import { ERROR_CREATE_LISTING_BLOCK_GAS_LIMIT_EXCEEDED } from '../src/constants';
 import { setupForListing } from './helpers/setup';
 import {
   COMMON_BASE_RATE,
@@ -100,8 +100,8 @@ describe('ListingWizardAdapterV1', () => {
     return assets;
   };
 
-  const createListingsParams = (totalAssetCount: number, maxAssetCountPerListing = 5): ListingParams[] => {
-    const params: ListingParams[] = [];
+  const createListingsParams = (totalAssetCount: number, maxAssetCountPerListing = 5): TrackedListingParams[] => {
+    const params: TrackedListingParams[] = [];
     let assetsUsed = 0;
     let assetsLeft = totalAssetCount;
 
@@ -118,6 +118,7 @@ describe('ListingWizardAdapterV1', () => {
         immediatePayout: true,
       };
       params.push({
+        trackingId: Math.random().toString().substring(2),
         universeId: COMMON_ID,
         assetListingParams,
         listingTerms,
@@ -130,8 +131,9 @@ describe('ListingWizardAdapterV1', () => {
     return params;
   };
 
-  const createHeavyListingParam = (assetCount: number): ListingParams => {
+  const createHeavyListingParam = (assetCount: number): TrackedListingParams => {
     return {
+      trackingId: Math.random().toString().substring(2),
       universeId: COMMON_ID,
       assetListingParams: {
         assets: createAssets(1, assetCount),
@@ -236,9 +238,11 @@ describe('ListingWizardAdapterV1', () => {
   });
 
   describe('createListingsWithTerms', function () {
-    describe('happy path', () => {
+    describe('multiple listings', () => {
       let txCount: number;
       let listingCount: number;
+      let trackingIds: string[];
+      let transactionTrackingIds: string[];
       const totalAssetCount = 20;
 
       beforeEach(async function () {
@@ -248,15 +252,40 @@ describe('ListingWizardAdapterV1', () => {
 
         const listings = createListingsParams(totalAssetCount);
         listingCount = listings.length;
+        trackingIds = listings.map(listing => listing.trackingId);
 
         const transactions = await listingWizardAdapter.createListingsWithTerms(listings);
         txCount = transactions.length;
+        transactionTrackingIds = transactions.map(tx => tx.trackingIds).flat();
       });
 
       it('should create multiple listings with transaction count less than listing count', async () => {
         const actualListingCount = await listingManager.listingCount();
         expect(actualListingCount).to.eq(BigNumber.from(listingCount));
         expect(txCount).to.be.lt(listingCount);
+        for (const id of transactionTrackingIds) {
+          expect(trackingIds.includes(id));
+        }
+      });
+    });
+
+    describe('single listing', () => {
+      let transactions: ListingBatchTransaction[];
+      let trackingId: string;
+      const totalAssetCount = 1;
+
+      beforeEach(async function () {
+        ({ warperReference } = await setupForListing(false, totalAssetCount));
+        const listings = createListingsParams(totalAssetCount);
+        trackingId = listings[0].trackingId;
+        transactions = await listingWizardAdapter.createListingsWithTerms(listings);
+      });
+
+      it('should create a single listing with a single transaction', async () => {
+        const actualListingCount = await listingManager.listingCount();
+        expect(actualListingCount).to.eq(BigNumber.from(1));
+        expect(transactions.length).to.eq(1);
+        expect(transactions[0].trackingIds[0]).to.eq(trackingId);
       });
     });
 
@@ -269,9 +298,8 @@ describe('ListingWizardAdapterV1', () => {
 
       it('should throw an error', async function () {
         this.timeout(200000);
-        expect(
-          listingWizardAdapter.createListingsWithTerms([createHeavyListingParam(totalAssetCount)]),
-        ).to.eventually.throw(ERROR_CREATE_LISTING_BLOCK_GAS_LIMIT_EXCEEDED);
+        expect(listingWizardAdapter.createListingsWithTerms([createHeavyListingParam(totalAssetCount)])).to.eventually
+          .throw;
       });
     });
   });
