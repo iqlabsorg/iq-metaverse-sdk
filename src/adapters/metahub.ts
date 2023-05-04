@@ -167,6 +167,17 @@ export class MetahubAdapter extends Adapter {
   }
 
   /**
+   * Approves Metahub to take any assets (from given collection) from lister account during listing process.
+   * @param asset Some asset from requested for approval collection.
+   */
+  async approveAllForListing(asset: Asset): Promise<ContractTransaction> {
+    AddressTranslator.assertTypeERC721(asset.id);
+    return this.contractResolver
+      .resolveERC721Asset(this.assetIdToAddress(asset.id))
+      .setApprovalForAll(this.contract.address, true);
+  }
+
+  /**
    * Checks whether the asset is approved for listing by the owner.
    * Returns `true` if the asset can be listed, and `false` if the required approval is missing.
    * @param asset

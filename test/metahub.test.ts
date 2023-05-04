@@ -364,26 +364,52 @@ describe('MetahubAdapter', () => {
     });
   });
 
+  describe('approveAllForListing', () => {
+    beforeEach(async () => {
+      await mintNFTs(collection, lister, 2);
+    });
+
+    it('should approve metahub, as operator, to take any asset from a lister', async () => {
+      await metahubAdapterLister.approveAllForListing(asset);
+      expect(await collection.isApprovedForAll(lister.address, metahub.address)).to.be.eq(true);
+    });
+  });
+
   describe('isApprovedForListing', () => {
     beforeEach(async () => {
       await mintNFTs(collection, lister);
     });
 
-    describe('if not approved', () => {
-      it('should return false', async () => {
-        const approved = await metahubAdapter.isApprovedForListing(asset);
-        expect(approved).to.be.eq(false);
+    context('when approved for all', () => {
+      describe('if not approved for all', () => {
+        it('should return false', async () => {
+          const approved = await metahubAdapterLister.isApprovedForListing(asset);
+          expect(approved).to.be.eq(false);
+        });
+      });
+
+      describe('if is approved for all', () => {
+        beforeEach(async () => {
+          await metahubAdapterLister.approveAllForListing(asset);
+        });
+
+        it('should return true', async () => {
+          const approved = await metahubAdapterLister.isApprovedForListing(asset);
+          expect(approved).to.be.eq(true);
+        });
       });
     });
 
-    describe('if is approved', () => {
-      beforeEach(async () => {
-        await metahubAdapterLister.approveForListing(asset);
-      });
+    context('when single approve', () => {
+      describe('if is approved', () => {
+        beforeEach(async () => {
+          await metahubAdapterLister.approveForListing(asset);
+        });
 
-      it('should return true', async () => {
-        const approved = await metahubAdapter.isApprovedForListing(asset);
-        expect(approved).to.be.eq(true);
+        it('should return true', async () => {
+          const approved = await metahubAdapter.isApprovedForListing(asset);
+          expect(approved).to.be.eq(true);
+        });
       });
     });
   });
