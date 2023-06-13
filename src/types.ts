@@ -5,7 +5,7 @@ import { Accounts } from '@iqprotocol/iq-space-protocol-light/typechain/contract
 import { Rentings } from '@iqprotocol/iq-space-protocol-light/typechain/contracts/renting/renting-manager/IRentingManager';
 import { Warpers } from '@iqprotocol/iq-space-protocol-light/typechain/contracts/warper/IWarperController';
 import { AccountId, AssetId, AssetType, ChainId } from 'caip';
-import { BigNumber, BytesLike, Overrides as BaseOverrides, Signer } from 'ethers';
+import { Overrides as BaseOverrides, BigNumber, BytesLike, ContractTransaction, Signer } from 'ethers';
 
 export type Address = string;
 
@@ -39,11 +39,6 @@ export interface ChainAware {
   getChainId(): Promise<ChainId>;
 }
 
-export type ListingParams = {
-  lister: AccountId;
-  configurator: AccountId;
-};
-
 export type ListingTermsInfo = IListingTermsRegistry.ListingTermsStruct & {
   id: BigNumber;
 };
@@ -64,7 +59,10 @@ export type TaxTermsQueryParams = {
 
 export type AssetListingParams = {
   assets: Asset[];
-  params: ListingParams;
+  params: {
+    lister: AccountId;
+    configurator: AccountId;
+  };
   maxLockPeriod: BigNumberish;
   immediatePayout: boolean;
 };
@@ -78,6 +76,16 @@ export type Listing = Pick<
   configurator: AccountId;
   beneficiary: AccountId;
   lister: AccountId;
+};
+
+export type ListingParams = {
+  universeId: BigNumberish;
+  assetListingParams: AssetListingParams;
+  listingTerms: IListingTermsRegistry.ListingTermsStruct;
+};
+
+export type TrackedListingParams = ListingParams & {
+  trackingId: string;
 };
 
 export type AssetNamespace = 'erc20' | 'erc721' | 'erc1155';
@@ -216,4 +224,14 @@ export type RentingExtendedDelegatedSignatureData = {
 
 export type RentingExtendedDelegatedSignatureVerificationData = RentingExtendedDelegatedSignatureData & {
   delegatedSignatureWithNonce: DelegatedSignatureWithNonce;
+};
+
+export type ListingBatch = {
+  calls: string[];
+  trackingIds: string[];
+};
+
+export type ListingBatchTransaction = {
+  transaction: ContractTransaction;
+  trackingIds: string[];
 };

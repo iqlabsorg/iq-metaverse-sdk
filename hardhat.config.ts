@@ -38,6 +38,7 @@ const config: HardhatUserConfig = {
       chainId: 31337, // explicit default
       live: false,
       saveDeployments: false,
+      blockGasLimit: 60_000_000,
     },
   },
 };

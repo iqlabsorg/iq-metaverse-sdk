@@ -198,10 +198,11 @@ export const setupUniverseAndRegisteredWarper = async (): Promise<{
 };
 
 /**
- * Setup with single universe, warper, asset and tax terms
+ * Setup with single universe, warper, asset(s) and tax terms
  */
 export const setupForListing = async (
   withReward = false,
+  assetCount = 1,
 ): Promise<{
   warperReference: AssetType;
   collectionReference: AssetType;
@@ -212,7 +213,7 @@ export const setupForListing = async (
   const collection = (await ethers.getContract('ERC721Mock')) as ERC721Mock;
 
   /** Mint NFTs to lister */
-  await mintAndApproveNFTs(collection, lister);
+  await mintAndApproveNFTs(collection, lister, assetCount);
 
   /** Set global tax terms */
   const globalTaxTerms = withReward
