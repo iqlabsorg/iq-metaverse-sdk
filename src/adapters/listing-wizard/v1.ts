@@ -7,7 +7,7 @@ import {
   prepareTypedDataActionEip712SignatureV1,
   verifyTypedDataActionEip712SignatureV1,
 } from '@iqprotocol/iq-space-protocol-light';
-import { IListingTermsRegistry, ListingWizardV1 } from '@iqprotocol/iq-space-protocol-light/typechain';
+import { IListingTermsRegistry, ListingWizardV1, IListingWizardV1, BulkListingParams } from '@iqprotocol/iq-space-protocol-light/typechain';
 import { AccountId } from 'caip';
 import { BigNumber, BigNumberish, BytesLike, ContractTransaction } from 'ethers';
 import { ListingExtendedDelegatedSignatureVerificationData } from 'src';
@@ -142,6 +142,36 @@ export class ListingWizardAdapterV1 extends Adapter {
       delegatedListingSignature,
     );
   }
+
+  async createBulkListingWithTerms(
+    bulkParams: BulkListingParams[]
+  ): Promise<{ listingIds: BigNumber[]; listingTermsIds: BigNumber[] }> {
+    const numListings = bulkParams.length;
+    const listingIds: BigNumber[] = [];
+    const listingTermsIds: BigNumber[] = [];
+
+    for (const bulkParam of bulkParams) {
+      const { assets, params, terms, maxLockPeriod, immediatePayout, universeId } = bulkParam;
+      const { encodedAssets, listingParams, maxLockPeriod: maxLock, immediatePayout: immediate } =
+        ListingHelper.prepareListingParams(params, this.addressTranslator);
+
+      const listingId = await this.contract.createListingWithTerms(
+        encodedAssets,
+        listingParams,
+        terms,
+        maxLockPeriod,
+        immediatePayout,
+        universeId
+      );
+
+      listingIds.push(listingId);
+      const listingTermsId = await this.registerUniverseListingTerms(listingId, universeId, terms); //how we can get it? it should goes from IListingTermsRegistry like in contract
+      listingTermsIds.push(listingTermsId);
+    }
+
+    return { listingIds, listingTermsIds };
+  }
+
 
   /**
    * Estimates the gas amount needed for creating new asset listing (delegated).
